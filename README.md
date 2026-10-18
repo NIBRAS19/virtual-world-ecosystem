@@ -107,7 +107,7 @@ npx serve .
 ```
 
 Open `http://localhost:8000`.
-
+live : https://nibras19.github.io/virtual-world-ecosystem/
 ### Running Verification Tests
 
 ```bash
