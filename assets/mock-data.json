@@ -1,0 +1,22 @@
+{
+  "version": 4,
+  "runtime": "Embedded in assets/js/app.js so the MVP works without fetch/server dependencies.",
+  "seedCounts": {
+    "residents": 22,
+    "districts": 7,
+    "landPlots": 21,
+    "properties": 15,
+    "products": 15,
+    "vehicles": 10,
+    "businesses": 10,
+    "communities": 10,
+    "events": 10,
+    "messageConversations": 12,
+    "notifications": 20,
+    "transactions": 20,
+    "games": 3
+  },
+  "currency": "ISL",
+  "currencyNote": "Fictional demo currency with no real-world cash value.",
+  "schemaKey": "nexus_island_mvp_v4"
+}
