@@ -67,6 +67,41 @@
         gain.gain.setValueAtTime(0.06, now);
         gain.gain.linearRampToValueAtTime(0.001, now + 0.28);
         osc.start(now); osc.stop(now + 0.28);
+      } else if (type === 'engine') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(80, now);
+        osc.frequency.linearRampToValueAtTime(160, now + 0.15);
+        gain.gain.setValueAtTime(0.03, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.15);
+        osc.start(now); osc.stop(now + 0.15);
+      } else if (type === 'drift') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(180, now + 0.18);
+        gain.gain.setValueAtTime(0.02, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.18);
+        osc.start(now); osc.stop(now + 0.18);
+      } else if (type === 'nitro') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(900, now + 0.25);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.25);
+        osc.start(now); osc.stop(now + 0.25);
+      } else if (type === 'horn') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.setValueAtTime(554.37, now + 0.08);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
+        osc.start(now); osc.stop(now + 0.3);
+      } else if (type === 'cash') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(987.77, now);
+        osc.frequency.setValueAtTime(1318.51, now + 0.08);
+        gain.gain.setValueAtTime(0.07, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.24);
+        osc.start(now); osc.stop(now + 0.24);
       }
     } catch {}
   }
@@ -247,7 +282,8 @@
       wallet: 1450, wishlist: [], cart: [],
       inventory: ['m5','m2','m7','m9','m11','m13'],
       equipped: { fashion: null, badge: 'm5', vehicle: null },
-      ownedLand: [], ownedProperties: [], ownedVehicles: [],
+      ownedLand: [], ownedProperties: [], ownedVehicles: ['v1'],
+      activeVehicle: 'v1', streetCred: 3, worldLayer: 'satellite', worldMode: 'map',
       home: {
         built: true, name: 'Alex\'s Coastal Atelier & Majlis',
         landId: 'Suite #104 (Pioneer District)', style: 'UAE Luxury Coastal',
@@ -318,6 +354,10 @@
       if (merged.home.visitorsNow === undefined) merged.home.visitorsNow = 3;
       if (!merged.currentDistrict) merged.currentDistrict = 'harbor';
       if (!merged.avatarPosition) merged.avatarPosition = { x: 48, y: 64 };
+      if (!merged.streetCred) merged.streetCred = 3;
+      if (!merged.worldLayer) merged.worldLayer = 'satellite';
+      if (!merged.worldMode) merged.worldMode = 'map';
+      if (!merged.activeVehicle) merged.activeVehicle = 'v1';
       return merged;
     } catch { return defaultState(); }
   }
@@ -1411,114 +1451,291 @@
     </section>`;
   }
 
+  /* ═══════════════════════════════════════════════════════════════
+     WORLD & ASSETS: GOOGLE MAPS + GTA INTERACTIVE ENGINE
+     ═══════════════════════════════════════════════════════════════ */
+  const WORLD_DATA = {
+    width: 2400,
+    height: 1800,
+    districts: {
+      harbor: { id: 'harbor', name: 'Harbor District', icon: '⚓', x: 500, y: 520, radius: 260, color: '#0891b2', landmark: 'Marina Grand Promenade' },
+      creator: { id: 'creator', name: 'Creator District', icon: '🎨', x: 1640, y: 440, radius: 280, color: '#ea580c', landmark: 'Louvre Crystal Pavilion' },
+      gaming: { id: 'gaming', name: 'Gaming District', icon: '🎮', x: 740, y: 1180, radius: 290, color: '#7c3aed', landmark: 'Yas Cyber Arena & Circuit' },
+      downtown: { id: 'downtown', name: 'Downtown Core', icon: '🏢', x: 1720, y: 1020, radius: 280, color: '#0ea5e9', landmark: 'ADGM Apex Tower & Core' },
+      residential: { id: 'residential', name: 'Residential District', icon: '🏡', x: 1200, y: 1420, radius: 260, color: '#059669', landmark: 'Palm Sanctuary Lagoon' },
+      nature: { id: 'nature', name: 'Nature Zone', icon: '🌿', x: 380, y: 1260, radius: 240, color: '#16a34a', landmark: 'Eastern Mangrove Reserve' },
+      future: { id: 'future', name: 'Future Zone', icon: '∞', x: 1960, y: 1440, radius: 250, color: '#6366f1', landmark: 'NOVA Quantum Spire' }
+    },
+    roads: [
+      { id: 'r1', name: 'Corniche Grand Blvd', from: [380, 520], to: [520, 520] },
+      { id: 'r2', name: 'Corniche Grand Blvd', from: [520, 520], to: [840, 560] },
+      { id: 'r3', name: 'Corniche Grand Blvd', from: [840, 560], to: [1150, 950] },
+      { id: 'r4', name: 'Saadiyat Causeway', from: [840, 560], to: [1250, 480], bridge: true },
+      { id: 'r5', name: 'Saadiyat Cultural Way', from: [1250, 480], to: [1640, 440] },
+      { id: 'r6', name: 'ADGM Tech Spine', from: [1150, 950], to: [1720, 1020] },
+      { id: 'r7', name: 'NOVA Quantum Way', from: [1720, 1020], to: [1960, 1440] },
+      { id: 'r8', name: 'Palm Sanctuary Drive', from: [1150, 950], to: [1200, 1420] },
+      { id: 'r9', name: 'Yas Coastal Highway', from: [1200, 1420], to: [740, 1180] },
+      { id: 'r10', name: 'Marina Express Link', from: [520, 520], to: [740, 1180] },
+      { id: 'r11', name: 'Mangrove Boardwalk', from: [740, 1180], to: [380, 1260] }
+    ],
+    yasCircuit: [
+      { x: 620, y: 1080 }, { x: 860, y: 1080 }, { x: 920, y: 1180 },
+      { x: 880, y: 1280 }, { x: 680, y: 1300 }, { x: 580, y: 1200 }
+    ],
+    plots: [
+      { id: 'L-101', name: 'Marina Edge Plot', district: 'harbor', x: 440, y: 480, w: 70, h: 55, price: 450 },
+      { id: 'L-102', name: 'Bluewater Promenade', district: 'harbor', x: 580, y: 470, w: 75, h: 60, price: 670 },
+      { id: 'L-103', name: 'Corniche Gateway', district: 'harbor', x: 490, y: 590, w: 80, h: 65, price: 850 },
+      { id: 'L-201', name: 'Saadiyat Studio Lane', district: 'creator', x: 1560, y: 400, w: 70, h: 60, price: 670 },
+      { id: 'L-202', name: 'Louvre Vista Atelier', district: 'creator', x: 1710, y: 410, w: 80, h: 65, price: 890 },
+      { id: 'L-203', name: 'Artisan Plaza Parcel', district: 'creator', x: 1640, y: 510, w: 85, h: 70, price: 1070 },
+      { id: 'L-301', name: 'Yas Circuit West', district: 'gaming', x: 660, y: 1120, w: 75, h: 60, price: 890 },
+      { id: 'L-302', name: 'Apex Arena Row', district: 'gaming', x: 810, y: 1140, w: 80, h: 65, price: 1110 },
+      { id: 'L-303', name: 'Pixel Boulevard', district: 'gaming', x: 740, y: 1250, w: 85, h: 70, price: 1290 },
+      { id: 'L-401', name: 'ADGM Global Square', district: 'downtown', x: 1650, y: 960, w: 75, h: 60, price: 1110 },
+      { id: 'L-402', name: 'Al Maryah Center', district: 'downtown', x: 1790, y: 980, w: 80, h: 65, price: 1330 },
+      { id: 'L-403', name: 'Fintech Tower Parcel', district: 'downtown', x: 1720, y: 1090, w: 85, h: 70, price: 1510 },
+      { id: 'L-501', name: 'Palm Grove Haven', district: 'residential', x: 1140, y: 1360, w: 75, h: 60, price: 1330 },
+      { id: 'L-502', name: 'Nurai Vista Villa', district: 'residential', x: 1260, y: 1380, w: 80, h: 65, price: 1550 },
+      { id: 'L-503', name: 'Coastal Sanctuary', district: 'residential', x: 1200, y: 1490, w: 85, h: 70, price: 1730 },
+      { id: 'L-601', name: 'Eastern Mangrove Point', district: 'nature', x: 330, y: 1220, w: 70, h: 60, price: 1550 },
+      { id: 'L-602', name: 'Falcon Dune View', district: 'nature', x: 430, y: 1230, w: 75, h: 65, price: 1770 },
+      { id: 'L-603', name: 'Flamingo Lagoon', district: 'nature', x: 380, y: 1330, w: 80, h: 70, price: 1950 },
+      { id: 'L-701', name: 'Masdar Eco Hub', district: 'future', x: 1900, y: 1390, w: 75, h: 60, price: 1770 },
+      { id: 'L-702', name: 'NOVA Quantum Axis', district: 'future', x: 2020, y: 1410, w: 80, h: 65, price: 1990 },
+      { id: 'L-703', name: 'Spatial Portal West', district: 'future', x: 1960, y: 1510, w: 85, h: 70, price: 2170 }
+    ],
+    businesses: [
+      { id: 'b1', name: 'Harbor & Co. Roastery', type: 'Artisan Cafe', icon: '☕', x: 570, y: 550, district: 'harbor' },
+      { id: 'b2', name: 'Yas Cyber Forge', type: 'Game Studio', icon: '🎮', x: 710, y: 1130, district: 'gaming' },
+      { id: 'b3', name: 'Nexus AI Labs', type: 'AI & Tech', icon: '🧪', x: 1690, y: 970, district: 'downtown' },
+      { id: 'b4', name: 'Canvas House Saadiyat', type: 'Art Gallery', icon: '🎨', x: 1590, y: 430, district: 'creator' },
+      { id: 'b5', name: 'Emirates Gourmet Food', type: 'Fine Dining', icon: '🍽️', x: 470, y: 570, district: 'harbor' },
+      { id: 'b6', name: 'ADGM Founders Circle', type: 'Advisory & Law', icon: '🏛️', x: 1760, y: 1040, district: 'downtown' },
+      { id: 'b7', name: 'Oceanic Yacht Charters', type: 'Tourism', icon: '🌊', x: 440, y: 490, district: 'harbor' },
+      { id: 'b8', name: 'Motion Works VFX', type: 'Digital VFX', icon: '✨', x: 1690, y: 460, district: 'creator' },
+      { id: 'b9', name: 'Arena Esports League', type: 'Esports Org', icon: '🏆', x: 790, y: 1210, district: 'gaming' },
+      { id: 'b10', name: 'Green Oasis Eco-Tech', type: 'Sustainability', icon: '🌱', x: 420, y: 1240, district: 'nature' }
+    ],
+    parkedVehicles: [
+      { id: 'v1', name: 'Pulse Hyper-GT', icon: '🏎️', type: 'Supercar', x: 610, y: 520, angle: 0 },
+      { id: 'v2', name: 'Aero-Hover Superbike', icon: '🏍️', type: 'Hover Bike', x: 800, y: 1130, angle: 1.57 },
+      { id: 'v3', name: 'Seaglass Taycan EV', icon: '🚙', type: 'Electric Sedan', x: 1670, y: 1010, angle: -0.8 },
+      { id: 'v4', name: 'Gulfstream 42 Speedboat', icon: '🛥️', type: 'Speedboat', x: 410, y: 470, angle: 0.4 }
+    ],
+    atms: [
+      { id: 'atm-1', name: 'Harbor Marina ATM', x: 530, y: 490 },
+      { id: 'atm-2', name: 'ADGM Financial ATM', x: 1750, y: 990 },
+      { id: 'atm-3', name: 'Yas Arena ATM', x: 720, y: 1200 }
+    ],
+    stuntRamps: [
+      { id: 'stunt-1', name: 'Yas Canal Stunt Ramp', x: 920, y: 1060, angle: -0.6 },
+      { id: 'stunt-2', name: 'Saadiyat Causeway Stunt Ramp', x: 1020, y: 540, angle: 0.5 }
+    ],
+    npcs: [
+      { id: 'npc-1', name: 'Omar Al-Zaabi', avatar: '👨🏽‍💻', role: 'Island Pioneer', x: 510, y: 540, mission: 'courier' },
+      { id: 'npc-2', name: 'Maya Chen', avatar: '👩🏻‍🎨', role: 'Spatial Creator', x: 1620, y: 460, mission: 'art' },
+      { id: 'npc-3', name: 'Noah Williams', avatar: '🧑🏼‍🎮', role: 'Esports Pro', x: 730, y: 1160, mission: 'circuit' }
+    ]
+  };
+
+  /* World Engine Global Instance */
+  const worldEngine = {
+    canvas: null,
+    ctx: null,
+    radarCanvas: null,
+    radarCtx: null,
+    animId: null,
+    mode: 'map', // 'map' or 'drive'
+    layer: 'satellite', // 'satellite', 'street', 'cyber', 'deeds'
+    camera: { x: 520, y: 520, zoom: 0.75, targetX: 520, targetY: 520, targetZoom: 0.75 },
+    player: {
+      x: 520, y: 520,
+      vx: 0, vy: 0,
+      speed: 0,
+      maxSpeed: 11,
+      accel: 0.35,
+      friction: 0.94,
+      angle: 0,
+      inVehicle: 'v1',
+      drifting: false,
+      nitro: 100,
+      inAir: false
+    },
+    keys: {},
+    skidMarks: [],
+    particles: [],
+    gpsRoute: null,
+    activeMission: null,
+    lapTimer: { active: false, startTime: 0, currentTime: 0, bestTime: null, lastCheckpoint: -1 },
+    streetCred: 3,
+    radioStation: 'Nexus Synth 94.2',
+    drag: { isDown: false, startX: 0, startY: 0, camStartX: 0, camStartY: 0 },
+    nearestInteract: null,
+    wavePhase: 0
+  };
+
   /* ═══════════════════════════════════════════════
-     ROUTE: ISLAND MAP (Immersive Centerpiece)
+     ROUTE: ISLAND MAP (Google Maps meets GTA Engine)
      ═══════════════════════════════════════════════ */
   function island() {
-    const mapTheme = state.settings.mapTheme || 'day';
-    const oceanClass = mapTheme === 'night' ? 'map-ocean-night' : mapTheme === 'sunset' ? 'map-ocean-sunset' : 'map-ocean';
+    const layer = state.worldLayer || 'satellite';
+    const mode = state.worldMode || 'map';
     const currentD = DISTRICTS.find(d => d.id === state.currentDistrict) || DISTRICTS[0];
 
-    return `<section class="fade" style="display:flex;flex-direction:column;gap:20px">
-      <!-- Header -->
+    return `<section class="fade" style="display:flex;flex-direction:column;gap:18px">
+      <!-- HEADER -->
       <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
         <div>
-          <div class="metric-label">Abu Dhabi Persistent World</div>
-          <h1 class="heading-lg" style="margin-top:4px">Interactive Island Map</h1>
-          <p style="font-size:13px;color:var(--text-muted);margin-top:4px">Select any district to travel, meet residents, and unlock exploration XP.</p>
+          <div class="metric-label" style="display:flex;align-items:center;gap:6px">
+            <span class="live-dot" style="background:#22d3ee"></span> Persistent Abu Dhabi Archipelago
+          </div>
+          <h1 class="heading-lg" style="margin-top:4px">Nexus World &amp; Geospatial Engine</h1>
+          <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Switch between Google Maps satellite view and GTA-style interactive vehicle free-roam.</p>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="display:flex;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:3px;gap:2px">
-            ${[['day','☀️'],['sunset','🌅'],['night','🌙']].map(([t,i]) => `
-              <button onclick="setMapTheme('${t}')" style="padding:6px 12px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all 0.2s;${mapTheme===t?'background:rgba(6,182,212,0.15);color:#22d3ee':'background:transparent;color:var(--text-muted)'}">${i} ${t.charAt(0).toUpperCase()+t.slice(1)}</button>
+
+        <!-- Right Quick Stats & Actions -->
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div class="gta-stars-meter" title="Street Credibility Rating">
+            <span style="font-size:11px;font-weight:800;color:var(--text-dim);margin-right:4px">CRED</span>
+            ${[1,2,3,4,5].map(s => `<span class="gta-star ${s <= (state.streetCred||3) ? 'filled' : ''}">★</span>`).join('')}
+          </div>
+
+          <div style="display:flex;align-items:center;gap:6px">
+            <button onclick="toggleWorldMode('map')" class="btn ${mode==='map'?'btn-primary':'btn-ghost'} btn-sm">🧭 Google Maps</button>
+            <button onclick="toggleWorldMode('drive')" class="btn ${mode==='drive'?'btn-gold':'btn-ghost'} btn-sm">🏎️ GTA Free-Roam</button>
+            ${btn('✨ NOVA Guide', 'nova()', 'ghost', 'class="btn btn-ghost btn-sm"')}
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN INTERACTIVE WORLD ENGINE FRAME -->
+      <div class="world-engine-frame">
+        <!-- TOP TOOLBAR & CONTROLS -->
+        <div class="map-top-bar">
+          <!-- Search POIs & Locations -->
+          <div class="map-search-wrap">
+            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none">🔍</span>
+            <input type="text" id="mapSearchInput" class="map-search-input" placeholder="Search districts, plots, shops, cars..." oninput="searchWorldPois(this.value)" onfocus="searchWorldPois(this.value)">
+            <div id="mapSearchDropdown" class="map-search-dropdown"></div>
+          </div>
+
+          <!-- Layer Switcher -->
+          <div class="map-layer-pill-group">
+            ${[
+              ['satellite', '🛰️', 'Satellite'],
+              ['street', '🗺️', 'Street'],
+              ['cyber', '🌃', 'Cyber'],
+              ['deeds', '📐', 'Deeds']
+            ].map(([l, ic, txt]) => `
+              <button onclick="setWorldLayer('${l}')" class="map-layer-btn ${layer === l ? 'active' : ''}">
+                <span>${ic}</span> <span>${txt}</span>
+              </button>
             `).join('')}
           </div>
-          ${btn('✨ NOVA Guide', 'nova()', 'primary')}
-        </div>
-      </div>
 
-      <!-- THE MAP -->
-      <div class="map-container ${oceanClass}" style="min-height:480px;position:relative">
-        <div class="wave-shimmer"></div>
-
-        <!-- Water ripples -->
-        <div class="water-ripple" style="width:80px;height:80px;left:8%;top:25%;animation-delay:0s"></div>
-        <div class="water-ripple" style="width:100px;height:100px;right:10%;top:55%;animation-delay:1.5s"></div>
-        <div class="water-ripple" style="width:60px;height:60px;left:60%;top:10%;animation-delay:2.5s"></div>
-        <div class="water-ripple" style="width:70px;height:70px;left:25%;bottom:15%;animation-delay:3.5s"></div>
-
-        <!-- Radar pings -->
-        <div class="radar-ring" style="width:28px;height:28px;border-color:rgba(6,182,212,0.3);left:20%;top:30%"></div>
-        <div class="radar-ring" style="width:32px;height:32px;border-color:rgba(244,63,94,0.25);left:65%;top:22%;animation-delay:1s"></div>
-        <div class="radar-ring" style="width:24px;height:24px;border-color:rgba(139,92,246,0.3);left:30%;top:64%;animation-delay:2s"></div>
-
-        <!-- Island SVG -->
-        <div style="padding:30px 50px" class="float">
-          ${islandSVG()}
-        </div>
-
-        <!-- District Pins -->
-        ${DISTRICTS.map(d => {
-          const active = d.id === state.currentDistrict;
-          return `
-          <button type="button" onclick="zone('${d.id}')" class="district-pin ${active?'district-pin-active':''}" style="left:${d.mapX}%;top:${d.mapY}%">
-            ${active ? '' : '<div class="pin-pulse"></div>'}
-            <div class="district-pin-inner" style="${active?'background:rgba(6,182,212,0.2);border-color:rgba(6,182,212,0.5);box-shadow:0 0 30px -5px rgba(6,182,212,0.3),0 8px 24px -4px rgba(0,0,0,0.4)':''}">
-              <div style="font-size:22px">${d.icon}</div>
-              <div style="font-size:10px;font-weight:800;color:var(--text-primary);margin-top:3px">${d.name.replace(' District','')}</div>
-              <div style="font-size:8px;font-weight:700;color:${d.color};text-transform:uppercase">${d.tagline.split(' ')[0]}</div>
-            </div>
-          </button>`;
-        }).join('')}
-
-        <!-- HUD overlays -->
-        <div class="glass" style="position:absolute;left:12px;top:12px;padding:8px 14px;border-radius:12px">
-          <div class="metric-label">Live Status</div>
-          <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;margin-top:3px">
-            <span class="live-dot"></span> ${DATA.users.filter(u=>u.online).length} Online
+          <!-- Vehicle & Mission Hub -->
+          <div style="display:flex;gap:6px">
+            <select onchange="spawnVehicleInWorld(this.value);this.selectedIndex=0;" style="padding:6px 12px;border-radius:12px;background:rgba(8,20,42,0.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.12);color:var(--text-primary);font-size:12px;font-weight:700;cursor:pointer;outline:none">
+              <option value="">🚗 Spawn Vehicle...</option>
+              ${DATA.vehicles.map(v => `<option value="${v.id}">${v.icon} ${v.name}</option>`).join('')}
+            </select>
+            <button onclick="startWorldMission('courier')" class="btn btn-gold btn-sm" style="box-shadow:0 4px 16px rgba(245,158,11,0.3)">⚡ Courier Sprint</button>
           </div>
         </div>
 
-        <div class="glass" style="position:absolute;right:12px;top:12px;padding:8px 14px;border-radius:12px;text-align:right">
-          <div class="metric-label">Current Zone</div>
-          <div style="font-size:12px;font-weight:800;margin-top:3px">${currentD.icon} ${currentD.name}</div>
+        <!-- CANVAS VIEWPORT -->
+        <div id="worldCanvasContainer" class="world-canvas-container ${mode==='drive'?'free-roam-cursor':''}">
+          <canvas id="nexusWorldCanvas"></canvas>
         </div>
 
-        <div class="glass" style="position:absolute;left:12px;right:12px;bottom:12px;padding:12px 16px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-          <div style="display:flex;align-items:center;gap:10px">
-            <span style="font-size:20px">🧭</span>
-            <div>
-              <div style="font-size:13px;font-weight:800">Click any district to travel</div>
-              <div style="font-size:11px;color:var(--text-muted)" class="sm-show">Earn Exploration XP · Unlock district lore</div>
-            </div>
+        <!-- FLOATING ZOOM & RECENTER CONTROLS -->
+        <div class="map-nav-controls">
+          <button onclick="zoomWorld(0.2)" class="map-nav-btn" title="Zoom In">+</button>
+          <button onclick="zoomWorld(-0.2)" class="map-nav-btn" title="Zoom Out">−</button>
+          <button onclick="recenterWorld()" class="map-nav-btn" title="Recenter Camera">⌖</button>
+          <button onclick="cycleRadio()" class="map-nav-btn" title="Island Radio">📻</button>
+        </div>
+
+        <!-- GTA RADAR MINIMAP (Bottom-Left) -->
+        <div class="gta-radar-wrapper">
+          <div class="gta-radar-outer">
+            <canvas id="nexusRadarCanvas" width="144" height="144"></canvas>
+            <div class="gta-radar-heading">N</div>
           </div>
-          <span class="tag tag-cyan">Visited: ${state.districtsVisited.length}/7</span>
+          <div id="gtaLocationBadge" class="gta-location-badge">⚓ Harbor Marina Promenade</div>
+        </div>
+
+        <!-- GTA SPEEDOMETER & NITRO GAUGE (Bottom-Right, Drive Mode) -->
+        <div id="gtaSpeedometer" class="gta-speedometer" style="display:${mode==='drive'?'block':'none'}">
+          <div style="display:flex;align-items:baseline;justify-content:space-between">
+            <div id="speedoVal" class="gta-speedo-val">0</div>
+            <div style="font-size:10px;font-weight:800;color:var(--text-dim);letter-spacing:0.1em">KM / H</div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+            <span id="vehicleGear" style="font-size:11px;font-weight:900;color:#22d3ee">GEAR D</span>
+            <span id="vehicleModelName" style="font-size:10px;font-weight:700;color:var(--text-muted)">Pulse Hyper-GT</span>
+          </div>
+          <div class="gta-nitro-track">
+            <div id="nitroBar" class="gta-nitro-fill" style="width:100%"></div>
+          </div>
+        </div>
+
+        <!-- CONTEXTUAL GTA PROXIMITY INTERACT PROMPT -->
+        <div id="gtaPromptBox" class="gta-prompt-box" style="display:none" onclick="triggerGtaInteract()">
+          <div class="gta-key-pill">[E]</div>
+          <div id="gtaPromptText" style="font-size:12px;font-weight:800;color:#fff">Enter Harbor &amp; Co. Roastery</div>
+        </div>
+
+        <!-- ACTIVE MISSION HUD BANNER -->
+        <div id="gtaMissionHud" class="gta-mission-hud" style="display:none">
+          <span style="font-size:24px">📦</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;color:#fbbf24">Active Contract</div>
+            <div id="missionTitle" style="font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Harbor to Saadiyat Express</div>
+            <div id="missionCountdown" style="font-size:13px;font-weight:900;color:#22d3ee;font-family:'JetBrains Mono'">Time Left: 45s</div>
+          </div>
+          <button onclick="cancelWorldMission()" style="background:transparent;border:none;color:var(--text-dim);font-weight:900;cursor:pointer;font-size:14px">✕</button>
+        </div>
+
+        <!-- MOBILE ON-SCREEN TOUCH CONTROLS -->
+        <div id="gtaTouchControls" class="gta-touch-controls">
+          <div class="touch-btn-pad">
+            <button class="touch-action-btn" ontouchstart="touchControlPress('gas')" ontouchend="touchControlRelease('gas')">▲ GAS</button>
+            <button class="touch-action-btn" ontouchstart="touchControlPress('brake')" ontouchend="touchControlRelease('brake')">▼ BRK</button>
+            <button class="touch-action-btn" style="background:rgba(245,158,11,0.3);border-color:#f59e0b" ontouchstart="touchControlPress('nitro')" ontouchend="touchControlRelease('nitro')">⚡</button>
+            <button class="touch-action-btn" style="background:rgba(16,185,129,0.3);border-color:#10b981" onclick="triggerGtaInteract()">[E]</button>
+          </div>
         </div>
       </div>
 
-      <!-- Current District Detail -->
+      <!-- CURRENT DISTRICT DETAILS -->
       <div id="zoneHost">
         ${renderDistrictDetail(currentD)}
       </div>
 
-      <!-- All Districts Grid -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
-        ${DISTRICTS.map(d => card(`
-          <div style="padding:20px;display:flex;flex-direction:column;justify-content:space-between;height:100%">
-            <div>
-              <div style="display:flex;justify-content:space-between;align-items:start">
-                <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.04);display:grid;place-items:center;font-size:20px">${d.icon}</div>
-                <span style="font-size:9px;font-weight:800;text-transform:uppercase;color:${d.color};letter-spacing:0.1em">${d.tagline}</span>
+      <!-- ALL 7 DISTRICTS CARD GRID -->
+      <div>
+        <div class="metric-label" style="margin-bottom:12px">All Abu Dhabi Island Districts</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+          ${DISTRICTS.map(d => card(`
+            <div style="padding:20px;display:flex;flex-direction:column;justify-content:space-between;height:100%">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:start">
+                  <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.04);display:grid;place-items:center;font-size:20px">${d.icon}</div>
+                  <span style="font-size:9px;font-weight:800;text-transform:uppercase;color:${d.color};letter-spacing:0.1em">${d.tagline}</span>
+                </div>
+                <h3 style="font-size:16px;font-weight:900;margin-top:12px">${d.name}</h3>
+                <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.6">${d.description}</p>
               </div>
-              <h3 style="font-size:16px;font-weight:900;margin-top:12px">${d.name}</h3>
-              <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.6">${d.description}</p>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)">
+                <span style="font-size:11px;font-weight:600;color:var(--text-dim)">${DATA.land.filter(l=>l.district===d.name).length} plots</span>
+                ${btn('Travel Here', `zone('${d.id}')`, d.id===state.currentDistrict?'primary':'ghost', 'class="btn btn-sm"')}
+              </div>
             </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)">
-              <span style="font-size:11px;font-weight:600;color:var(--text-dim)">${DATA.land.filter(l=>l.district===d.name).length} plots</span>
-              ${btn('Travel Here', `zone('${d.id}')`, d.id===state.currentDistrict?'primary':'ghost', 'class="btn btn-sm"')}
-            </div>
-          </div>
-        `)).join('')}
+          `)).join('')}
+        </div>
       </div>
     </section>`;
   }
@@ -1533,7 +1750,7 @@
           <div style="flex:1;min-width:280px">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
               <span class="live-dot"></span>
-              <span class="metric-label">District Arrival</span>
+              <span class="metric-label">District Arrival &amp; Fast-Travel Hub</span>
             </div>
             <h2 style="font-size:28px;font-weight:900;display:flex;align-items:center;gap:10px;margin-top:8px">
               <span>${d.icon}</span> ${d.name}
@@ -1551,11 +1768,11 @@
 
           <div style="width:280px;flex-shrink:0;padding:20px;border-radius:18px;background:rgba(6,182,212,0.04);border:1px solid rgba(6,182,212,0.1)">
             <div class="metric-label" style="color:#22d3ee">Fast-Travel Active</div>
-            <div style="font-size:16px;font-weight:900;margin-top:4px">You're Here</div>
-            <p style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5">All nearby services and land plots are accessible.</p>
+            <div style="font-size:16px;font-weight:900;margin-top:4px">Current Sector</div>
+            <p style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5">Launch into free-roam driving from this district or inspect available real estate deeds.</p>
             <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px">
-              ${btn('🏝️ Browse Land', "nav('land.html')", 'primary', 'class="btn btn-primary btn-sm" style="width:100%"')}
-              ${btn('🏢 Storefronts', "nav('businesses.html')", 'ghost', 'class="btn btn-ghost btn-sm" style="width:100%"')}
+              ${btn('🏎️ Drive Here Now', `toggleWorldMode('drive')`, 'gold', 'class="btn btn-gold btn-sm" style="width:100%"')}
+              ${btn('🏝️ Browse District Deeds', "nav('land.html')", 'primary', 'class="btn btn-primary btn-sm" style="width:100%"')}
             </div>
           </div>
         </div>
@@ -1563,11 +1780,14 @@
         <!-- Nearby listings -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.05)">
           <div>
-            <div style="font-size:13px;font-weight:900;margin-bottom:10px">Storefronts</div>
+            <div style="font-size:13px;font-weight:900;margin-bottom:10px">Active Storefronts</div>
             ${nearbyBiz.length ? nearbyBiz.map(b => `
-              <div style="padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:10px;margin-bottom:6px">
-                <span style="font-size:20px">${b.icon}</span>
-                <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.name)}</div><div style="font-size:10px;color:var(--text-dim)">${esc(b.type)} · ⭐ ${b.rating}</div></div>
+              <div style="padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px">
+                <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                  <span style="font-size:20px">${b.icon}</span>
+                  <div style="min-width:0"><div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.name)}</div><div style="font-size:10px;color:var(--text-dim)">${esc(b.type)} · ⭐ ${b.rating}</div></div>
+                </div>
+                ${btn('GPS Route', `selectWorldPoi('${b.id}')`, 'ghost', 'class="btn btn-ghost btn-sm"')}
               </div>
             `).join('') : '<div style="font-size:11px;color:var(--text-dim)">No storefronts yet.</div>'}
           </div>
@@ -1576,7 +1796,10 @@
             ${nearbyPlots.slice(0,3).map(l => `
               <div style="padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
                 <div><div style="font-size:12px;font-weight:700">${l.id} · ${esc(l.name)}</div><div style="font-size:10px;color:var(--text-dim)">${l.size}</div></div>
-                <div style="font-size:12px;font-weight:800;color:#22d3ee">${money(l.price)}</div>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <span style="font-size:12px;font-weight:800;color:#22d3ee">${money(l.price)}</span>
+                  ${btn('Inspect', `selectWorldPoi('${l.id}')`, 'primary', 'class="btn btn-primary btn-sm"')}
+                </div>
               </div>
             `).join('')}
           </div>
@@ -1597,10 +1820,958 @@
     else { toast(`Traveled to ${d.name}.`, 'info'); }
     const h = document.getElementById('zoneHost');
     if (h) { h.innerHTML = renderDistrictDetail(d); h.scrollIntoView({ behavior: 'smooth' }); }
-    // Update active pin styling
-    document.querySelectorAll('.district-pin').forEach(el => el.classList.remove('district-pin-active'));
-    const pins = document.querySelectorAll('.district-pin');
-    pins.forEach(pin => { if (pin.getAttribute('onclick')?.includes(id)) pin.classList.add('district-pin-active'); });
+    
+    // Also smoothly fly the world camera to this district in the interactive engine!
+    const targetDistrict = WORLD_DATA.districts[id];
+    if (targetDistrict && worldEngine.canvas) {
+      worldEngine.camera.targetX = targetDistrict.x;
+      worldEngine.camera.targetY = targetDistrict.y;
+      worldEngine.camera.targetZoom = 0.9;
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     WORLD ENGINE CONTROLLER & GAME LOOP IMPLEMENTATION
+     ═══════════════════════════════════════════════════════════════ */
+  function setWorldLayer(l) {
+    worldEngine.layer = l;
+    state.worldLayer = l;
+    save();
+    document.querySelectorAll('.map-layer-btn').forEach(btn => btn.classList.remove('active'));
+    event?.currentTarget?.classList?.add('active');
+    playBeep('click');
+  }
+
+  function toggleWorldMode(mode) {
+    worldEngine.mode = mode;
+    state.worldMode = mode;
+    save();
+    playBeep(mode === 'drive' ? 'engine' : 'click');
+    const container = document.getElementById('worldCanvasContainer');
+    if (container) {
+      if (mode === 'drive') container.classList.add('free-roam-cursor');
+      else container.classList.remove('free-roam-cursor');
+    }
+    const speedo = document.getElementById('gtaSpeedometer');
+    if (speedo) speedo.style.display = mode === 'drive' ? 'block' : 'none';
+
+    if (mode === 'drive') {
+      worldEngine.camera.targetZoom = 1.6;
+      worldEngine.camera.targetX = worldEngine.player.x;
+      worldEngine.camera.targetY = worldEngine.player.y;
+      toast('🏎️ Free-roam mode: Use WASD / Arrows to drive, Space to drift, Shift for Nitro!', 'info');
+    } else {
+      worldEngine.camera.targetZoom = 0.75;
+      toast('🧭 Google Maps view: Drag to pan, scroll wheel to zoom.', 'info');
+    }
+  }
+
+  function zoomWorld(delta) {
+    worldEngine.camera.targetZoom = Math.max(0.35, Math.min(2.4, worldEngine.camera.targetZoom + delta));
+    playBeep('click');
+  }
+
+  function recenterWorld() {
+    worldEngine.camera.targetX = worldEngine.player.x;
+    worldEngine.camera.targetY = worldEngine.player.y;
+    worldEngine.camera.targetZoom = worldEngine.mode === 'drive' ? 1.6 : 0.85;
+    playBeep('click');
+    toast('Camera centered on player.', 'info');
+  }
+
+  function searchWorldPois(query) {
+    const dropdown = document.getElementById('mapSearchDropdown');
+    if (!dropdown) return;
+    const q = String(query || '').trim().toLowerCase();
+    if (!q) { dropdown.style.display = 'none'; return; }
+
+    const results = [];
+    Object.values(WORLD_DATA.districts).forEach(d => {
+      if (d.name.toLowerCase().includes(q)) results.push({ id: d.id, name: d.name, type: 'District', icon: d.icon, x: d.x, y: d.y });
+    });
+    WORLD_DATA.plots.forEach(p => {
+      if (p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q)) results.push({ id: p.id, name: `${p.id} · ${p.name}`, type: 'Land Deed', icon: '🏝️', x: p.x, y: p.y });
+    });
+    WORLD_DATA.businesses.forEach(b => {
+      if (b.name.toLowerCase().includes(q) || b.type.toLowerCase().includes(q)) results.push({ id: b.id, name: b.name, type: b.type, icon: b.icon, x: b.x, y: b.y });
+    });
+    WORLD_DATA.parkedVehicles.forEach(v => {
+      if (v.name.toLowerCase().includes(q)) results.push({ id: v.id, name: v.name, type: 'Vehicle', icon: v.icon, x: v.x, y: v.y });
+    });
+
+    if (results.length === 0) {
+      dropdown.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text-dim);text-align:center">No locations found.</div>';
+    } else {
+      dropdown.innerHTML = results.slice(0, 6).map(r => `
+        <div onclick="selectWorldPoi('${r.id}')" style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='rgba(6,182,212,0.1)'" onmouseout="this.style.background='transparent'">
+          <span style="font-size:18px">${r.icon}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:800;color:#fff">${r.name}</div>
+            <div style="font-size:10px;color:#22d3ee">${r.type}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+    dropdown.style.display = 'block';
+  }
+
+  function selectWorldPoi(id) {
+    const dropdown = document.getElementById('mapSearchDropdown');
+    if (dropdown) dropdown.style.display = 'none';
+
+    // Find POI
+    let target = Object.values(WORLD_DATA.districts).find(d => d.id === id) ||
+                 WORLD_DATA.plots.find(p => p.id === id) ||
+                 WORLD_DATA.businesses.find(b => b.id === id) ||
+                 WORLD_DATA.parkedVehicles.find(v => v.id === id);
+
+    if (!target) return;
+
+    worldEngine.camera.targetX = target.x;
+    worldEngine.camera.targetY = target.y;
+    worldEngine.camera.targetZoom = 1.35;
+
+    // Set GPS Route
+    worldEngine.gpsRoute = [
+      { x: worldEngine.player.x, y: worldEngine.player.y },
+      { x: (worldEngine.player.x + target.x) / 2, y: (worldEngine.player.y + target.y) / 2 - 40 },
+      { x: target.x, y: target.y }
+    ];
+
+    playBeep('reward');
+    toast(`🧭 GPS destination set: ${target.name || id}!`, 'success');
+  }
+
+  function spawnVehicleInWorld(vehId) {
+    if (!vehId) return;
+    const v = DATA.vehicles.find(x => x.id === vehId);
+    if (!v) return;
+    worldEngine.player.inVehicle = vehId;
+    worldEngine.player.maxSpeed = 8 + (v.speed / 10);
+    worldEngine.player.accel = 0.25 + (v.acceleration / 300);
+    state.activeVehicle = vehId;
+    save();
+    playBeep('engine');
+    toast(`🏎️ Spawned ${v.name}! You are in the driver seat.`, 'success');
+    toggleWorldMode('drive');
+  }
+
+  function cycleRadio() {
+    const stations = ['Nexus Synth 94.2', 'Abu Dhabi Lo-Fi Beats', 'Desert Cyber Bass', 'Radio Off'];
+    const idx = stations.indexOf(worldEngine.radioStation);
+    worldEngine.radioStation = stations[(idx + 1) % stations.length];
+    playBeep('chat');
+    toast(`📻 Island Radio: ${worldEngine.radioStation}`, 'info');
+  }
+
+  function startWorldMission(type) {
+    if (type === 'courier') {
+      worldEngine.activeMission = {
+        type: 'courier',
+        title: 'Harbor to Saadiyat Express',
+        timeLeft: 45,
+        targetX: 1640,
+        targetY: 440,
+        reward: 500,
+        xp: 150
+      };
+      // Set GPS line
+      worldEngine.gpsRoute = [
+        { x: worldEngine.player.x, y: worldEngine.player.y },
+        { x: 840, y: 560 },
+        { x: 1250, y: 480 },
+        { x: 1640, y: 440 }
+      ];
+      playBeep('reward');
+      toast('📦 Express Contract: Deliver package to Saadiyat Atelier in 45s!', 'gold');
+      const hud = document.getElementById('gtaMissionHud');
+      if (hud) hud.style.display = 'flex';
+      toggleWorldMode('drive');
+    }
+  }
+
+  function cancelWorldMission() {
+    worldEngine.activeMission = null;
+    worldEngine.gpsRoute = null;
+    const hud = document.getElementById('gtaMissionHud');
+    if (hud) hud.style.display = 'none';
+    toast('Mission cancelled.', 'info');
+  }
+
+  function triggerGtaInteract() {
+    if (!worldEngine.nearestInteract) return;
+    const item = worldEngine.nearestInteract;
+    playBeep('click');
+
+    if (item.type === 'business') {
+      enterWorldBusiness(item.ref.id);
+    } else if (item.type === 'plot') {
+      inspectWorldDeed(item.ref.id);
+    } else if (item.type === 'atm') {
+      accessWorldAtm(item.ref.id);
+    } else if (item.type === 'vehicle') {
+      spawnVehicleInWorld(item.ref.id);
+    } else if (item.type === 'npc') {
+      modal(`Chat with ${item.ref.name}`, `
+        <div style="text-align:center;padding:12px">
+          <div style="font-size:54px">${item.ref.avatar}</div>
+          <h3 style="font-size:16px;font-weight:900;margin-top:8px">${item.ref.name} (${item.ref.role})</h3>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:6px;line-height:1.6">"Welcome to Nexus Island! Need fast cash? I have an urgent courier delivery package headed to Saadiyat Atelier. Can you deliver it in 45 seconds?"</p>
+          <div style="display:flex;gap:8px;margin-top:20px;justify-content:center">
+            ${btn('📦 Accept Delivery Contract (+500 ISL)', 'closeModal();startWorldMission("courier")', 'gold')}
+            ${btn('Maybe later', 'closeModal()', 'ghost')}
+          </div>
+        </div>
+      `);
+    }
+  }
+
+  function enterWorldBusiness(bId) {
+    const b = DATA.businesses.find(x => x.id === bId);
+    if (!b) return;
+    playBeep('reward');
+    modal(`${b.name} (${b.type})`, `
+      <div style="padding:12px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <span style="font-size:42px">${b.icon}</span>
+          <div>
+            <h3 style="font-size:18px;font-weight:900">${esc(b.name)}</h3>
+            <div style="font-size:11px;color:#22d3ee">${b.type} · ⭐ ${b.rating} · ${b.followers} followers</div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);line-height:1.5">${esc(b.description)}</p>
+        <div style="display:flex;gap:8px;margin-top:20px">
+          ${btn('🛒 Browse Menu & Shop', `closeModal();nav('marketplace.html')`, 'primary', 'style="flex:1"')}
+          ${btn(state.following.includes(b.id)?'Following':'Follow', `toggleFollow('${b.id}')`, 'ghost')}
+        </div>
+      </div>
+    `);
+  }
+
+  function inspectWorldDeed(plotId) {
+    const p = DATA.land.find(x => x.id === plotId);
+    if (!p) return;
+    landDetail(plotId);
+  }
+
+  function accessWorldAtm(atmId) {
+    playBeep('cash');
+    modal('Nexus Central ATM Terminal', `
+      <div style="text-align:center;padding:16px">
+        <div style="font-size:48px;margin-bottom:8px">🏧</div>
+        <div class="metric-label">Autonomous Liquid Reserve</div>
+        <div style="font-size:24px;font-weight:900;color:#22d3ee;margin-top:6px">${money(state.wallet)}</div>
+        <p style="font-size:11px;color:var(--text-muted);margin-top:4px">Instant demo liquidity for testing island asset transactions.</p>
+        <div style="display:flex;gap:8px;margin-top:20px;justify-content:center">
+          ${btn('+1,000 ISL Demo Cash', 'closeModal();demoFunds(1000)', 'gold')}
+          ${btn('+5,000 ISL Whale Deposit', 'closeModal();demoFunds(5000)', 'primary')}
+        </div>
+      </div>
+    `);
+  }
+
+  function touchControlPress(action) {
+    if (action === 'gas') worldEngine.keys['ArrowUp'] = true;
+    if (action === 'brake') worldEngine.keys['ArrowDown'] = true;
+    if (action === 'nitro') worldEngine.keys['ShiftLeft'] = true;
+  }
+
+  function touchControlRelease(action) {
+    if (action === 'gas') delete worldEngine.keys['ArrowUp'];
+    if (action === 'brake') delete worldEngine.keys['ArrowDown'];
+    if (action === 'nitro') delete worldEngine.keys['ShiftLeft'];
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     CANVAS INITIALIZATION AND RENDER LOOP
+     ═══════════════════════════════════════════════════════════════ */
+  function initWorldEngine() {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    const canvas = document.getElementById('nexusWorldCanvas');
+    if (!canvas || !canvas.getContext) return;
+
+    worldEngine.canvas = canvas;
+    worldEngine.ctx = canvas.getContext('2d');
+    worldEngine.radarCanvas = document.getElementById('nexusRadarCanvas');
+    if (worldEngine.radarCanvas && worldEngine.radarCanvas.getContext) {
+      worldEngine.radarCtx = worldEngine.radarCanvas.getContext('2d');
+    }
+
+    // Set canvas dimensions
+    const resize = () => {
+      if (!canvas.parentElement) return;
+      canvas.width = canvas.parentElement.clientWidth || 900;
+      canvas.height = canvas.parentElement.clientHeight || 620;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Parse URL params for deep-links (?drive=v1, ?inspect=L-101, ?target=b1)
+    if (window.location && window.location.search && typeof URLSearchParams !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const driveTarget = params.get('drive');
+        const inspectTarget = params.get('inspect') || params.get('target');
+        if (driveTarget) {
+          spawnVehicleInWorld(driveTarget);
+        } else if (inspectTarget) {
+          setTimeout(() => selectWorldPoi(inspectTarget), 250);
+        }
+      } catch {}
+    }
+
+    // Bind Mouse Drag & Wheel
+    canvas.addEventListener('mousedown', (e) => {
+      worldEngine.drag.isDown = true;
+      worldEngine.drag.startX = e.clientX;
+      worldEngine.drag.startY = e.clientY;
+      worldEngine.drag.camStartX = worldEngine.camera.x;
+      worldEngine.drag.camStartY = worldEngine.camera.y;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!worldEngine.drag.isDown) return;
+      const dx = (e.clientX - worldEngine.drag.startX) / worldEngine.camera.zoom;
+      const dy = (e.clientY - worldEngine.drag.startY) / worldEngine.camera.zoom;
+      worldEngine.camera.targetX = worldEngine.drag.camStartX - dx;
+      worldEngine.camera.targetY = worldEngine.drag.camStartY - dy;
+    });
+
+    window.addEventListener('mouseup', () => { worldEngine.drag.isDown = false; });
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.87;
+      worldEngine.camera.targetZoom = Math.max(0.35, Math.min(2.4, worldEngine.camera.targetZoom * zoomFactor));
+    }, { passive: false });
+
+    // Keyboard bindings for GTA Controls
+    window.addEventListener('keydown', (e) => {
+      worldEngine.keys[e.code] = true;
+      worldEngine.keys[e.key] = true;
+
+      if (e.key === 'e' || e.key === 'E' || e.key === 'f' || e.key === 'F') {
+        triggerGtaInteract();
+      }
+      if (e.key === 'h' || e.key === 'H') {
+        playBeep('horn');
+      }
+      if (e.key === 'r' || e.key === 'R') {
+        cycleRadio();
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      delete worldEngine.keys[e.code];
+      delete worldEngine.keys[e.key];
+    });
+
+    // Touch support detection
+    if ('ontouchstart' in window) {
+      const touchHud = document.getElementById('gtaTouchControls');
+      if (touchHud) touchHud.classList.add('mobile-active');
+    }
+
+    // Start Animation Loop
+    if (worldEngine.animId) cancelAnimationFrame(worldEngine.animId);
+    let lastTime = performance.now();
+
+    function loop(now) {
+      const dt = Math.min(0.06, (now - lastTime) / 1000);
+      lastTime = now;
+      updateWorldPhysics(dt);
+      renderWorldCanvas();
+      renderRadarMinimap();
+      worldEngine.animId = requestAnimationFrame(loop);
+    }
+    worldEngine.animId = requestAnimationFrame(loop);
+  }
+
+  function updateWorldPhysics(dt) {
+    const p = worldEngine.player;
+    const keys = worldEngine.keys;
+    const isDrive = worldEngine.mode === 'drive';
+
+    // Player Movement (Driving or Walking)
+    const forward = keys['KeyW'] || keys['ArrowUp'];
+    const backward = keys['KeyS'] || keys['ArrowDown'];
+    const left = keys['KeyA'] || keys['ArrowLeft'];
+    const right = keys['KeyD'] || keys['ArrowRight'];
+    const drift = keys['Space'];
+    const nitro = (keys['ShiftLeft'] || keys['ShiftRight']) && isDrive;
+
+    if (isDrive) {
+      // Vehicle Dynamics
+      const maxSpd = nitro ? p.maxSpeed * 1.6 : p.maxSpeed;
+      if (forward) {
+        p.speed = Math.min(maxSpd, p.speed + (p.accel * (nitro ? 2.0 : 1.0)));
+        if (Math.random() < 0.2) playBeep('engine');
+      } else if (backward) {
+        p.speed = Math.max(-p.maxSpeed * 0.4, p.speed - p.accel * 0.8);
+      } else {
+        p.speed *= p.friction;
+      }
+
+      // Steering
+      const turnAmt = 0.05 * (p.speed / p.maxSpeed);
+      if (left) p.angle -= turnAmt;
+      if (right) p.angle += turnAmt;
+
+      // Drift Skid Marks
+      if (drift && Math.abs(p.speed) > 3) {
+        p.drifting = true;
+        p.speed *= 0.97;
+        worldEngine.skidMarks.push({ x: p.x, y: p.y, angle: p.angle, alpha: 0.8 });
+        if (Math.random() < 0.3) playBeep('drift');
+      } else {
+        p.drifting = false;
+      }
+
+      // Velocity vectors
+      p.vx = Math.cos(p.angle) * p.speed;
+      p.vy = Math.sin(p.angle) * p.speed;
+      p.x += p.vx;
+      p.y += p.vy;
+
+      // Bounds clamping
+      p.x = Math.max(150, Math.min(WORLD_DATA.width - 150, p.x));
+      p.y = Math.max(150, Math.min(WORLD_DATA.height - 150, p.y));
+
+      // Nitro Depletion & Refill
+      if (nitro && p.speed > 4) {
+        p.nitro = Math.max(0, p.nitro - 0.4);
+        worldEngine.particles.push({ x: p.x - Math.cos(p.angle)*25, y: p.y - Math.sin(p.angle)*25, color: '#06b6d4', size: 6, alpha: 1 });
+      } else {
+        p.nitro = Math.min(100, p.nitro + 0.15);
+      }
+
+      // Camera Follows Player
+      worldEngine.camera.targetX = p.x;
+      worldEngine.camera.targetY = p.y;
+    } else {
+      // Walking mode
+      let mx = 0, my = 0;
+      if (forward) my -= 1;
+      if (backward) my += 1;
+      if (left) mx -= 1;
+      if (right) mx += 1;
+      const len = Math.hypot(mx, my);
+      if (len > 0) {
+        const walkSpeed = (keys['ShiftLeft'] || keys['ShiftRight']) ? 6.5 : 3.8;
+        p.x += (mx / len) * walkSpeed;
+        p.y += (my / len) * walkSpeed;
+        p.angle = Math.atan2(my, mx);
+      }
+    }
+
+    // Camera smoothing
+    const c = worldEngine.camera;
+    c.x += (c.targetX - c.x) * 0.12;
+    c.y += (c.targetY - c.y) * 0.12;
+    c.zoom += (c.targetZoom - c.zoom) * 0.12;
+
+    // Fade skidmarks and particles
+    for (let i = worldEngine.skidMarks.length - 1; i >= 0; i--) {
+      worldEngine.skidMarks[i].alpha -= 0.003;
+      if (worldEngine.skidMarks[i].alpha <= 0) worldEngine.skidMarks.splice(i, 1);
+    }
+    for (let i = worldEngine.particles.length - 1; i >= 0; i--) {
+      worldEngine.particles[i].alpha -= 0.04;
+      worldEngine.particles[i].size *= 0.95;
+      if (worldEngine.particles[i].alpha <= 0) worldEngine.particles.splice(i, 1);
+    }
+
+    // Proximity Detection
+    detectNearestInteraction();
+
+    // Mission Countdown Timer
+    if (worldEngine.activeMission) {
+      worldEngine.activeMission.timeLeft -= dt;
+      const countEl = document.getElementById('missionCountdown');
+      if (countEl) countEl.innerText = `Time Left: ${Math.max(0, Math.ceil(worldEngine.activeMission.timeLeft))}s`;
+
+      // Check destination arrival
+      const distToTarget = Math.hypot(p.x - worldEngine.activeMission.targetX, p.y - worldEngine.activeMission.targetY);
+      if (distToTarget < 90) {
+        // Mission Completed!
+        const rew = worldEngine.activeMission.reward;
+        state.wallet += rew;
+        state.streetCred = Math.min(5, (state.streetCred || 3) + 1);
+        worldEngine.streetCred = state.streetCred;
+        award(100, 50, 'Completed Express Courier Contract');
+        playBeep('cash');
+        toast(`🎉 Mission Success! Earned +${money(rew)} &amp; +1 Street Cred Star!`, 'success');
+        cancelWorldMission();
+      } else if (worldEngine.activeMission.timeLeft <= 0) {
+        toast('⏳ Time expired! Contract failed.', 'warn');
+        cancelWorldMission();
+      }
+    }
+
+    // DOM HUD Updates
+    const speedo = document.getElementById('speedoVal');
+    if (speedo) speedo.innerText = Math.round(Math.abs(p.speed) * 18);
+    const nitroBar = document.getElementById('nitroBar');
+    if (nitroBar) nitroBar.style.width = `${p.nitro}%`;
+
+    // Detect Current Location
+    updateLocationBadge();
+  }
+
+  function detectNearestInteraction() {
+    const p = worldEngine.player;
+    let closest = null;
+    let minD = 75;
+
+    // Check businesses
+    WORLD_DATA.businesses.forEach(b => {
+      const d = Math.hypot(p.x - b.x, p.y - b.y);
+      if (d < minD) { minD = d; closest = { type: 'business', ref: b, label: `Enter ${b.name}` }; }
+    });
+    // Check plots
+    WORLD_DATA.plots.forEach(l => {
+      const d = Math.hypot(p.x - (l.x + l.w/2), p.y - (l.y + l.h/2));
+      if (d < minD) { minD = d; closest = { type: 'plot', ref: l, label: `Inspect Deed ${l.id} (${l.name})` }; }
+    });
+    // Check ATMs
+    WORLD_DATA.atms.forEach(a => {
+      const d = Math.hypot(p.x - a.x, p.y - a.y);
+      if (d < minD) { minD = d; closest = { type: 'atm', ref: a, label: `Access ${a.name}` }; }
+    });
+    // Check Parked Cars
+    WORLD_DATA.parkedVehicles.forEach(v => {
+      const d = Math.hypot(p.x - v.x, p.y - v.y);
+      if (d < minD) { minD = d; closest = { type: 'vehicle', ref: v, label: `Drive ${v.name}` }; }
+    });
+    // Check NPCs
+    WORLD_DATA.npcs.forEach(n => {
+      const d = Math.hypot(p.x - n.x, p.y - n.y);
+      if (d < minD) { minD = d; closest = { type: 'npc', ref: n, label: `Talk to ${n.name}` }; }
+    });
+
+    worldEngine.nearestInteract = closest;
+    const prompt = document.getElementById('gtaPromptBox');
+    const promptText = document.getElementById('gtaPromptText');
+    if (prompt && promptText) {
+      if (closest) {
+        promptText.innerText = closest.label;
+        prompt.style.display = 'flex';
+      } else {
+        prompt.style.display = 'none';
+      }
+    }
+  }
+
+  function updateLocationBadge() {
+    const p = worldEngine.player;
+    let nearestDistrict = Object.values(WORLD_DATA.districts)[0];
+    let minD = 99999;
+    Object.values(WORLD_DATA.districts).forEach(d => {
+      const dist = Math.hypot(p.x - d.x, p.y - d.y);
+      if (dist < minD) { minD = dist; nearestDistrict = d; }
+    });
+    const badge = document.getElementById('gtaLocationBadge');
+    if (badge) badge.innerText = `${nearestDistrict.icon} ${nearestDistrict.name}`;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     CANVAS RENDERING: GOOGLE MAPS + GTA SCENE
+     ═══════════════════════════════════════════════════════════════ */
+  function renderWorldCanvas() {
+    const ctx = worldEngine.ctx;
+    const canvas = worldEngine.canvas;
+    if (!ctx || !canvas) return;
+
+    const w = canvas.width;
+    const h = canvas.height;
+    const cam = worldEngine.camera;
+    const layer = worldEngine.layer;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Camera Transform Matrix
+    ctx.save();
+    ctx.translate(w / 2, h / 2);
+    ctx.scale(cam.zoom, cam.zoom);
+    ctx.translate(-cam.x, -cam.y);
+
+    // 1. OCEAN BACKGROUND & WATER RIPPLES
+    worldEngine.wavePhase += 0.02;
+    const oceanGrad = ctx.createRadialGradient(cam.x, cam.y, 100, cam.x, cam.y, 1600);
+    if (layer === 'cyber') {
+      oceanGrad.addColorStop(0, '#020713');
+      oceanGrad.addColorStop(1, '#010309');
+    } else {
+      oceanGrad.addColorStop(0, '#083344');
+      oceanGrad.addColorStop(0.5, '#042238');
+      oceanGrad.addColorStop(1, '#021324');
+    }
+    ctx.fillStyle = oceanGrad;
+    ctx.fillRect(-800, -800, WORLD_DATA.width + 1600, WORLD_DATA.height + 1600);
+
+    // Water rings
+    ctx.strokeStyle = layer === 'cyber' ? 'rgba(99,102,241,0.1)' : 'rgba(34,211,238,0.15)';
+    ctx.lineWidth = 2;
+    for (let r = 0; r < 4; r++) {
+      const rad = 250 + ((r * 120 + worldEngine.wavePhase * 50) % 600);
+      ctx.beginPath();
+      ctx.arc(520, 520, rad, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // 2. ISLAND ARCHIPELAGO MAIN LANDMASS
+    Object.values(WORLD_DATA.districts).forEach(d => {
+      // Sand Beach Buffer Ring
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.radius + 30, 0, Math.PI * 2);
+      ctx.fillStyle = layer === 'cyber' ? 'rgba(99,102,241,0.06)' : 'rgba(251,191,36,0.25)';
+      ctx.fill();
+
+      // Landmass Body
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+      if (layer === 'cyber') {
+        ctx.fillStyle = '#061325';
+        ctx.strokeStyle = 'rgba(6,182,212,0.4)';
+        ctx.lineWidth = 2;
+        ctx.fill();
+        ctx.stroke();
+      } else if (layer === 'street') {
+        ctx.fillStyle = '#0c233c';
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 3;
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        // Satellite Photorealistic Greens & Terrain
+        const landGrad = ctx.createRadialGradient(d.x - 30, d.y - 30, 20, d.x, d.y, d.radius);
+        landGrad.addColorStop(0, d.color + '55');
+        landGrad.addColorStop(0.7, '#064e3b');
+        landGrad.addColorStop(1, '#065f46');
+        ctx.fillStyle = landGrad;
+        ctx.fill();
+      }
+
+      // District Center Pulse Beacon
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = d.color;
+      ctx.fill();
+    });
+
+    // 3. YAS GRAND PRIX CIRCUIT ROAD
+    ctx.beginPath();
+    const pts = WORLD_DATA.yasCircuit;
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.closePath();
+    ctx.lineWidth = 32;
+    ctx.strokeStyle = layer === 'cyber' ? '#1e1b4b' : '#1e293b';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+
+    // Circuit Neon Curbs
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = layer === 'cyber' ? '#a855f7' : '#f43f5e';
+    ctx.stroke();
+
+    // 4. ROAD NETWORK & BRIDGES
+    WORLD_DATA.roads.forEach(r => {
+      // Under-shadow / bridge deck
+      ctx.beginPath();
+      ctx.moveTo(r.from[0], r.from[1]);
+      ctx.lineTo(r.to[0], r.to[1]);
+      ctx.lineWidth = r.bridge ? 36 : 28;
+      ctx.strokeStyle = layer === 'cyber' ? '#040d1a' : r.bridge ? '#334155' : '#1e293b';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Road Surface
+      ctx.beginPath();
+      ctx.moveTo(r.from[0], r.from[1]);
+      ctx.lineTo(r.to[0], r.to[1]);
+      ctx.lineWidth = r.bridge ? 28 : 22;
+      ctx.strokeStyle = layer === 'cyber' ? '#061a33' : '#334155';
+      ctx.stroke();
+
+      // Road Center Divider
+      ctx.beginPath();
+      ctx.moveTo(r.from[0], r.from[1]);
+      ctx.lineTo(r.to[0], r.to[1]);
+      ctx.lineWidth = 2;
+      ctx.setLineDash([12, 8]);
+      ctx.strokeStyle = layer === 'cyber' ? '#22d3ee' : '#fbbf24';
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+    // 5. LAND PARCELS & DEEDS (When in Deeds or Map Mode)
+    WORLD_DATA.plots.forEach(plot => {
+      ctx.beginPath();
+      ctx.rect(plot.x, plot.y, plot.w, plot.h);
+      if (layer === 'deeds') {
+        ctx.fillStyle = 'rgba(6,182,212,0.12)';
+        ctx.strokeStyle = '#22d3ee';
+        ctx.lineWidth = 2;
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,0.03)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = 1;
+      }
+      ctx.fill();
+      ctx.stroke();
+
+      // Plot ID label
+      ctx.fillStyle = layer === 'deeds' ? '#22d3ee' : 'rgba(255,255,255,0.5)';
+      ctx.font = 'bold 10px JetBrains Mono';
+      ctx.fillText(plot.id, plot.x + 8, plot.y + 18);
+    });
+
+    // 6. TIRE SKID MARKS
+    worldEngine.skidMarks.forEach(sm => {
+      ctx.save();
+      ctx.translate(sm.x, sm.y);
+      ctx.rotate(sm.angle);
+      ctx.fillStyle = `rgba(15, 23, 42, ${sm.alpha})`;
+      ctx.fillRect(-6, -6, 12, 4);
+      ctx.fillRect(-6, 4, 12, 4);
+      ctx.restore();
+    });
+
+    // 7. GPS WAYPOINT LINE (When Active)
+    if (worldEngine.gpsRoute && worldEngine.gpsRoute.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(worldEngine.gpsRoute[0].x, worldEngine.gpsRoute[0].y);
+      for (let i = 1; i < worldEngine.gpsRoute.length; i++) {
+        ctx.lineTo(worldEngine.gpsRoute[i].x, worldEngine.gpsRoute[i].y);
+      }
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = '#fbbf24';
+      ctx.setLineDash([14, 8]);
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // 8. STOREFRONTS & ENTERPRISES
+    WORLD_DATA.businesses.forEach(b => {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, 16, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(8,20,42,0.9)';
+      ctx.strokeStyle = '#06b6d4';
+      ctx.lineWidth = 2;
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.font = '16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(b.icon, b.x, b.y);
+
+      // Name Label in Map Mode
+      if (cam.zoom > 0.8) {
+        ctx.font = 'bold 9px Plus Jakarta Sans';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(b.name, b.x, b.y + 24);
+      }
+    });
+
+    // 9. PARKED VEHICLES & ATMS
+    WORLD_DATA.parkedVehicles.forEach(v => {
+      if (v.id === worldEngine.player.inVehicle && worldEngine.mode === 'drive') return;
+      ctx.save();
+      ctx.translate(v.x, v.y);
+      ctx.rotate(v.angle);
+      ctx.font = '22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(v.icon, 0, 0);
+      ctx.restore();
+    });
+
+    WORLD_DATA.atms.forEach(a => {
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, 12, 0, Math.PI * 2);
+      ctx.fillStyle = '#059669';
+      ctx.fill();
+      ctx.font = '12px sans-serif';
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🏧', a.x, a.y);
+    });
+
+    // 10. STUNT RAMPS
+    WORLD_DATA.stuntRamps.forEach(sr => {
+      ctx.save();
+      ctx.translate(sr.x, sr.y);
+      ctx.rotate(sr.angle);
+      ctx.fillStyle = '#eab308';
+      ctx.fillRect(-14, -8, 28, 16);
+      ctx.fillStyle = '#000';
+      ctx.font = '9px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('▲▲', 0, 0);
+      ctx.restore();
+    });
+
+    // 11. NPC RESIDENTS
+    WORLD_DATA.npcs.forEach(n => {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, 14, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(245,158,11,0.2)';
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.fill();
+      ctx.stroke();
+      ctx.font = '16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(n.avatar, n.x, n.y);
+    });
+
+    // 12. EXHAUST & NITRO PARTICLES
+    worldEngine.particles.forEach(pt => {
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+      ctx.fillStyle = pt.color;
+      ctx.globalAlpha = pt.alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    });
+
+    // 13. PLAYER AVATAR & ACTIVE DRIVEN VEHICLE
+    const p = worldEngine.player;
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.angle);
+
+    if (worldEngine.mode === 'drive') {
+      // Vehicle Chassis
+      const veh = DATA.vehicles.find(v => v.id === p.inVehicle) || DATA.vehicles[0];
+      // Car Body
+      ctx.fillStyle = '#0ea5e9';
+      ctx.shadowColor = '#06b6d4';
+      ctx.shadowBlur = 15;
+      ctx.fillRect(-22, -12, 44, 24);
+      ctx.shadowBlur = 0;
+
+      // Windshield & Roof
+      ctx.fillStyle = '#041428';
+      ctx.fillRect(-8, -9, 20, 18);
+
+      // Headlights
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(20, -11, 4, 6);
+      ctx.fillRect(20, 5, 4, 6);
+
+      // Taillights
+      ctx.fillStyle = p.speed < 0 ? '#fff' : '#f43f5e';
+      ctx.fillRect(-24, -10, 3, 5);
+      ctx.fillRect(-24, 5, 3, 5);
+    } else {
+      // Avatar Walking Circle
+      ctx.beginPath();
+      ctx.arc(0, 0, 14, 0, Math.PI * 2);
+      ctx.fillStyle = '#06b6d4';
+      ctx.fill();
+      ctx.font = '16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(state.user?.avatar || '👤', 0, 0);
+    }
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     GTA CIRCULAR RADAR MINIMAP RENDERER
+     ═══════════════════════════════════════════════════════════════ */
+  function renderRadarMinimap() {
+    const rctx = worldEngine.radarCtx;
+    const rcan = worldEngine.radarCanvas;
+    if (!rctx || !rcan) return;
+
+    const rw = rcan.width;
+    const rh = rcan.height;
+    const p = worldEngine.player;
+
+    rctx.clearRect(0, 0, rw, rh);
+
+    // Circular clip
+    rctx.save();
+    rctx.beginPath();
+    rctx.arc(rw / 2, rh / 2, rw / 2, 0, Math.PI * 2);
+    rctx.clip();
+
+    // Radar Dark Oceanic Background
+    rctx.fillStyle = '#040d1a';
+    rctx.fillRect(0, 0, rw, rh);
+
+    // Radar Transform centered on player
+    rctx.translate(rw / 2, rh / 2);
+    const rScale = 0.22;
+    rctx.scale(rScale, rScale);
+    rctx.translate(-p.x, -p.y);
+
+    // Roads on radar
+    rctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    rctx.lineWidth = 18;
+    rctx.lineCap = 'round';
+    WORLD_DATA.roads.forEach(r => {
+      rctx.beginPath();
+      rctx.moveTo(r.from[0], r.from[1]);
+      rctx.lineTo(r.to[0], r.to[1]);
+      rctx.stroke();
+    });
+
+    // POI Blips
+    WORLD_DATA.businesses.forEach(b => {
+      rctx.beginPath();
+      rctx.arc(b.x, b.y, 18, 0, Math.PI * 2);
+      rctx.fillStyle = '#06b6d4';
+      rctx.fill();
+    });
+
+    WORLD_DATA.npcs.forEach(n => {
+      rctx.beginPath();
+      rctx.arc(n.x, n.y, 16, 0, Math.PI * 2);
+      rctx.fillStyle = '#f59e0b';
+      rctx.fill();
+    });
+
+    // GPS route on radar
+    if (worldEngine.gpsRoute && worldEngine.gpsRoute.length > 1) {
+      rctx.beginPath();
+      rctx.moveTo(worldEngine.gpsRoute[0].x, worldEngine.gpsRoute[0].y);
+      for (let i = 1; i < worldEngine.gpsRoute.length; i++) {
+        rctx.lineTo(worldEngine.gpsRoute[i].x, worldEngine.gpsRoute[i].y);
+      }
+      rctx.lineWidth = 14;
+      rctx.strokeStyle = '#fbbf24';
+      rctx.stroke();
+    }
+
+    rctx.restore();
+
+    // Player Heading Arrow in Center of Radar
+    rctx.save();
+    rctx.translate(rw / 2, rh / 2);
+    rctx.rotate(p.angle);
+    rctx.beginPath();
+    rctx.moveTo(10, 0);
+    rctx.lineTo(-8, -7);
+    rctx.lineTo(-4, 0);
+    rctx.lineTo(-8, 7);
+    rctx.closePath();
+    rctx.fillStyle = '#22d3ee';
+    rctx.shadowColor = '#22d3ee';
+    rctx.shadowBlur = 8;
+    rctx.fill();
+    rctx.restore();
   }
 
   /* ═══════════════════════════════════════════════
@@ -1644,6 +2815,7 @@
               <span style="font-size:10px;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted)">${l.potential}</span>
             </div>
             <div style="display:flex;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)">
+              ${btn('📍 Map View',`nav('island.html?inspect=${l.id}')`,'ghost','class="btn btn-ghost btn-sm"')}
               ${btn('View Deed',`landDetail('${l.id}')`,'ghost','class="btn btn-ghost btn-sm"')}
               ${l.available?btn('Acquire',`buyLand('${l.id}')`,'primary','class="btn btn-primary btn-sm"'):'<span class="tag tag-rose">Sold</span>'}
             </div>
@@ -1717,7 +2889,7 @@
     return `<section class="fade" style="display:flex;flex-direction:column;gap:16px">
       ${pageHeader('Digital Real Estate','Properties & Rooms','Browse, acquire, and customize your private spaces.',btn('My Interior','openRoomDesigner()','primary'))}
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
-        ${DATA.properties.map(p => itemCard(p.icon, p.name, `${p.type} · ${p.district}`, `<div style="font-size:14px;font-weight:800;color:#22d3ee">${money(p.price)} <span style="font-size:10px;color:var(--text-dim)">${aed(p.price)}</span></div>`, btn('View','propertyDetail("'+p.id+'")','ghost','class="btn btn-ghost btn-sm"'))).join('')}
+        ${DATA.properties.map(p => itemCard(p.icon, p.name, `${p.type} · ${p.district}`, `<div style="font-size:14px;font-weight:800;color:#22d3ee">${money(p.price)} <span style="font-size:10px;color:var(--text-dim)">${aed(p.price)}</span></div>`, btn('📍 Map',`nav('island.html?target=${p.id}')`,'ghost','class="btn btn-ghost btn-sm"') + btn('View','propertyDetail("'+p.id+'")','primary','class="btn btn-primary btn-sm"'))).join('')}
       </div>
     </section>`;
   }
@@ -1848,9 +3020,12 @@
                 <p style="font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.5">${esc(b.description)}</p>
               </div>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)">
               <div style="font-size:11px;color:var(--text-dim)">⭐ ${b.rating} · ${b.followers} followers</div>
-              ${btn(state.following.includes(b.id)?'Following':'Follow',`toggleFollow('${b.id}')`,state.following.includes(b.id)?'primary':'ghost','class="btn btn-sm"')}
+              <div style="display:flex;gap:6px">
+                ${btn('🧭 Drive Here',`nav('island.html?target=${b.id}')`,'ghost','class="btn btn-ghost btn-sm"')}
+                ${btn(state.following.includes(b.id)?'Following':'Follow',`toggleFollow('${b.id}')`,state.following.includes(b.id)?'primary':'ghost','class="btn btn-sm"')}
+              </div>
             </div>
           </div>
         `)).join('')}
@@ -1876,9 +3051,12 @@
             <div style="display:flex;gap:8px;margin-bottom:14px">
               ${[['SPD',v.speed],['HDL',v.handling],['ACC',v.acceleration]].map(([l,v2])=>`<div style="flex:1;padding:6px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);text-align:center"><div style="font-size:9px;font-weight:700;color:var(--text-dim)">${l}</div><div style="font-size:13px;font-weight:900;color:#22d3ee">${v2}</div></div>`).join('')}
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)">
               <div style="font-size:15px;font-weight:900;color:#22d3ee">${money(v.price)}</div>
-              ${btn('Acquire',`buyVehicle('${v.id}')`,'primary','class="btn btn-primary btn-sm"')}
+              <div style="display:flex;gap:6px">
+                ${btn('🏎️ Test Drive',`driveVehicle('${v.id}')`,'gold','class="btn btn-gold btn-sm"')}
+                ${state.ownedVehicles.includes(v.id)?'<span class="badge badge-emerald" style="padding:4px 8px;font-size:10px">In Garage</span>':btn('Acquire',`buyVehicle('${v.id}')`,'primary','class="btn btn-primary btn-sm"')}
+              </div>
             </div>
           </div>
         `)).join('')}
@@ -1886,9 +3064,50 @@
     </section>`;
   }
 
-  function vehicleDetail(id) { toast('Vehicle detail.','info'); }
-  function buyVehicle(id) { const v=DATA.vehicles.find(x=>x.id===id);if(!v)return;if(state.wallet<v.price)return toast('Insufficient ISL.','warn');state.wallet-=v.price;state.ownedVehicles.push(id);state.transactions.unshift({id:uid('tx'),description:`Acquired ${v.name}`,amount:-v.price,type:'Purchase',date:'Just now',status:'Settled'});award(40,0,`Acquired ${v.name}`);toast(`🏎️ ${v.name} is yours!`,'success');save();refresh(); }
-  function driveVehicle() {}
+  function vehicleDetail(id) {
+    const v = DATA.vehicles.find(x => x.id === id);
+    if (!v) return;
+    modal(`${v.name} (${v.type})`, `
+      <div style="text-align:center;padding:12px">
+        <div style="font-size:64px;margin-bottom:12px">${v.icon}</div>
+        <div style="display:flex;gap:10px;margin-bottom:16px">
+          ${[['Top Speed', v.speed + ' KM/H'], ['Handling', v.handling + '/100'], ['Acceleration', v.acceleration + '/100']].map(([l, val]) => `
+            <div style="flex:1;padding:10px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);text-align:center">
+              <div class="metric-label">${l}</div>
+              <div style="font-size:16px;font-weight:900;color:#22d3ee;margin-top:2px">${val}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="display:flex;gap:8px">
+          ${btn('🏎️ Spawn & Drive on Island', `closeModal();driveVehicle('${v.id}')`, 'gold', 'style="flex:1"')}
+          ${btn('Close', 'closeModal()', 'ghost')}
+        </div>
+      </div>
+    `);
+  }
+  function buyVehicle(id) {
+    const v = DATA.vehicles.find(x => x.id === id);
+    if (!v) return;
+    if (state.wallet < v.price) return toast('Insufficient ISL.','warn');
+    state.wallet -= v.price;
+    if (!state.ownedVehicles.includes(id)) state.ownedVehicles.push(id);
+    state.activeVehicle = id;
+    state.transactions.unshift({id:uid('tx'),description:`Acquired ${v.name}`,amount:-v.price,type:'Purchase',date:'Just now',status:'Settled'});
+    award(50, 25, `Acquired ${v.name}`);
+    toast(`🏎️ ${v.name} added to your garage!`, 'success');
+    save();
+    refresh();
+  }
+  function driveVehicle(id) {
+    const vId = id || state.activeVehicle || 'v1';
+    state.activeVehicle = vId;
+    state.worldMode = 'drive';
+    if (!state.ownedVehicles.includes(vId)) state.ownedVehicles.push(vId);
+    save();
+    playBeep('engine');
+    toast(`🏎️ Driving ${DATA.vehicles.find(v=>v.id===vId)?.name || 'vehicle'} in free-roam mode!`, 'success');
+    nav(`island.html?drive=${vId}`);
+  }
 
   /* SOCIAL */
   function friends() {
@@ -2997,9 +4216,10 @@
 
   initAlphaTracker();
   initMultiplayer();
+  initWorldEngine();
 
   /* ─── GLOBAL BINDINGS ─── */
   if (typeof window !== 'undefined') {
-    window.S=state; window.DATA=DATA; window.save=save; window.nav=nav; window.demo=demo; window.login=login; window.register=register; window.forgot=forgot; window.onboard=onboard; window.nova=nova; window.askNOVA=askNOVA; window.search=search; window.searchResults=searchResults; window.closeModal=closeModal; window.toast=toast; window.zone=zone; window.setMapTheme=setMapTheme; window.landDetail=landDetail; window.filterLand=filterLand; window.wish=wish; window.buyLand=buyLand; window.confirmLand=confirmLand; window.demoFunds=demoFunds; window.propertyDetail=propertyDetail; window.buyProperty=buyProperty; window.buildHome=buildHome; window.confirmHomeBuild=confirmHomeBuild; window.openRoomDesigner=openRoomDesigner; window.placeDecor=placeDecor; window.editHome=editHome; window.saveHomeDetails=saveHomeDetails; window.filterMarket=filterMarket; window.showInventory=showInventory; window.productDetail=productDetail; window.addCart=addCart; window.changeQty=changeQty; window.cart=cart; window.checkout=checkout; window.openCreatorStudio=openCreatorStudio; window.publishCreatorAsset=publishCreatorAsset; window.createBusiness=createBusiness; window.createBusinessSave=createBusinessSave; window.toggleFollow=toggleFollow; window.vehicleDetail=vehicleDetail; window.buyVehicle=buyVehicle; window.driveVehicle=driveVehicle; window.openPeople=openPeople; window.sendRequest=sendRequest; window.acceptRequest=acceptRequest; window.declineRequest=declineRequest; window.person=person; window.blockUser=blockUser; window.selectConversation=selectConversation; window.msg=msg; window.sendMessage=sendMessage; window.toggleCommunity=toggleCommunity; window.toggleRsvp=toggleRsvp; window.enterLiveStage=enterLiveStage; window.playGame=playGame; window.droneTap=droneTap; window.pearlPing=pearlPing; window.answerTycoon=answerTycoon; window.editProfile=editProfile; window.saveProfile=saveProfile; window.readOne=readOne; window.readAll=readAll; window.clearRead=clearRead; window.toggleSetting=toggleSetting; window.setSetting=setSetting; window.confirmReset=confirmReset; window.resetDemo=resetDemo; window.signOut=signOut; window.tour=tour; window.openPitchDeck=openPitchDeck; window.openMobileMenu=openMobileMenu; window.unitCalc=unitCalc; window.getWaitlist=getWaitlist; window.submitWaitlist=submitWaitlist; window.copyWaitlistRef=copyWaitlistRef; window.exportWaitlistCSV=exportWaitlistCSV; window.openAlphaJoinModal=openAlphaJoinModal; window.submitAlphaJoin=submitAlphaJoin; window.openAlphaFeedbackModal=openAlphaFeedbackModal; window.setAlphaStar=setAlphaStar; window.submitAlphaFeedback=submitAlphaFeedback; window.openAlphaInviteModal=openAlphaInviteModal; window.exportAlphaTelemetryCSV=exportAlphaTelemetryCSV; window.simulateAlphaSession=simulateAlphaSession; window.getAlphaTelemetry=getAlphaTelemetry; window.setRoomAmbiance=setRoomAmbiance; window.upvoteMyRoom=upvoteMyRoom; window.toggleRoomOpenHouse=toggleRoomOpenHouse; window.equipRoomSlot=equipRoomSlot; window.tryInRoom=tryInRoom; window.buyAndPlaceInRoom=buyAndPlaceInRoom; window.openShareRoomModal=openShareRoomModal; window.openSignGuestbookModal=openSignGuestbookModal; window.submitGuestbookEntry=submitGuestbookEntry; window.inspectCommunityRoom=inspectCommunityRoom; window.shopRoomBundle=shopRoomBundle; window.walkToPlazaPoint=walkToPlazaPoint; window.submitDistrictSay=submitDistrictSay; window.sendDistrictEmote=sendDistrictEmote; window.waveAtPeer=waveAtPeer; window.inspectPeer=inspectPeer; window.tipPeer=tipPeer; window.launchMultiplayerDemo=launchMultiplayerDemo; window.openNeighborInviteModal=openNeighborInviteModal; window.submitNeighborInvite=submitNeighborInvite; window.sendNeighborInvite=sendNeighborInvite; window.showNeighborInvites=showNeighborInvites; window.viewMyNeighborhood=viewMyNeighborhood; window.setFlexStyle=setFlexStyle; window.copyFlexCard=copyFlexCard; window.shareFlexCard=shareFlexCard; window.shareFlexWhatsApp=shareFlexWhatsApp; window.shareFlexInstagram=shareFlexInstagram; window.shareFlexTwitter=shareFlexTwitter; window.openHideTreasureModal=openHideTreasureModal; window.submitHideTreasure=submitHideTreasure; window.attemptTreasure=attemptTreasure; window.openTreasureMap=openTreasureMap; window.shareGuestbook=shareGuestbook;
+    window.S=state; window.DATA=DATA; window.save=save; window.nav=nav; window.demo=demo; window.login=login; window.register=register; window.forgot=forgot; window.onboard=onboard; window.nova=nova; window.askNOVA=askNOVA; window.search=search; window.searchResults=searchResults; window.closeModal=closeModal; window.toast=toast; window.zone=zone; window.setMapTheme=setMapTheme; window.landDetail=landDetail; window.filterLand=filterLand; window.wish=wish; window.buyLand=buyLand; window.confirmLand=confirmLand; window.demoFunds=demoFunds; window.propertyDetail=propertyDetail; window.buyProperty=buyProperty; window.buildHome=buildHome; window.confirmHomeBuild=confirmHomeBuild; window.openRoomDesigner=openRoomDesigner; window.placeDecor=placeDecor; window.editHome=editHome; window.saveHomeDetails=saveHomeDetails; window.filterMarket=filterMarket; window.showInventory=showInventory; window.productDetail=productDetail; window.addCart=addCart; window.changeQty=changeQty; window.cart=cart; window.checkout=checkout; window.openCreatorStudio=openCreatorStudio; window.publishCreatorAsset=publishCreatorAsset; window.createBusiness=createBusiness; window.createBusinessSave=createBusinessSave; window.toggleFollow=toggleFollow; window.vehicleDetail=vehicleDetail; window.buyVehicle=buyVehicle; window.driveVehicle=driveVehicle; window.openPeople=openPeople; window.sendRequest=sendRequest; window.acceptRequest=acceptRequest; window.declineRequest=declineRequest; window.person=person; window.blockUser=blockUser; window.selectConversation=selectConversation; window.msg=msg; window.sendMessage=sendMessage; window.toggleCommunity=toggleCommunity; window.toggleRsvp=toggleRsvp; window.enterLiveStage=enterLiveStage; window.playGame=playGame; window.droneTap=droneTap; window.pearlPing=pearlPing; window.answerTycoon=answerTycoon; window.editProfile=editProfile; window.saveProfile=saveProfile; window.readOne=readOne; window.readAll=readAll; window.clearRead=clearRead; window.toggleSetting=toggleSetting; window.setSetting=setSetting; window.confirmReset=confirmReset; window.resetDemo=resetDemo; window.signOut=signOut; window.tour=tour; window.openPitchDeck=openPitchDeck; window.openMobileMenu=openMobileMenu; window.unitCalc=unitCalc; window.getWaitlist=getWaitlist; window.submitWaitlist=submitWaitlist; window.copyWaitlistRef=copyWaitlistRef; window.exportWaitlistCSV=exportWaitlistCSV; window.openAlphaJoinModal=openAlphaJoinModal; window.submitAlphaJoin=submitAlphaJoin; window.openAlphaFeedbackModal=openAlphaFeedbackModal; window.setAlphaStar=setAlphaStar; window.submitAlphaFeedback=submitAlphaFeedback; window.openAlphaInviteModal=openAlphaInviteModal; window.exportAlphaTelemetryCSV=exportAlphaTelemetryCSV; window.simulateAlphaSession=simulateAlphaSession; window.getAlphaTelemetry=getAlphaTelemetry; window.setRoomAmbiance=setRoomAmbiance; window.upvoteMyRoom=upvoteMyRoom; window.toggleRoomOpenHouse=toggleRoomOpenHouse; window.equipRoomSlot=equipRoomSlot; window.tryInRoom=tryInRoom; window.buyAndPlaceInRoom=buyAndPlaceInRoom; window.openShareRoomModal=openShareRoomModal; window.openSignGuestbookModal=openSignGuestbookModal; window.submitGuestbookEntry=submitGuestbookEntry; window.inspectCommunityRoom=inspectCommunityRoom; window.shopRoomBundle=shopRoomBundle; window.walkToPlazaPoint=walkToPlazaPoint; window.submitDistrictSay=submitDistrictSay; window.sendDistrictEmote=sendDistrictEmote; window.waveAtPeer=waveAtPeer; window.inspectPeer=inspectPeer; window.tipPeer=tipPeer; window.launchMultiplayerDemo=launchMultiplayerDemo; window.openNeighborInviteModal=openNeighborInviteModal; window.submitNeighborInvite=submitNeighborInvite; window.sendNeighborInvite=sendNeighborInvite; window.showNeighborInvites=showNeighborInvites; window.viewMyNeighborhood=viewMyNeighborhood; window.setFlexStyle=setFlexStyle; window.copyFlexCard=copyFlexCard; window.shareFlexCard=shareFlexCard; window.shareFlexWhatsApp=shareFlexWhatsApp; window.shareFlexInstagram=shareFlexInstagram; window.shareFlexTwitter=shareFlexTwitter; window.openHideTreasureModal=openHideTreasureModal; window.submitHideTreasure=submitHideTreasure; window.attemptTreasure=attemptTreasure; window.openTreasureMap=openTreasureMap; window.shareGuestbook=shareGuestbook; window.setWorldLayer=setWorldLayer; window.toggleWorldMode=toggleWorldMode; window.zoomWorld=zoomWorld; window.recenterWorld=recenterWorld; window.searchWorldPois=searchWorldPois; window.selectWorldPoi=selectWorldPoi; window.spawnVehicleInWorld=spawnVehicleInWorld; window.cycleRadio=cycleRadio; window.startWorldMission=startWorldMission; window.cancelWorldMission=cancelWorldMission; window.triggerGtaInteract=triggerGtaInteract; window.enterWorldBusiness=enterWorldBusiness; window.inspectWorldDeed=inspectWorldDeed; window.accessWorldAtm=accessWorldAtm; window.touchControlPress=touchControlPress; window.touchControlRelease=touchControlRelease;
   }
 })();

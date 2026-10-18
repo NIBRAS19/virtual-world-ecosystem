@@ -26,3 +26,27 @@
 - **Island Guestbook & Social Tipping**: Visitor log with resident messages, tipping engine (up to 500 ISL with transaction ledger integration), upvotes, and social proof counters.
 - **Unified Navigation & Discovery**: Integrated viral features directly into Desktop Sidebar, Mobile Sheet, and the Dashboard Core Growth Loops.
 
+## v6 — Google Maps & GTA Interactive World Engine
+- **Geospatial Google Maps System**:
+  - Smooth 2D/2.5D Canvas map viewport with drag-to-pan, mousewheel/pinch zoom (`0.35x` to `2.4x`), and camera fly-to easing.
+  - 4 Dynamic Map Layers: **Satellite Photorealistic Earth**, **Street / Vector Roads**, **Night Cyber Blueprint**, and **Land Deeds Subdivision Grid**.
+  - Autocomplete Search Engine: Instant filtering and camera jump to all 7 districts, 21 land plots, 10 businesses, and 4 parked vehicles.
+  - GPS Polyline Waypoint Navigation: Computes and renders glowing directional route lines along the island road graph.
+- **GTA-Style Free-Roam & Driving Mechanics**:
+  - Seamless toggle between Google Maps Overview and GTA Free-Roam follow-cam mode.
+  - Avatar controls: WASD / Arrow keys for movement, Shift to sprint.
+  - Full vehicle driving physics: Real-time acceleration, braking, top speeds, handbrake drifting (`Space`) with tire skid marks, and Nitro Boost (`Shift`) with cyan flame particle exhausts.
+  - Audio Engine Upgrades: Synthesized Web Audio API sound effects for engine revving, tire screech drifting, nitro whoosh, car horns (`H`), and radio stations (`R`).
+  - Contextual Interaction Engine: Proximity detector displaying glowing `[E]` prompts when approaching storefronts, title deed signs, ATMs, NPCs, and parked vehicles.
+- **Authentic GTA Heads-Up Display (HUD)**:
+  - Circular Radar Minimap in bottom-left showing immediate vicinity, rotating North compass needle, player heading arrow, POI blips, and road name badges.
+  - Speedometer & Nitro Gauge in bottom-right with real-time digital KM/H, current gear, and nitro refill bar.
+  - Street Cred Stars: 5-Star reputation rating that increases with exploration, high-speed runs, and completed missions.
+- **World Missions & Activities**:
+  - "Harbor to Saadiyat Express" Courier Delivery: Real-time countdown timer, GPS route guidance, and cash/XP payout on arrival.
+  - Yas Circuit Grand Prix Time Trial and canal stunt jump ramps.
+- **Connected World & Assets Suite**:
+  - Upgraded `vehicles.html` with direct "🏎️ Test Drive" spawning into the open world.
+  - Upgraded `land.html`, `property.html`, and `businesses.html` with direct "📍 Map View" and "🧭 Drive Here" deep-linking.
+
+
