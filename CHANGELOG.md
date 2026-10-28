@@ -25,28 +25,31 @@
 - **Secret Treasure Hunt (Chests & Rewards)**: Geocaching mechanic allowing players to hide and discover secret chests with custom hints, rarity tiers, and ISL token bounties.
 - **Island Guestbook & Social Tipping**: Visitor log with resident messages, tipping engine (up to 500 ISL with transaction ledger integration), upvotes, and social proof counters.
 - **Unified Navigation & Discovery**: Integrated viral features directly into Desktop Sidebar, Mobile Sheet, and the Dashboard Core Growth Loops.
-
 ## v6 — Google Maps & GTA Interactive World Engine
-- **Geospatial Google Maps System**:
-  - Smooth 2D/2.5D Canvas map viewport with drag-to-pan, mousewheel/pinch zoom (`0.35x` to `2.4x`), and camera fly-to easing.
-  - 4 Dynamic Map Layers: **Satellite Photorealistic Earth**, **Street / Vector Roads**, **Night Cyber Blueprint**, and **Land Deeds Subdivision Grid**.
-  - Autocomplete Search Engine: Instant filtering and camera jump to all 7 districts, 21 land plots, 10 businesses, and 4 parked vehicles.
-  - GPS Polyline Waypoint Navigation: Computes and renders glowing directional route lines along the island road graph.
+- **Geospatial Archipelago Engine**:
+  - Full Canvas-based interactive open world with smooth pan, zoom (`0.35x` to `3.0x`), coordinates tracking, and multi-island navigation.
+  - 5 Distinct Islands: Nexus Main, Nurai Cove, Yas Arena Island, Masdar Tech Atoll, Eastern Mangrove Sanctuary.
+  - Dynamic Time-of-Day lighting: Day, Sunset, Night with realistic water wave shimmer.
+  - Connected Road Network across districts with vehicles, pedestrian NPCs, and POIs.
 - **GTA-Style Free-Roam & Driving Mechanics**:
-  - Seamless toggle between Google Maps Overview and GTA Free-Roam follow-cam mode.
-  - Avatar controls: WASD / Arrow keys for movement, Shift to sprint.
-  - Full vehicle driving physics: Real-time acceleration, braking, top speeds, handbrake drifting (`Space`) with tire skid marks, and Nitro Boost (`Shift`) with cyan flame particle exhausts.
-  - Audio Engine Upgrades: Synthesized Web Audio API sound effects for engine revving, tire screech drifting, nitro whoosh, car horns (`H`), and radio stations (`R`).
-  - Contextual Interaction Engine: Proximity detector displaying glowing `[E]` prompts when approaching storefronts, title deed signs, ATMs, NPCs, and parked vehicles.
-- **Authentic GTA Heads-Up Display (HUD)**:
-  - Circular Radar Minimap in bottom-left showing immediate vicinity, rotating North compass needle, player heading arrow, POI blips, and road name badges.
-  - Speedometer & Nitro Gauge in bottom-right with real-time digital KM/H, current gear, and nitro refill bar.
-  - Street Cred Stars: 5-Star reputation rating that increases with exploration, high-speed runs, and completed missions.
-- **World Missions & Activities**:
-  - "Harbor to Saadiyat Express" Courier Delivery: Real-time countdown timer, GPS route guidance, and cash/XP payout on arrival.
-  - Yas Circuit Grand Prix Time Trial and canal stunt jump ramps.
-- **Connected World & Assets Suite**:
-  - Upgraded `vehicles.html` with direct "🏎️ Test Drive" spawning into the open world.
-  - Upgraded `land.html`, `property.html`, and `businesses.html` with direct "📍 Map View" and "🧭 Drive Here" deep-linking.
+  - Avatar movement: WASD controls with smooth interpolation, Shift to sprint.
+  - Vehicle driving physics: Acceleration, handling, steering, top speeds, speedometer, and custom driving HUD.
+  - Proximity detection with `[E]` prompts for NPCs, POIs, and vehicles (`[F]` to enter/exit).
+- **Minimap & Navigation HUD**:
+  - Real-time minimap with viewport indicator, player heading, and district landmarks.
+  - Quick-travel district teleportation and live resident density counters.
 
-
+## v7 — Apple/iOS High-Class Design System & Workflow Redesign
+- **Design Philosophy Overhaul**:
+  - Replaced neon cyberpunk aesthetic with Apple/iOS-inspired executive design: generous whitespace, calm neutral surfaces, refined typography (`Inter` / SF-style scale).
+  - Single refined blue accent (`#3b82f6` / `#60a5fa`) instead of overwhelming saturated neon colors.
+  - Layered surface elevations (`--bg-primary`, `--bg-secondary`, `--bg-tertiary`, `--bg-elevated`) with subtle ambient shadows instead of heavy blur filters.
+- **Executive Navigation & Shell**:
+  - Redesigned Top Header with segmented control navigation, clear status indicators, and streamlined search.
+  - Rebuilt Left Sidebar (260px) with comfortable 44px hit targets, left accent indicators, and grouped categories.
+  - Sleek Mobile Bottom Nav with safe area padding and clean active dot indicators.
+- **Dashboard & Core Workflow Polish**:
+  - Sovereign Abu Dhabi Digital Society Hero with active resident indicators, executive pitch deck access, and instant world launch.
+  - Resident Passport widget with clean level progress and XP indicator.
+  - Modernized Product Loop and Viral Growth cards with subtle hover micro-interactions.
+  - Seamless integration across all 29 routes with 100% smoke test coverage.

@@ -1,14 +1,42 @@
-# Nexus Island — Investor-Ready Frontend MVP v5 (UAE & Global Edition)
+# Nexus Island — Multi-Country Virtual World Ecosystem MVP v6 (UAE Flagship Edition)
 
-Nexus Island is a browser-first, investor-grade interactive MVP of a persistent digital society where citizens **enter, explore, meet, own, style, play, trade, build, and return**.
+Nexus Island is a browser-first, investor-grade interactive MVP of a persistent multi-country virtual ecosystem where citizens obtain **country-specific Virtual Visas**, **travel across 5 interconnected UAE islands (expanding to 10+)** in a **GTA-style drivable open world**, **buy land, construct custom Emaar villas, buy/sell real estate via ADGM Atomic Escrow**, **drive supercars**, **visit real-world enterprise flagships (Emaar, LuLu Hypermarket, ADGM, Hub71)**, and share **Flex Cards**.
 
-Anchored in **Abu Dhabi / UAE**, Nexus Island unites persistent digital identity, utility land and property ownership, creator commerce, resident social networks, casual browser mini-games, and an intelligent **NOVA AI Co-Pilot**.
+📘 **New Master Execution Blueprint**: See [`STARTUP_EXECUTION_MASTER_GUIDE.md`](./STARTUP_EXECUTION_MASTER_GUIDE.md) for the complete startup execution strategy, 4-Country Virtual Visa architecture, 5-to-10+ Island expansion roadmap, GTA world engine design, B2B brand partnership playbook, Nexus Shield security model, and 14-stream revenue model.
 
 ---
 
-## 🌟 What Was Upgraded in MVP v5
+## 🌟 What Was Upgraded in MVP v6 (Multi-Country & GTA Archipelago Edition)
 
-Building upon the startup guide blueprint (`Nexus_Island_Virtual_Ecosystem_Full_Startup_Guide.md`), MVP v5 transforms the prototype into a rich, full working experience:
+### 1. 🛂 4-Country Virtual Visa & Border Control System
+- **4 Sovereign Countries Planned**:
+  1. **🇦🇪 United Arab Emirates (Active Launch Hub)** — 5 Active Islands + 5 Expansion Islands (10+ Island Masterplan).
+  2. **🇸🇦 Saudi Arabia (KSA — NEOM & Red Sea Hub)** — Unlockable Foreign Entry Visa (`350 ISL`).
+  3. **🇸🇬 Singapore (Marina Cyber-Port)** — Unlockable Foreign Entry Visa (`400 ISL`).
+  4. **🇬🇧 United Kingdom (London Royal Spatial District)** — Unlockable Foreign Entry Visa (`450 ISL`).
+- **4 Citizen Visa Tiers**: Tourist Pass (Free, 72h), Resident Visa (Free w/ KYC), 10-Year Golden Visa (`500 ISL` — 0% property escrow tax), and Global Diplomatic Passport (`1,200 ISL` — all 4 countries unlocked).
+
+### 2. 🏝️ 5 Active UAE District-Islands + 10+ Island Expansion Masterplan (GTA-Style World)
+- **5 Active UAE Islands Connected by Drivable Causeway Bridges**:
+  - **Island 1**: Al Maryah Financial & Marina Island (ADGM, Hub71, Marina Skyport)
+  - **Island 2**: Saadiyat Cultural & Emaar Atelier Island (Emaar Pavilion, Louvre Dome)
+  - **Island 3**: Yas Velocity & Entertainment Island (Yas Cyber Speedway, Prestige Motors, Esports Arena)
+  - **Island 4**: Palm Jumeirah & Royal Villa Island (Emaar Signature Villas, Galleria & LuLu Mall)
+  - **Island 5**: Masdar AI, Nature & Future Island (NOVA AI Spire, Eco Reserve)
+- **Islands 6–10 Expansion Masterplan**: Interactive reclamation beacons on the map and in the UI where citizens vote with ISL/XP on which island unlocks next (Dubai DIFC Island, Al Reem High-Rise Island, Ras Al Khaimah Wynn Island, Sharjah Edu-Island, Fujairah Deep-Port Island).
+- **GTA-Style Real-World Travel**: Walk (`WASD`), sprint (`Shift`), enter/exit parked cars (`F`), drive across inter-island highway bridges, and use the live GTA minimap radar.
+
+### 3. 🏗️ Full Real Estate Lifecycle: Buy Land, Build Custom Emaar Houses & Resell via Escrow
+- **Sovereign Land Acquisition**: Buy zoned parcels across the UAE archipelago with `1 ISL = 0.50 AED` dual-currency pricing.
+- **Architectural House Builder**: Select an owned land plot and construct certified blueprints (**Emaar Signature Beach Villa**, **Palm Modernist Majlis**, **ADGM Sky Penthouse**, **Hub71 Tech Founder HQ**), permanently boosting the plot's market valuation.
+- **Secondary Market Resale (ADGM Atomic Escrow)**: List and instantly settle owned land, constructed villas, or turnkey properties for appreciated ISL payouts (with 5% standard escrow fee or 0% for Golden Visa holders).
+
+### 4. 🏢 Anchor Enterprises & Real-World Brand Flagships (`businesses.html`)
+- **Emaar Virtual Developments**: Commission custom villas on owned land & claim VIP off-plan property passes.
+- **LuLu Hypermarket Phygital Store**: Shop virtual baskets & claim real-world **15% Off LuLu UAE** discount vouchers.
+- **Prestige Motors & Supercar Dealership**: Test-drive and purchase EV hypercars, dune buggies, and yachts.
+- **ADGM Financial Authority & Escrow Registry**: Inspect atomic escrow protections, SHA-256 receipts, and corporate licenses.
+- **Hub71 Tech Startup Campus**: Claim a **500 ISL Non-Dilutive Founder Grant** and launch user-owned virtual businesses.
 
 ### 1. Visual Aesthetics & Design System
 - **Typography & Polish**: Loaded Google's **Plus Jakarta Sans** with clean visual hierarchy.

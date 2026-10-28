@@ -67,56 +67,96 @@
         gain.gain.setValueAtTime(0.06, now);
         gain.gain.linearRampToValueAtTime(0.001, now + 0.28);
         osc.start(now); osc.stop(now + 0.28);
-      } else if (type === 'engine') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(80, now);
-        osc.frequency.linearRampToValueAtTime(160, now + 0.15);
-        gain.gain.setValueAtTime(0.03, now);
-        gain.gain.linearRampToValueAtTime(0.001, now + 0.15);
-        osc.start(now); osc.stop(now + 0.15);
-      } else if (type === 'drift') {
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(320, now);
-        osc.frequency.exponentialRampToValueAtTime(180, now + 0.18);
-        gain.gain.setValueAtTime(0.02, now);
-        gain.gain.linearRampToValueAtTime(0.001, now + 0.18);
-        osc.start(now); osc.stop(now + 0.18);
-      } else if (type === 'nitro') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(300, now);
-        osc.frequency.exponentialRampToValueAtTime(900, now + 0.25);
-        gain.gain.setValueAtTime(0.05, now);
-        gain.gain.linearRampToValueAtTime(0.001, now + 0.25);
-        osc.start(now); osc.stop(now + 0.25);
-      } else if (type === 'horn') {
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(440, now);
-        osc.frequency.setValueAtTime(554.37, now + 0.08);
-        gain.gain.setValueAtTime(0.06, now);
-        gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
-        osc.start(now); osc.stop(now + 0.3);
-      } else if (type === 'cash') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(987.77, now);
-        osc.frequency.setValueAtTime(1318.51, now + 0.08);
-        gain.gain.setValueAtTime(0.07, now);
-        gain.gain.linearRampToValueAtTime(0.001, now + 0.24);
-        osc.start(now); osc.stop(now + 0.24);
       }
     } catch {}
   }
 
   /* ═══════════════════════════════════════════════
-     DATA MODELS
+     DATA MODELS — 4 COUNTRIES, VISAS, 5-TO-10+ ISLANDS & ASSETS
      ═══════════════════════════════════════════════ */
+  const COUNTRIES = [
+    {
+      id: 'uae', name: 'United Arab Emirates', short: 'UAE', flag: '🇦🇪', status: 'ACTIVE PRIMARY HUB',
+      visaCode: 'NX-VISA-UAE', visaFee: 0, currency: 'AED (1 ISL = 0.50 AED)',
+      islandsCount: '5 Active Islands + 5 Expansion Islands (10+ Total)',
+      capitalHub: 'Abu Dhabi & Dubai Sovereign Archipelago',
+      highlights: ['ADGM & Hub71 Financial Core', 'Emaar Palm & Nurai Villas', 'LuLu Virtual Hypermarket & Mall', 'Yas Motorsport & Supercar Showroom'],
+      description: 'The flagship virtual nation. Enter via your UAE Virtual Visa to explore 5 connected GTA-style islands, buy land, build Emaar villas, drive supercars, and trade with atomic escrow protection.'
+    },
+    {
+      id: 'ksa', name: 'Saudi Arabia', short: 'KSA', flag: '🇸🇦', status: 'WAVE 2 VISA OPEN',
+      visaCode: 'NX-VISA-KSA', visaFee: 250, currency: 'SAR (1 ISL = 0.50 SAR)',
+      islandsCount: '4 Planned Mega-Districts',
+      capitalHub: 'Riyadh KAFD, NEOM The Line & Red Sea Atoll',
+      highlights: ['NEOM Linear Smart City', 'Riyadh Financial Spire', 'Qiddiya Esports & Motorsport Megaplex', 'Red Sea Coral Villas'],
+      description: 'Access Saudi Arabia\'s giga-project digital twins. Requires a KSA e-Visa (250 ISL) or Global Diplomatic Passport.'
+    },
+    {
+      id: 'sgp', name: 'Singapore', short: 'SGP', flag: '🇸🇬', status: 'WAVE 3 VISA OPEN',
+      visaCode: 'NX-VISA-SGP', visaFee: 300, currency: 'SGD (1 ISL = 0.18 SGD)',
+      islandsCount: '4 Planned Island Hubs',
+      capitalHub: 'Marina Bay Sky-Gardens & Sentosa Cove',
+      highlights: ['Marina Bay Financial Hub', 'Sentosa Luxury Waterfront', 'One-North AI & DeepTech Park', 'Orchard Flagship Retail Boulevard'],
+      description: 'Asia-Pacific\'s sovereign wealth and deep-tech nexus. Requires a Singapore Tech Visa (300 ISL) or Diplomatic Passport.'
+    },
+    {
+      id: 'uk', name: 'United Kingdom', short: 'UK', flag: '🇬🇧', status: 'WAVE 4 VISA OPEN',
+      visaCode: 'NX-VISA-GBR', visaFee: 350, currency: 'GBP (1 ISL = 0.11 GBP)',
+      islandsCount: '4 Planned Crown Districts',
+      capitalHub: 'London Canary Wharf, Mayfair & Silverstone',
+      highlights: ['Canary Wharf Banking Citadel', 'Mayfair & Knightsbridge Luxury', 'Thames Innovation Pier', 'Silverstone Grand Prix Circuit'],
+      description: 'European financial and luxury heritage hub. Requires a UK Royal Visa (350 ISL) or Diplomatic Passport.'
+    }
+  ];
+
+  const VISA_TIERS = [
+    { id: 'tourist', name: 'Tourist Entry Visa', icon: '🛂', price: 0, escrowFee: '5%', countries: 1, badge: 'Tourist Visa', perks: 'Access all 5 UAE Islands, GTA Free-Roam, Chat & Live Events' },
+    { id: 'resident', name: 'UAE Resident Visa', icon: '🪪', price: 100, escrowFee: '5%', countries: 1, badge: 'Resident Citizen', perks: 'Buy Land, Build Houses, Buy Cars, Create Flex Cards & Communities' },
+    { id: 'golden', name: 'UAE Golden Investor Visa', icon: '🌟', price: 500, escrowFee: '0%', countries: 2, badge: 'Golden Visa Holder', perks: '0% Property Resale Escrow Fee, Priority Islands 6–10 Access, Commercial Business License & +15% Property Value' },
+    { id: 'diplomatic', name: 'Global Diplomatic Passport', icon: '👑', price: 1200, escrowFee: '0%', countries: 4, badge: 'Diplomatic Sovereign', perks: 'All 4 Countries Unlocked (UAE, KSA, Singapore, UK), VIP Skyport Fast-Track & Black/Gold Flex Card' }
+  ];
+
+  const UAE_ISLANDS = [
+    { id: 'nexus-main', num: 1, name: 'Island 1: ADGM, Hub71 & Harbor Main', status: 'active', icon: '🏛️', focus: 'Corporate Offices, Financial Hub, Startup Campus & Skyport', anchors: 'ADGM, Hub71, Harbor Marina, Visa Skyport', plots: 9, districtId: 'downtown' },
+    { id: 'nurai-cove', num: 2, name: 'Island 2: Emaar Palm & Nurai Villas', status: 'active', icon: '🏖️', focus: 'Luxury Residential Land, Emaar Custom Villas & Beachfront Majlis', anchors: 'Emaar Developments HQ, Palm Lagoon Villas', plots: 6, districtId: 'residential' },
+    { id: 'yas-arena', num: 3, name: 'Island 3: Yas Motorsport & Auto Hub', status: 'active', icon: '🏎️', focus: 'GTA Racing Circuit, Vehicle Dealerships & Esports Stadium', anchors: 'Prestige Supercar Showroom, Yas Grand Prix', plots: 3, districtId: 'gaming' },
+    { id: 'masdar-atoll', num: 4, name: 'Island 4: Masdar AI & Saadiyat Arts', status: 'active', icon: '🎨', focus: 'NOVA AI Supercomputing Spire, Louvre Pavilion & Creator Studios', anchors: 'NOVA AI Spire, Saadiyat Crystal Gallery', plots: 3, districtId: 'creator' },
+    { id: 'mangrove-sanctuary', num: 5, name: 'Island 5: LuLu Mall & Mangrove Eco', status: 'active', icon: '🛒', focus: 'Retail Hypermarkets, Shopping Malls, Phygital Perks & Eco Trails', anchors: 'LuLu Hypermarket, Galleria Mall, Mangrove Reserve', plots: 3, districtId: 'nature' },
+    { id: 'exp-dubai-burj', num: 6, name: 'Island 6: Dubai Downtown & Burj Frontier', status: 'expansion', phase: 'Wave 2 Expansion', icon: '🏙️', focus: 'Emaar Sky-Penthouses, Luxury Couture Mall & Fountain Plaza', anchors: 'Burj Sky-Suites, Dubai Mall Twin', plots: 12 },
+    { id: 'exp-al-maryah', num: 7, name: 'Island 7: Al Maryah Global Banking Atoll', status: 'expansion', phase: 'Wave 2 Expansion', icon: '🏦', focus: 'Institutional Wealth Management, Private Banks & Sovereign Funds', anchors: 'Global Exchange Tower, Sovereign Vault', plots: 10 },
+    { id: 'exp-saadiyat-north', num: 8, name: 'Island 8: Saadiyat North Couture & Arena', status: 'expansion', phase: 'Wave 3 Expansion', icon: '🎭', focus: 'Virtual Fashion Weeks, Amphitheater Concerts & Luxury Pavilions', anchors: 'Runway Dome, Gulf Opera House', plots: 8 },
+    { id: 'exp-jebel-ali', num: 9, name: 'Island 9: Jebel Ali Trade & Logistics Port', status: 'expansion', phase: 'Wave 3 Expansion', icon: '🚢', focus: 'B2B Enterprise Expo Halls, Maritime Trade & Global Supply Twins', anchors: 'DP Trade Hub, Expo Mega-Pavilion', plots: 14 },
+    { id: 'exp-al-ain-oasis', num: 10, name: 'Island 10: Al Ain Oasis & Mountain Retreat', status: 'expansion', phase: 'Wave 4 Expansion', icon: '🌴', focus: 'Heritage Palaces, Desert Dune Rally Tracks & Wellness Sanctuaries', anchors: 'Jebel Hafeet Hillclimb, Royal Oasis', plots: 10 }
+  ];
+
+  const HOUSE_BLUEPRINTS = [
+    { id: 'bp-emaar-villa', name: 'Emaar Beachfront Contemporary Villa', developer: 'Emaar Virtual Developments', icon: '🏖️', cost: 450, valueBoost: 750, style: 'Emaar Modern Coastal', slots: 8, desc: 'Signature floor-to-ceiling glass waterfront villa with infinity pool, private yacht dock, and majlis terrace.' },
+    { id: 'bp-majlis-palace', name: 'Royal Emirati Majlis Courtyard Estate', developer: 'Aldar & Heritage Architects', icon: '🕌', cost: 650, valueBoost: 1100, style: 'Royal Heritage Majlis', slots: 10, desc: 'Palatial courtyard residence featuring traditional wind-towers, marble reception majlis, and palm gardens.' },
+    { id: 'bp-adgm-penthouse', name: 'ADGM Executive Glass Sky-Villa', developer: 'Emaar Commercial & Towers', icon: '🏙️', cost: 550, valueBoost: 900, style: 'Skyline Duplex Penthouse', slots: 8, desc: 'Double-height executive sky-residence with private helipad, boardroom lounge, and panoramic island views.' },
+    { id: 'bp-masdar-ecopod', name: 'Masdar Zero-Carbon Smart Residence', developer: 'Masdar Clean-Tech Living', icon: '🌿', cost: 350, valueBoost: 580, style: 'AI Eco-Futuristic', slots: 6, desc: 'Solar-powered smart architectural home with automated NOVA AI climate control and mangrove deck.' }
+  ];
+
+  function txHash(seed) {
+    const str = String(seed || Date.now());
+    let h1 = 0xdeadbeef ^ str.length, h2 = 0x41c6ce57 ^ str.length;
+    for (let i = 0, ch; i < str.length; i++) {
+      ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return '0xNX' + (h2 >>> 0).toString(16).padStart(8, '0').toUpperCase() + (h1 >>> 0).toString(16).padStart(8, '0').toUpperCase();
+  }
+
   const DISTRICTS = [
-    { id:'harbor', name:'Harbor District', icon:'⚓', tagline:'Waterfront Marina Hub', description:'The primary arrival port inspired by Abu Dhabi Corniche & Marina. Cafes, luxury yachts, event plazas and social discovery.', color:'#0891b2', gradient:'from-cyan-500 to-blue-600', landmark:'Marina Grand Promenade', mapX:22, mapY:30 },
-    { id:'creator', name:'Creator District', icon:'🎨', tagline:'Cultural & Atelier Zone', description:'Ateliers, NFT galleries, sound studios and VR stages inspired by the Saadiyat Cultural District.', color:'#ea580c', gradient:'from-rose-500 to-amber-500', landmark:'Louvre-style Crystal Pavilion', mapX:68, mapY:24 },
-    { id:'gaming', name:'Gaming District', icon:'🎮', tagline:'Interactive Arena Hub', description:'High-octane esports stadiums, racetracks and neon arcades inspired by Yas Island entertainment.', color:'#7c3aed', gradient:'from-indigo-600 to-purple-600', landmark:'Yas Cyber Arena', mapX:32, mapY:65 },
-    { id:'downtown', name:'Downtown', icon:'🏢', tagline:'Financial & Tech Core', description:'ADGM & Al Maryah inspired corporate spires, virtual banks, enterprise hubs and premier retail towers.', color:'#0ea5e9', gradient:'from-slate-800 to-cyan-900', landmark:'ADGM Apex Tower', mapX:72, mapY:56 },
-    { id:'residential', name:'Residential District', icon:'🏡', tagline:'Waterfront Living', description:'Coastal villas, palm gardens, private residences and social majlis spaces inspired by Nurai Island.', color:'#059669', gradient:'from-emerald-600 to-teal-700', landmark:'Palm Sanctuary Lagoon', mapX:50, mapY:78 },
-    { id:'nature', name:'Nature Zone', icon:'🌿', tagline:'Mangrove Reserve', description:'Eco-tourism paths, coastal mangrove boardwalks, desert safari camps and serene meditation spaces.', color:'#16a34a', gradient:'from-green-600 to-emerald-800', landmark:'Eastern Mangrove Sanctuary', mapX:16, mapY:72 },
-    { id:'future', name:'Future Zone', icon:'∞', tagline:'AI & Quantum Port', description:'Masdar-inspired clean tech, NOVA AI Supercomputing Spire, quantum labs and VR/AR spatial portals.', color:'#6366f1', gradient:'from-sky-500 to-indigo-800', landmark:'NOVA Quantum Spire', mapX:80, mapY:80 }
+    { id:'harbor', name:'Harbor District', islandId:'nexus-main', islandName:'Island 1: ADGM & Harbor Main', icon:'⚓', tagline:'Waterfront Marina & Skyport', description:'The primary arrival port inspired by Abu Dhabi Corniche & Marina. Home to the UAE International Skyport, cafes, luxury yachts, and social plazas.', color:'#0891b2', gradient:'from-cyan-500 to-blue-600', landmark:'Marina Promenade & Visa Skyport', mapX:22, mapY:30 },
+    { id:'creator', name:'Creator District', islandId:'masdar-atoll', islandName:'Island 4: Masdar AI & Saadiyat Arts', icon:'🎨', tagline:'Cultural & Atelier Zone', description:'Ateliers, 3D galleries, sound studios and VR stages inspired by the Saadiyat Cultural District.', color:'#ea580c', gradient:'from-rose-500 to-amber-500', landmark:'Louvre-style Crystal Pavilion', mapX:68, mapY:24 },
+    { id:'gaming', name:'Gaming District', islandId:'yas-arena', islandName:'Island 3: Yas Motorsport & Auto Hub', icon:'🎮', tagline:'Motorsport & Auto Dealership Hub', description:'High-octane esports stadiums, GTA racetracks and Prestige Supercar Showrooms inspired by Yas Island.', color:'#7c3aed', gradient:'from-indigo-600 to-purple-600', landmark:'Yas Cyber Arena & Auto Showroom', mapX:32, mapY:65 },
+    { id:'downtown', name:'Downtown', islandId:'nexus-main', islandName:'Island 1: ADGM & Harbor Main', icon:'🏢', tagline:'ADGM & Hub71 Financial Core', description:'ADGM & Hub71 corporate spires, virtual escrow banks, startup headquarters and shopping malls.', color:'#0ea5e9', gradient:'from-slate-800 to-cyan-900', landmark:'ADGM Apex Tower & Hub71 Campus', mapX:72, mapY:56 },
+    { id:'residential', name:'Residential District', islandId:'nurai-cove', islandName:'Island 2: Emaar Palm & Nurai Villas', icon:'🏡', tagline:'Emaar Waterfront Living', description:'Emaar coastal villas, palm gardens, private residences and social majlis spaces on Nurai & Palm Island.', color:'#059669', gradient:'from-emerald-600 to-teal-700', landmark:'Emaar Palm Sanctuary Lagoon', mapX:50, mapY:78 },
+    { id:'nature', name:'Nature Zone', islandId:'mangrove-sanctuary', islandName:'Island 5: LuLu Mall & Mangrove Eco', icon:'🌿', tagline:'LuLu Retail Mall & Eco Reserve', description:'Home to LuLu Virtual Hypermarket, Galleria Shopping Mall, and protected coastal mangrove boardwalks.', color:'#16a34a', gradient:'from-green-600 to-emerald-800', landmark:'LuLu Hypermarket & Mangrove Sanctuary', mapX:16, mapY:72 },
+    { id:'future', name:'Future Zone', islandId:'masdar-atoll', islandName:'Island 4: Masdar AI & Saadiyat Arts', icon:'∞', tagline:'AI & Quantum Port', description:'Masdar-inspired clean tech, NOVA AI Supercomputing Spire, quantum labs and VR/AR spatial portals.', color:'#6366f1', gradient:'from-sky-500 to-indigo-800', landmark:'NOVA Quantum Spire', mapX:80, mapY:80 }
   ];
 
   const USER_NAMES = ['Maya Chen','Omar Al-Zaabi','Sara Al-Mansoori','Daniel Ross','Lina Park','Noah Williams','Aisha Rahman','Leo Martins','Hana Ito','Adam Brooks','Nora Silva','Yusuf Qasimi','Eva Stone','Ryan Cole','Zara Malik','Kai Morgan','Amir Shah','Mia Chen','Ben Carter','Ivy Wong','Rami Haddad','Sofia Cruz'];
@@ -167,14 +207,29 @@
       speed:75+i*3, handling:70+(i*6)%28, acceleration:80+(i*4)%20
     })),
     businesses: [
-      'Harbor & Co. Roastery','Yas Cyber Forge','Nexus AI Labs','Canvas House Saadiyat','Emirates Gourmet Food','ADGM Founders Circle','Oceanic Yacht Charters','Motion Works VFX','Arena Esports League','Green Oasis Eco-Tech'
+      'Emaar Virtual Developments','LuLu Virtual Hypermarket & Mall','Prestige Motors & EV Showroom','ADGM Financial Authority & RegLab','Hub71 Global Startup Campus','Galleria & Marina Shopping Mall','Harbor & Co. Roastery','Yas Cyber Forge','Nexus AI Labs','Canvas House Saadiyat'
     ].map((name,i) => ({
       id:`b${i+1}`, name,
-      type:['Artisan Cafe','Game Studio','AI & Tech','Art Gallery','Fine Dining','Advisory & Law','Tourism & Charters','Digital VFX','Esports Org','Sustainability'][i],
-      district:['Harbor District','Gaming District','Downtown','Creator District','Harbor District','Downtown','Nature Zone','Creator District','Gaming District','Nature Zone'][i],
-      owner: USER_NAMES[i], icon:['☕','🎮','🧪','🎨','🍽️','🏛️','🌊','✨','🏆','🌱'][i],
-      followers:140+i*95, rating:4.8 + (i%3)*0.1, dailyRevenue:120+i*45,
-      description:['Premier artisanal coffee and tea majlis with harbor views.','Top esports tournament operator and custom experience builder.','Pioneering intelligent agent workflows and spatial AI infrastructure.','Contemporary digital gallery showcasing regional & global digital artists.','Virtual franchise serving gourmet Emirati and international cuisine.','Corporate structuring, venture connections and ecosystem networking.','Exclusive yacht excursions and offshore virtual diving adventures.','High-end 3D avatars, apparel modeling and spatial branding.','Weekly prize-pool competitive gaming tournaments across the island.','Clean-tech digital twins and biodiversity preservation simulations.'][i]
+      type:['Master Property Developer','Hypermarket & Retail','Vehicle Dealership','Financial Center & Escrow','Tech Accelerator & Venture','Luxury Shopping Mall','Artisan Cafe','Game Studio','AI & Tech','Art Gallery'][i],
+      district:['Residential District','Nature Zone','Gaming District','Downtown','Downtown','Harbor District','Harbor District','Gaming District','Future Zone','Creator District'][i],
+      islandName:['Island 2: Emaar Palm','Island 5: LuLu Mall & Eco','Island 3: Yas Motorsport','Island 1: ADGM & Hub71','Island 1: ADGM & Hub71','Island 5: LuLu Mall & Eco','Island 1: ADGM & Harbor','Island 3: Yas Motorsport','Island 4: Masdar AI','Island 4: Saadiyat Arts'][i],
+      owner: ['Emaar Group (Anchor)','LuLu Group (Anchor)','Prestige Automotive (Anchor)','ADGM Sovereign (Anchor)','Hub71 Ecosystem (Anchor)','Galleria Retail (Anchor)', ...USER_NAMES][i],
+      icon:['🏗️','🛒','🏎️','🏛️','🚀','🛍️','☕','🎮','🧪','🎨'][i],
+      followers:1240+i*185, rating:4.9 - (i%2)*0.1, dailyRevenue:480+i*95,
+      anchor: i < 6,
+      ctaLabel: ['Commission Villa Build','Shop & Claim 15% Voucher','Test-Drive & Buy Cars','Verify Escrow & License','Apply for 500 ISL Grant','Explore Mall Brands','Visit Cafe','Join Tournament','Test NOVA AI','View Exhibition'][i],
+      description:[
+        'Master developer of luxury beachfront villas, sky-penthouses, and architectural blueprints across Nexus Island. Construct custom Emaar homes on your owned land.',
+        'Flagship virtual hypermarket & department store offering digital home goods paired with redeemable real-world LuLu discount vouchers across the UAE.',
+        'Official automotive showroom featuring high-performance supercars, electric sedans, 4x4 dune rovers, and eVTOL air taxis with instant GTA test-drives.',
+        'Sovereign financial hub providing corporate licensing, Web2.5 Atomic Escrow protection, and institutional compliance for island enterprises.',
+        'Abu Dhabi\'s flagship tech ecosystem connecting startup founders with venture capital, co-working spaces, and non-dilutive innovation grants.',
+        'Multi-brand virtual shopping mall featuring luxury fashion wearables, creator pop-up boutiques, and social dining lounges.',
+        'Premier artisanal coffee and tea majlis with harbor views.',
+        'Top esports tournament operator and custom experience builder.',
+        'Pioneering intelligent agent workflows and spatial AI infrastructure.',
+        'Contemporary digital gallery showcasing regional & global digital artists.'
+      ][i]
     })),
     communities: [
       'Abu Dhabi Tech Founders','Nexus Web3 Architects','Saadiyat Creator Guild','Yas Island Pro Gamers','MENA Angel Investors','Spatial Design Collective','Gulf Virtual Explorers','Cyber Sound Producers','Esports Grand Prix','Global Digital Citizens'
@@ -252,24 +307,39 @@
 
   function seedTransactions() {
     return [
-      {id:'tx-01',description:'Initial Island Citizenship Grant',amount:1000,type:'Grant',date:'Today',status:'Settled'},
-      {id:'tx-02',description:'Falcon Explorer Golden Badge',amount:-25,type:'Purchase',date:'Today',status:'Settled'},
-      {id:'tx-03',description:'Exploration Quest Reward — Harbor',amount:80,type:'Reward',date:'Today',status:'Settled'},
-      {id:'tx-04',description:'Arabian Gulf Pearl Lamp',amount:-40,type:'Marketplace',date:'Yesterday',status:'Settled'},
-      {id:'tx-05',description:'Daily Login & Presence Stipend',amount:50,type:'Reward',date:'Yesterday',status:'Settled'},
-      {id:'tx-06',description:'Yas Speed Challenge Runner-Up',amount:120,type:'Gaming',date:'2d ago',status:'Settled'},
-      {id:'tx-07',description:'Creator Royalties — Asset Licensing',amount:75,type:'Earning',date:'3d ago',status:'Settled'},
-      {id:'tx-08',description:'Community Hub Membership Fee',amount:-15,type:'Social',date:'3d ago',status:'Settled'},
-      {id:'tx-09',description:'NOVA Assistant Strategy Consultation',amount:0,type:'System',date:'4d ago',status:'Settled'}
+      {id:'tx-01',description:'Initial UAE Island Citizenship Grant',amount:1000,type:'Grant',date:'Today',status:'Settled · Escrow Verified',hash:txHash('tx-01')},
+      {id:'tx-02',description:'Falcon Explorer Golden Badge',amount:-25,type:'Purchase',date:'Today',status:'Settled · Escrow Verified',hash:txHash('tx-02')},
+      {id:'tx-03',description:'Exploration Quest Reward — Harbor',amount:80,type:'Reward',date:'Today',status:'Settled · Escrow Verified',hash:txHash('tx-03')},
+      {id:'tx-04',description:'Arabian Gulf Pearl Lamp',amount:-40,type:'Marketplace',date:'Yesterday',status:'Settled · Escrow Verified',hash:txHash('tx-04')},
+      {id:'tx-05',description:'Daily Login & Presence Stipend',amount:50,type:'Reward',date:'Yesterday',status:'Settled · Escrow Verified',hash:txHash('tx-05')},
+      {id:'tx-06',description:'Yas Speed Challenge Runner-Up',amount:120,type:'Gaming',date:'2d ago',status:'Settled · Escrow Verified',hash:txHash('tx-06')},
+      {id:'tx-07',description:'Creator Royalties — Asset Licensing',amount:75,type:'Earning',date:'3d ago',status:'Settled · Escrow Verified',hash:txHash('tx-07')},
+      {id:'tx-08',description:'Community Hub Membership Fee',amount:-15,type:'Social',date:'3d ago',status:'Settled · Escrow Verified',hash:txHash('tx-08')},
+      {id:'tx-09',description:'NOVA Assistant Strategy Consultation',amount:0,type:'System',date:'4d ago',status:'Settled · Escrow Verified',hash:txHash('tx-09')}
     ];
   }
 
   /* ─── STATE MANAGEMENT ─── */
   function defaultState() {
     return {
-      schema: 6,
+      schema: 7,
       auth: false,
       onboardingComplete: false,
+      currentCountry: 'uae',
+      visaTier: 'resident',
+      visas: {
+        uae: { status: 'Active', tier: 'resident', number: '#VISA-UAE-8841', issued: 'Oct 2026' }
+      },
+      landBuildings: {},
+      phygitalVouchers: [
+        { id: 'vch-1', brand: 'LuLu Hypermarket', code: 'LULU-NEXUS-15', discount: '15% OFF Online & In-Store UAE Order', status: 'Active' },
+        { id: 'vch-2', brand: 'Emaar Developments', code: 'EMAAR-VIP-2026', discount: 'VIP Priority Preview & U-Points Bonus', status: 'Active' }
+      ],
+      islandVotes: ['exp-dubai-burj'],
+      security: {
+        pinEnabled: true, pinCode: '2026', kycVerified: true,
+        escrowProtection: true, twoFactor: true, securityScore: 98
+      },
       user: {
         id: 'demo-user', name: 'Alex Morgan', username: 'alex',
         email: 'alex.morgan@nexusisland.ae', country: 'United Arab Emirates',
@@ -279,14 +349,13 @@
         interests: ['Spatial AI','ADGM Startups','Esports','Architecture'],
         goal: 'Build an Enterprise'
       },
-      wallet: 1450, wishlist: [], cart: [],
+      wallet: 1850, wishlist: [], cart: [],
       inventory: ['m5','m2','m7','m9','m11','m13'],
       equipped: { fashion: null, badge: 'm5', vehicle: null },
-      ownedLand: [], ownedProperties: [], ownedVehicles: ['v1'],
-      activeVehicle: 'v1', streetCred: 3, worldLayer: 'satellite', worldMode: 'map',
+      ownedLand: ['L-101'], ownedProperties: ['p1'], ownedVehicles: ['v1'],
       home: {
-        built: true, name: 'Alex\'s Coastal Atelier & Majlis',
-        landId: 'Suite #104 (Pioneer District)', style: 'UAE Luxury Coastal',
+        built: true, name: 'Alex\'s Emaar Coastal Atelier & Majlis',
+        landId: 'L-101 (Harbor Marina Edge)', style: 'Emaar Modern Coastal',
         room: 'Living Lounge', ambiance: 'sunset',
         slots: { seating: 'm9', lighting: 'm2', art: 'm13', hospitality: 'm11', trophy: 'm5' },
         furniture: ['m2','m9','m13','m11','m5'], privacy: 'Public',
@@ -299,15 +368,15 @@
       },
       friends: ['u1','u2','u3','u4','u5','u7'],
       requests: ['u8','u9','u10'], blocked: [],
-      following: ['b1','b3','b6'], joined: ['c1','c2','c5'], rsvp: ['e1','e2','e4'],
+      following: ['b1','b2','b3','b4','b5'], joined: ['c1','c2','c5'], rsvp: ['e1','e2','e4'],
       events: {}, communities: {},
       messages: seedMessages(), selectedConversation: 'u1',
       notifications: seedNotifications(), transactions: seedTransactions(),
       gameStats: { drone: { plays: 2, best: 940 }, pearl: { plays: 3, best: 7 }, tycoon: { plays: 1, best: 3 } },
       activity: [
-        {id:uid('act'),text:'Claimed UAE Pioneer Island Citizen pass',time:'Today'},
-        {id:uid('act'),text:'Traveled to Harbor District & Marina Promenade',time:'Today'},
-        {id:uid('act'),text:'Equipped Falcon Explorer Golden Badge',time:'Today'},
+        {id:uid('act'),text:'Issued Sovereign UAE Virtual Visa (#VISA-UAE-8841)',time:'Today'},
+        {id:uid('act'),text:'Traveled across 5 UAE Islands via GTA Causeway',time:'Today'},
+        {id:uid('act'),text:'Registered Title Deed L-101 in Nexus Shield Escrow',time:'Today'},
         {id:uid('act'),text:'Connected with Maya Chen (Spatial Creator)',time:'Yesterday'}
       ],
       createdBusinesses: [], customCreatedProducts: [],
@@ -316,7 +385,7 @@
         reducedMotion: false, audio: true, graphics: 'High (Spatial 60FPS)',
         chatPrivacy: 'Everyone', mapTheme: 'day'
       },
-      districtsVisited: ['harbor','creator','downtown'],
+      districtsVisited: ['harbor','creator','downtown','residential','gaming'],
       currentDistrict: 'harbor',
       avatarPosition: { x: 48, y: 64 },
       membership: 'Resident Plus',
@@ -329,7 +398,7 @@
       ],
       foundTreasures: [],
       flexCardStyle: 'black',
-      passportStamps: ['harbor','creator']
+      passportStamps: ['harbor','creator','downtown']
     };
   }
 
@@ -339,7 +408,7 @@
     try {
       const p = JSON.parse(raw);
       const base = defaultState();
-      const merged = { ...base, ...p, user:{...base.user, ...(p.user||{})}, settings:{...base.settings, ...(p.settings||{})}, gameStats:{...base.gameStats, ...(p.gameStats||{})}, home:{...base.home, ...(p.home||{})} };
+      const merged = { ...base, ...p, user:{...base.user, ...(p.user||{})}, settings:{...base.settings, ...(p.settings||{})}, gameStats:{...base.gameStats, ...(p.gameStats||{})}, home:{...base.home, ...(p.home||{})}, security:{...base.security, ...(p.security||{})} };
       if (!Array.isArray(merged.inventory)) merged.inventory = base.inventory;
       if (!merged.equipped) merged.equipped = base.equipped;
       if (!Array.isArray(merged.districtsVisited)) merged.districtsVisited = ['harbor'];
@@ -347,6 +416,13 @@
       if (!Array.isArray(merged.treasureBoxes)) merged.treasureBoxes = base.treasureBoxes;
       if (!Array.isArray(merged.foundTreasures)) merged.foundTreasures = [];
       if (!Array.isArray(merged.passportStamps)) merged.passportStamps = ['harbor'];
+      if (!merged.currentCountry) merged.currentCountry = 'uae';
+      if (!merged.visaTier) merged.visaTier = 'resident';
+      if (!merged.visas || typeof merged.visas !== 'object') merged.visas = base.visas;
+      if (!merged.landBuildings || typeof merged.landBuildings !== 'object') merged.landBuildings = {};
+      if (!Array.isArray(merged.phygitalVouchers)) merged.phygitalVouchers = base.phygitalVouchers;
+      if (!Array.isArray(merged.islandVotes)) merged.islandVotes = base.islandVotes;
+      if (!Array.isArray(merged.createdBusinesses)) merged.createdBusinesses = [];
       if (!merged.home.slots) merged.home.slots = { ...base.home.slots };
       if (!Array.isArray(merged.home.guestbook)) merged.home.guestbook = [ ...base.home.guestbook ];
       if (!merged.home.ambiance) merged.home.ambiance = 'sunset';
@@ -354,10 +430,6 @@
       if (merged.home.visitorsNow === undefined) merged.home.visitorsNow = 3;
       if (!merged.currentDistrict) merged.currentDistrict = 'harbor';
       if (!merged.avatarPosition) merged.avatarPosition = { x: 48, y: 64 };
-      if (!merged.streetCred) merged.streetCred = 3;
-      if (!merged.worldLayer) merged.worldLayer = 'satellite';
-      if (!merged.worldMode) merged.worldMode = 'map';
-      if (!merged.activeVehicle) merged.activeVehicle = 'v1';
       return merged;
     } catch { return defaultState(); }
   }
@@ -404,14 +476,14 @@
     let root = document.getElementById('toast');
     if (!root) { root = document.createElement('div'); root.id = 'toast'; document.body.append(root); }
     const colors = {
-      success: 'background:linear-gradient(135deg,rgba(16,185,129,0.9),rgba(5,150,105,0.9));color:#fff;box-shadow:0 8px 32px -4px rgba(16,185,129,0.4);',
-      warn: 'background:linear-gradient(135deg,rgba(245,158,11,0.9),rgba(217,119,6,0.9));color:#1c1917;box-shadow:0 8px 32px -4px rgba(245,158,11,0.4);',
-      danger: 'background:linear-gradient(135deg,rgba(244,63,94,0.9),rgba(225,29,72,0.9));color:#fff;box-shadow:0 8px 32px -4px rgba(244,63,94,0.4);',
-      info: 'background:rgba(8,20,50,0.92);color:#22d3ee;border:1px solid rgba(6,182,212,0.3);box-shadow:0 8px 32px -4px rgba(6,182,212,0.2);'
+      success: 'background:var(--bg-elevated);color:var(--success);border:1px solid rgba(34,197,94,0.2);',
+      warn: 'background:var(--bg-elevated);color:#eab308;border:1px solid rgba(234,179,8,0.2);',
+      danger: 'background:var(--bg-elevated);color:var(--danger);border:1px solid rgba(239,68,68,0.2);',
+      info: 'background:var(--bg-elevated);color:var(--accent-text);border:1px solid var(--border-hover);'
     };
-    root.innerHTML = `<div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;max-width:90vw;padding:14px 24px;border-radius:16px;backdrop-filter:blur(16px);font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;${colors[type]||colors.info}" class="pop"><span style="width:8px;height:8px;border-radius:50%;background:currentColor;opacity:0.6"></span>${esc(text)}</div>`;
+    root.innerHTML = `<div style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;max-width:90vw;padding:12px 20px;border-radius:var(--radius-lg);font-size:0.8125rem;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow-lg);${colors[type]||colors.info}" class="pop"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;opacity:0.7"></span>${esc(text)}</div>`;
     clearTimeout(root._timer);
-    root._timer = setTimeout(() => { if (root) root.innerHTML = ''; }, 3000);
+    root._timer = setTimeout(() => { if (root) root.innerHTML = ''; }, 3500);
   }
 
   function nav(file) { if (typeof window !== 'undefined') window.location.href = file; }
@@ -470,13 +542,13 @@
 
   function metric(label, value, note, ic='✦') {
     return `<div class="metric-card">
-      <div class="flex items-center justify-between gap-3">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
         <div>
           <div class="metric-label">${label}</div>
           <div class="metric-value">${value}</div>
           <div class="metric-note">${note}</div>
         </div>
-        <div style="width:40px;height:40px;border-radius:12px;background:rgba(6,182,212,0.08);display:grid;place-items:center;font-size:1.25rem;flex-shrink:0">${ic}</div>
+        <div style="width:40px;height:40px;border-radius:var(--radius-md);background:var(--accent-soft);display:grid;place-items:center;font-size:1.25rem;flex-shrink:0">${ic}</div>
       </div>
     </div>`;
   }
@@ -486,14 +558,14 @@
     if (typeof document === 'undefined') return;
     const host = document.getElementById('modal');
     if (!host) return;
-    host.innerHTML = `<div style="position:fixed;inset:0;z-index:120;background:rgba(2,10,24,0.75);backdrop-filter:blur(12px);padding:16px;display:grid;place-items:center" onclick="if(event.target===this)closeModal()">
-      <div class="glass-elevated pop" style="width:100%;max-width:640px;max-height:92vh;overflow-y:auto;border-radius:1.75rem;padding:28px">
-        <div style="display:flex;align-items:start;justify-content:space-between;gap:16px;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:16px;margin-bottom:20px">
+    host.innerHTML = `<div style="position:fixed;inset:0;z-index:120;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:16px;display:grid;place-items:center" onclick="if(event.target===this)closeModal()">
+      <div class="pop" style="width:100%;max-width:640px;max-height:92vh;overflow-y:auto;border-radius:var(--radius-2xl);padding:28px;background:var(--bg-elevated);border:1px solid var(--border-hover);box-shadow:var(--shadow-xl)">
+        <div style="display:flex;align-items:start;justify-content:space-between;gap:16px;border-bottom:1px solid var(--border);padding-bottom:16px;margin-bottom:20px">
           <div>
-            <div class="tag tag-cyan" style="margin-bottom:8px"><span class="live-dot" style="width:6px;height:6px"></span>NEXUS ISLAND · UAE</div>
+            <div class="tag tag-cyan" style="margin-bottom:8px"><span class="live-dot" style="width:5px;height:5px"></span>Nexus Island</div>
             <h3 class="heading-md">${title}</h3>
           </div>
-          <button type="button" onclick="closeModal()" style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:var(--text-muted);display:grid;place-items:center;cursor:pointer;font-size:14px;font-weight:700;transition:all 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">✕</button>
+          <button type="button" onclick="closeModal()" style="width:32px;height:32px;border-radius:var(--radius-sm);background:var(--bg-hover);border:1px solid var(--border);color:var(--text-muted);display:grid;place-items:center;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.15s;flex-shrink:0" onmouseover="this.style.background='var(--bg-active)';this.style.color='var(--text-primary)'" onmouseout="this.style.background='var(--bg-hover)';this.style.color='var(--text-muted)'">\u2715</button>
         </div>
         <div>${body}</div>
       </div>
@@ -557,7 +629,7 @@
       <path d="M220,200 Q350,250 400,300 Q450,350 520,380 M400,300 Q380,400 400,460 M400,300 Q520,260 600,240" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" stroke-dasharray="8 6"/>
 
       <!-- Water body (lagoon) -->
-      <ellipse cx="430" cy="400" rx="40" ry="20" fill="rgba(6,182,212,0.2)" stroke="rgba(6,182,212,0.15)" stroke-width="1.5"/>
+      <ellipse cx="430" cy="400" rx="40" ry="20" fill="var(--border-accent)" stroke="var(--border-accent)" stroke-width="1.5"/>
     </svg>`;
   }
 
@@ -566,90 +638,94 @@
      ═══════════════════════════════════════════════ */
   function navItem(label, file, ic) {
     const on = typeof location !== 'undefined' && location.pathname.endsWith(file);
-    return `<a href="${file}" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;font-size:13px;font-weight:700;transition:all 0.2s;${on ? 'background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.2)' : 'color:var(--text-secondary);border:1px solid transparent'}" onmouseover="if(!${on})this.style.background='rgba(255,255,255,0.04)'" onmouseout="if(!${on})this.style.background='transparent'"><span style="font-size:15px">${ic}</span><span>${label}</span></a>`;
+    return `<a href="${file}" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-md);font-size:0.8125rem;font-weight:${on ? '600' : '500'};transition:all 0.2s var(--ease-out);text-decoration:none;position:relative;${on ? 'color:var(--text-primary);background:var(--bg-tertiary)' : 'color:var(--text-muted)'}" onmouseover="if(!${on}){this.style.background='var(--bg-tertiary)';this.style.color='var(--text-secondary)'}" onmouseout="if(!${on}){this.style.background='transparent';this.style.color='var(--text-muted)'}"><span style="font-size:15px;opacity:${on ? '1' : '0.6'}">${ic}</span><span>${label}</span>${on ? '<div style="position:absolute;left:0;top:25%;bottom:25%;width:3px;border-radius:0 3px 3px 0;background:var(--accent)"></div>' : ''}</a>`;
   }
 
   function layout(content) {
     const unread = state.notifications.filter(n => !n.read).length;
     const currPath = typeof location !== 'undefined' ? location.pathname : '';
     const isTab = f => currPath.endsWith(f);
+    const currCountry = COUNTRIES.find(c => c.id === state.currentCountry) || COUNTRIES[0];
+    const currTier = VISA_TIERS.find(t => t.id === state.visaTier) || VISA_TIERS[1];
 
     return `<div style="min-height:100vh;position:relative">
       <!-- TOP NAV BAR -->
-      <header class="glass" style="position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,0.04)">
-        <div class="container-wide" style="height:var(--nav-height);display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <header style="position:sticky;top:0;z-index:50;background:rgba(9,9,11,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border)">
+        <div class="container-wide" style="height:var(--nav-height);display:flex;align-items:center;justify-content:space-between;gap:16px">
           <!-- Logo -->
           <a href="dashboard.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0">
-            <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#6366f1);display:grid;place-items:center;font-weight:900;color:#fff;font-size:16px;box-shadow:0 4px 12px -2px rgba(6,182,212,0.35)">N</div>
-            <div>
-              <div style="font-size:15px;font-weight:900;color:var(--text-primary);letter-spacing:-0.02em;line-height:1.1">Nexus Island</div>
-              <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.2em;color:rgba(6,182,212,0.7)">Abu Dhabi · UAE</div>
-            </div>
+            <div style="width:34px;height:34px;border-radius:10px;background:var(--accent);display:grid;place-items:center;font-weight:700;color:#fff;font-size:15px">N</div>
+            <span style="font-size:1rem;font-weight:700;color:var(--text-primary);letter-spacing:-0.02em">Nexus</span>
           </a>
 
-          <!-- Center Nav -->
+          <!-- Center Nav — Segmented Control -->
           <nav style="display:none" class="lg-show">
-            <div style="display:flex;align-items:center;gap:2px;padding:4px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04)">
-              ${[['Home','dashboard.html','⌂'],['World','island.html','🌐'],['Market','marketplace.html','▦'],['Land','land.html','🏝️'],['Social','friends.html','👥'],['Games','games.html','🎮'],['Events','events.html','◷']].map(([l,f,i]) => {
+            <div style="display:flex;align-items:center;gap:1px;padding:4px;border-radius:var(--radius-md);background:var(--bg-secondary);border:1px solid var(--border)">
+              ${[['Home','dashboard.html'],['World','island.html'],['Market','marketplace.html'],['Land','land.html'],['Enterprises','businesses.html'],['Flex Card','flex-card.html'],['Events','events.html']].map(([l,f]) => {
                 const active = isTab(f);
-                return `<a href="${f}" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:700;text-decoration:none;transition:all 0.2s;${active?'background:rgba(6,182,212,0.12);color:#22d3ee':'color:var(--text-muted)'}" onmouseover="if(!${active})this.style.color='var(--text-primary)'" onmouseout="if(!${active})this.style.color='var(--text-muted)'">${i} ${l}</a>`;
+                return `<a href="${f}" style="padding:7px 14px;border-radius:${active ? 'var(--radius-sm)' : '0'};font-size:0.8125rem;font-weight:${active ? '600' : '500'};text-decoration:none;transition:all 0.15s;${active ? 'background:var(--bg-elevated);color:var(--text-primary);box-shadow:var(--shadow-sm)' : 'color:var(--text-muted);background:transparent'}" onmouseover="if(!${active})this.style.color='var(--text-secondary)'" onmouseout="if(!${active})this.style.color='var(--text-muted)'">${l}</a>`;
               }).join('')}
             </div>
           </nav>
 
           <!-- Right Actions -->
           <div style="display:flex;align-items:center;gap:8px">
-            <button onclick="search()" style="display:none;padding:6px 12px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:var(--text-muted);font-size:12px;font-weight:700;cursor:pointer;align-items:center;gap:6px" class="md-show-flex">⌕ Search</button>
-            <a href="wallet.html" style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);font-size:12px;font-weight:800;color:var(--text-primary);text-decoration:none;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(6,182,212,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
-              <span style="color:#06b6d4">◈</span>${money(state.wallet)}
+            <button onclick="openVisaCenterModal()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:var(--radius-sm);background:var(--bg-secondary);border:1px solid var(--border-accent);color:var(--text-primary);font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s" title="4-Country Virtual Visa & Immigration Portal">
+              <span>${currCountry.flag}</span>
+              <span>${currCountry.short}</span>
+              <span style="color:var(--accent-text);font-size:10px">· ${currTier.icon} Visa</span>
+            </button>
+            <button onclick="search()" style="display:none;padding:7px 12px;border-radius:var(--radius-sm);background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-dim);font-size:0.8125rem;font-weight:500;cursor:pointer;align-items:center;gap:6px;transition:all 0.15s" class="md-show-flex" onmouseover="this.style.borderColor='var(--border-hover)'" onmouseout="this.style.borderColor='var(--border)'">⌕</button>
+            <a href="wallet.html" style="display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);background:var(--bg-secondary);border:1px solid var(--border);font-size:0.8125rem;font-weight:600;color:var(--text-primary);text-decoration:none;transition:all 0.15s" onmouseover="this.style.borderColor='var(--border-hover)'" onmouseout="this.style.borderColor='var(--border)'">
+              <span style="color:var(--accent-text)">◈</span>${money(state.wallet)}
             </a>
-            <a href="notifications.html" style="position:relative;width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);display:grid;place-items:center;font-size:15px;text-decoration:none;transition:all 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'">
-              🔔${unread ? `<span style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:#f43f5e;color:#fff;font-size:9px;font-weight:900;display:grid;place-items:center;border:2px solid var(--ocean-deep)">${unread > 9 ? '9+' : unread}</span>` : ''}
+            <a href="notifications.html" style="position:relative;width:36px;height:36px;border-radius:var(--radius-sm);background:var(--bg-secondary);border:1px solid var(--border);display:grid;place-items:center;font-size:14px;text-decoration:none;transition:all 0.15s" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='var(--bg-secondary)'">
+              🔔${unread ? `<span style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--danger);color:#fff;font-size:9px;font-weight:700;display:grid;place-items:center;border:2px solid var(--bg-primary)">${unread > 9 ? '9+' : unread}</span>` : ''}
             </a>
-            <button onclick="nova()" class="btn btn-primary btn-sm" style="padding:6px 14px">✨ <span class="sm-show">NOVA</span></button>
-            <button onclick="openMobileMenu()" class="xl-hide" style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:var(--text-primary);display:grid;place-items:center;cursor:pointer;font-size:16px;font-weight:700">☰</button>
-            <a href="profile.html" class="sm-show" style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);display:grid;place-items:center;font-size:18px;text-decoration:none">${state.user.avatar}</a>
+            <button onclick="nova()" class="btn btn-primary btn-sm">✨ <span class="sm-show">NOVA</span></button>
+            <button onclick="openMobileMenu()" class="xl-hide" style="width:36px;height:36px;border-radius:var(--radius-sm);background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-primary);display:grid;place-items:center;cursor:pointer;font-size:16px">☰</button>
+            <a href="profile.html" class="sm-show" style="width:36px;height:36px;border-radius:50%;background:var(--bg-tertiary);border:1px solid var(--border);display:grid;place-items:center;font-size:16px;text-decoration:none;transition:all 0.15s" onmouseover="this.style.borderColor='var(--border-hover)'" onmouseout="this.style.borderColor='var(--border)'">${state.user.avatar}</a>
           </div>
         </div>
       </header>
 
       <!-- MAIN LAYOUT -->
-      <div class="container-wide" style="display:flex;gap:24px">
+      <div class="container-wide" style="display:flex;gap:32px">
         <!-- SIDEBAR -->
-        <aside class="xl-show" style="width:220px;flex-shrink:0;padding:24px 0">
-          <div style="position:sticky;top:88px;display:flex;flex-direction:column;gap:24px">
+        <aside class="xl-show" style="width:var(--sidebar-width);flex-shrink:0;padding:28px 0">
+          <div style="position:sticky;top:100px;display:flex;flex-direction:column;gap:32px">
             <div>
-              <div class="metric-label" style="padding:0 12px;margin-bottom:8px">World & Assets</div>
+              <div class="metric-label" style="padding:0 14px;margin-bottom:10px">World & Assets</div>
               ${[['Island Map','island.html','🌐'],['Land Parcels','land.html','🏝️'],['Properties','property.html','🏠'],['Enterprises','businesses.html','🏢'],['Marketplace','marketplace.html','▦'],['Vehicles','vehicles.html','🏎️']].map(x=>navItem(...x)).join('')}
             </div>
             <div>
-              <div class="metric-label" style="padding:0 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+              <div class="metric-label" style="padding:0 14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
                 <span>Viral & Growth</span>
-                <span class="badge badge-accent" style="font-size:9px;padding:1px 6px">HOT</span>
+                <span class="tag tag-amber" style="font-size:9px;padding:2px 6px">HOT</span>
               </div>
               ${[['Neighbor Drop','neighbor-drop.html','🤝'],['Flex Card','flex-card.html','💳'],['Treasure Hunt','treasure-hunt.html','🏴‍☠️'],['Guestbook','guestbook.html','📖']].map(x=>navItem(...x)).join('')}
             </div>
             <div>
-              <div class="metric-label" style="padding:0 12px;margin-bottom:8px">Social & Play</div>
+              <div class="metric-label" style="padding:0 14px;margin-bottom:10px">Social & Play</div>
               ${[['Friends','friends.html','👥'],['Messages','messages.html','💬'],['Communities','communities.html','◎'],['Events','events.html','◷'],['Games','games.html','🎮']].map(x=>navItem(...x)).join('')}
             </div>
             <div>
-              <div class="metric-label" style="padding:0 12px;margin-bottom:8px">Identity</div>
+              <div class="metric-label" style="padding:0 14px;margin-bottom:10px">Identity</div>
               ${[['Wallet','wallet.html','◈'],['Profile','profile.html','◉'],['Notifications','notifications.html','🔔'],['Settings','settings.html','⚙']].map(x=>navItem(...x)).join('')}
             </div>
             <div>
-              <div class="metric-label" style="padding:0 12px;margin-bottom:8px">Investor</div>
+              <div class="metric-label" style="padding:0 14px;margin-bottom:10px">Investor</div>
               ${[['Pitch Deck','investor.html','▶'],['Revenue Model','business-model.html','↗'],['Alpha Cohort','alpha.html','⚡'],['Why Nexus','why-nexus.html','✦'],['Roadmap','future.html','∞'],['Admin','admin.html','▤']].map(x=>navItem(...x)).join('')}
             </div>
           </div>
         </aside>
 
         <!-- MAIN CONTENT -->
-        <main style="flex:1;min-width:0;padding:20px 0 120px">${content}</main>
+        <main style="flex:1;min-width:0;padding:28px 0 120px">${content}</main>
       </div>
 
       <!-- MOBILE BOTTOM NAV -->
-      <nav class="glass xl-hide" style="position:fixed;bottom:0;left:0;right:0;z-index:50;border-top:1px solid rgba(255,255,255,0.04);display:grid;grid-template-columns:repeat(5,1fr);padding:6px" class="safe-bottom">
+      <nav class="xl-hide" style="position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(9,9,11,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 4px;padding-bottom:max(8px,env(safe-area-inset-bottom,8px))">
         ${[
           ['dashboard.html','⌂','Home',isTab('dashboard.html')],
           ['island.html','🌐','World',isTab('island.html')],
@@ -657,15 +733,16 @@
           ['messages.html','💬','Chat',isTab('messages.html')],
           ['javascript:openMobileMenu()','☰','Menu',false]
         ].map(([href,ic,label,active]) => `
-          <a href="${href}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 4px;border-radius:10px;font-size:9px;font-weight:700;text-decoration:none;transition:all 0.2s;${active?'background:rgba(6,182,212,0.12);color:#22d3ee':'color:var(--text-muted)'}">
-            <span style="font-size:16px;line-height:1">${ic}</span>
-            <span style="margin-top:3px">${label}</span>
+          <a href="${href}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 4px;border-radius:var(--radius-sm);font-size:9px;font-weight:${active ? '600' : '500'};text-decoration:none;transition:all 0.15s;gap:3px;${active ? 'color:var(--accent-text)' : 'color:var(--text-dim)'}">
+            <span style="font-size:17px;line-height:1">${ic}</span>
+            <span>${label}</span>
+            ${active ? '<div style="width:4px;height:4px;border-radius:50%;background:var(--accent);margin-top:1px"></div>' : ''}
           </a>
         `).join('')}
       </nav>
 
       <!-- Alpha Feedback Pill -->
-      <button onclick="openAlphaFeedbackModal()" style="position:fixed;bottom:80px;right:16px;z-index:40;padding:10px 16px;border-radius:16px;background:rgba(8,20,48,0.9);backdrop-filter:blur(12px);border:1px solid rgba(6,182,212,0.25);color:#22d3ee;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px -4px rgba(0,0,0,0.5);transition:all 0.2s" class="xl-bottom-fix" onmouseover="this.style.borderColor='rgba(6,182,212,0.5)'" onmouseout="this.style.borderColor='rgba(6,182,212,0.25)'">
+      <button onclick="openAlphaFeedbackModal()" style="position:fixed;bottom:80px;right:16px;z-index:40;padding:10px 16px;border-radius:var(--radius-full);background:var(--bg-secondary);border:1px solid var(--border);color:var(--accent-text);font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:var(--shadow-lg);transition:all 0.2s" class="xl-bottom-fix" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor='var(--border)'">
         <span class="live-dot" style="width:6px;height:6px"></span>⚡ Alpha Feedback
       </button>
 
@@ -692,12 +769,12 @@
     modal('Navigate the Island', `
       <div style="display:flex;flex-direction:column;gap:20px;max-height:75vh;overflow-y:auto;padding-right:4px">
         <!-- Resident Card -->
-        <div style="padding:16px;border-radius:16px;background:linear-gradient(135deg,rgba(6,182,212,0.08),rgba(99,102,241,0.06));border:1px solid rgba(6,182,212,0.15);display:flex;align-items:center;justify-content:space-between">
+        <div style="padding:16px;border-radius:16px;background:linear-gradient(135deg,var(--accent-soft),rgba(99,102,241,0.06));border:1px solid var(--border-accent);display:flex;align-items:center;justify-content:space-between">
           <div style="display:flex;align-items:center;gap:12px">
             <span style="font-size:28px">${state.user.avatar}</span>
             <div>
               <div style="font-weight:800;font-size:14px">${esc(state.user.name)}</div>
-              <div style="font-size:11px;color:#22d3ee;font-weight:600">Level ${state.user.level} · ${money(state.wallet)}</div>
+              <div style="font-size:11px;color:var(--accent-text);font-weight:600">Level ${state.user.level} · ${money(state.wallet)}</div>
             </div>
           </div>
           <button onclick="closeModal();demoFunds(2500)" class="btn btn-primary btn-sm">+ Funds</button>
@@ -713,13 +790,238 @@
             <div class="metric-label" style="margin-bottom:8px">${title}</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
               ${items.map(([l,f,i]) => `
-                <a href="${f}" onclick="closeModal()" style="padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--text-secondary);text-decoration:none;transition:all 0.2s" onmouseover="this.style.background='rgba(6,182,212,0.06)';this.style.color='#22d3ee'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.color='var(--text-secondary)'">${i} ${l}</a>
+                <a href="${f}" onclick="closeModal()" style="padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--text-secondary);text-decoration:none;transition:all 0.2s" onmouseover="this.style.background='var(--accent-soft)';this.style.color='var(--accent-text)'" onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.color='var(--text-secondary)'">${i} ${l}</a>
               `).join('')}
             </div>
           </div>
         `).join('')}
       </div>
     `);
+  }
+
+  /* ═══════════════════════════════════════════════
+     4-COUNTRY VIRTUAL VISA & IMMIGRATION ENGINE
+     ═══════════════════════════════════════════════ */
+  function openVisaCenterModal() {
+    const currCountry = COUNTRIES.find(c => c.id === state.currentCountry) || COUNTRIES[0];
+    const currTier = VISA_TIERS.find(t => t.id === state.visaTier) || VISA_TIERS[1];
+    const heldVisas = Object.keys(state.visas || { uae: true });
+
+    modal('🛂 Sovereign Virtual Visa & 4-Country Travel Portal', `
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <!-- Active Passport Banner -->
+        <div style="padding:20px;border-radius:16px;background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(234,179,8,0.08));border:1px solid var(--border-accent);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:52px;height:52px;border-radius:14px;background:var(--bg-tertiary);border:1px solid var(--border-hover);display:grid;place-items:center;font-size:28px">${currCountry.flag}</div>
+            <div>
+              <div style="font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#fbbf24">Active Sovereign Visa · ${currTier.badge}</div>
+              <div style="font-size:16px;font-weight:800;margin-top:2px;color:var(--text-primary)">${esc(currCountry.name)} (${currCountry.short})</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Passport ID: <span class="mono" style="color:var(--accent-text)">${esc(state.visas?.[currCountry.id]?.number || '#VISA-UAE-8841')}</span> · Visas Held: ${heldVisas.length}/4 Countries</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <span class="tag tag-emerald">● IMMIGRATION CLEARED</span>
+            <div style="font-size:11px;color:var(--text-dim);margin-top:4px">Escrow Fee Rate: <b style="color:var(--text-primary)">${currTier.escrowFee}</b></div>
+          </div>
+        </div>
+
+        <!-- 4 Planned Countries Grid -->
+        <div>
+          <div class="metric-label" style="margin-bottom:10px">Select Destination Country (Requires Country Visa to Enter)</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px">
+            ${COUNTRIES.map(c => {
+              const hasVisa = Boolean(state.visas && state.visas[c.id]) || state.visaTier === 'diplomatic';
+              const isCurrent = state.currentCountry === c.id;
+              return `
+                <div style="padding:16px;border-radius:14px;background:${isCurrent ? 'var(--bg-tertiary)' : 'rgba(255,255,255,0.02)'};border:1px solid ${isCurrent ? 'var(--border-accent)' : 'var(--border)'};display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;align-items:start;gap:8px">
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <span style="font-size:24px">${c.flag}</span>
+                        <div>
+                          <div style="font-size:14px;font-weight:800;color:var(--text-primary)">${esc(c.name)}</div>
+                          <div style="font-size:10px;color:var(--text-dim)">${esc(c.islandsCount)}</div>
+                        </div>
+                      </div>
+                      <span class="tag ${hasVisa ? 'tag-emerald' : 'tag-amber'}" style="font-size:9px">${hasVisa ? '✓ VISA ISSUED' : money(c.visaFee)}</span>
+                    </div>
+                    <p style="font-size:11px;color:var(--text-secondary);margin-top:8px;line-height:1.5">${esc(c.description)}</p>
+                    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px">
+                      ${c.highlights.slice(0,2).map(h => `<span style="font-size:9px;padding:2px 6px;border-radius:6px;background:var(--bg-secondary);border:1px solid var(--border);color:var(--text-muted)">${esc(h)}</span>`).join('')}
+                    </div>
+                  </div>
+                  <div style="padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+                    <span style="font-size:10px;color:var(--text-dim);font-family:'JetBrains Mono',monospace">${c.visaCode}</span>
+                    ${isCurrent
+                      ? `<span style="font-size:11px;font-weight:700;color:var(--accent-text)">● Current Country</span>`
+                      : hasVisa
+                      ? btn(`✈️ Travel to ${c.short}`, `switchCountry('${c.id}')`, 'primary', 'class="btn btn-primary btn-sm"')
+                      : btn(`🛂 Obtain ${c.short} Visa (${money(c.visaFee)})`, `applyCountryVisa('${c.id}')`, 'gold', 'class="btn btn-gold btn-sm"')
+                    }
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- 4 Visa Tiers Upgrade -->
+        <div>
+          <div class="metric-label" style="margin-bottom:10px">Upgrade Your Sovereign Visa Tier (Unlocks 0% Escrow Tax & Multi-Country Access)</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">
+            ${VISA_TIERS.map(t => {
+              const active = state.visaTier === t.id;
+              return `
+                <div style="padding:14px;border-radius:12px;background:${active ? 'rgba(234,179,8,0.08)' : 'var(--bg-secondary)'};border:1px solid ${active ? 'rgba(234,179,8,0.35)' : 'var(--border)'};display:flex;flex-direction:column;justify-content:space-between;gap:10px">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                      <span style="font-size:13px;font-weight:800;color:var(--text-primary)">${t.icon} ${esc(t.name)}</span>
+                      <span style="font-size:11px;font-weight:800;color:var(--accent-text)">${t.price === 0 ? 'Free' : money(t.price)}</span>
+                    </div>
+                    <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.4">${esc(t.perks)}</p>
+                  </div>
+                  <div>
+                    ${active
+                      ? `<span class="tag tag-amber" style="width:100%;justify-content:center">★ Active Visa Tier</span>`
+                      : btn(`Upgrade to ${t.name.split(' ').slice(-2).join(' ')}`, `upgradeVisaTier('${t.id}')`, 'ghost', 'class="btn btn-ghost btn-sm" style="width:100%"')
+                    }
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
+  function applyCountryVisa(countryId) {
+    const c = COUNTRIES.find(x => x.id === countryId);
+    if (!c) return;
+    if (state.visas && state.visas[countryId]) return switchCountry(countryId);
+    if (state.wallet < c.visaFee) return toast(`Insufficient ISL balance. Need ${money(c.visaFee)} for ${c.name} Visa.`, 'warn');
+    state.wallet -= c.visaFee;
+    if (!state.visas) state.visas = {};
+    const vNum = `#VISA-${c.short}-${Math.floor(1000 + Math.random() * 9000)}`;
+    state.visas[countryId] = { status: 'Active', tier: state.visaTier, number: vNum, issued: 'Today' };
+    const txId = uid('tx');
+    state.transactions.unshift({
+      id: txId, description: `Issued ${c.name} (${c.short}) Virtual Visa ${vNum}`,
+      amount: -c.visaFee, type: 'Visa Immigration', date: 'Just now',
+      status: 'Settled · Escrow Verified', hash: txHash(txId)
+    });
+    award(80, 0, `Obtained ${c.name} Virtual Visa`);
+    save();
+    toast(`🛂 ${c.flag} ${c.name} Virtual Visa Approved (${vNum})!`, 'success');
+    openVisaCenterModal();
+  }
+
+  function switchCountry(countryId) {
+    const c = COUNTRIES.find(x => x.id === countryId);
+    if (!c) return;
+    const hasVisa = Boolean(state.visas && state.visas[countryId]) || state.visaTier === 'diplomatic';
+    if (!hasVisa) return applyCountryVisa(countryId);
+    state.currentCountry = countryId;
+    state.user.country = c.name;
+    activity(`Traveled via International Skyport to ${c.flag} ${c.name}`);
+    save();
+    closeModal();
+    toast(`✈️ Arrived in ${c.flag} ${c.name} (${c.capitalHub})!`, 'success');
+    refresh();
+  }
+
+  function upgradeVisaTier(tierId) {
+    const t = VISA_TIERS.find(x => x.id === tierId);
+    if (!t) return;
+    if (state.visaTier === tierId) return toast('Already on this Visa Tier.', 'info');
+    if (state.wallet < t.price) return toast(`Insufficient ISL balance. Need ${money(t.price)}.`, 'warn');
+    if (t.price > 0) {
+      state.wallet -= t.price;
+      const txId = uid('tx');
+      state.transactions.unshift({
+        id: txId, description: `Upgraded to ${t.name}`,
+        amount: -t.price, type: 'Visa Upgrade', date: 'Just now',
+        status: 'Settled · Escrow Verified', hash: txHash(txId)
+      });
+    }
+    state.visaTier = tierId;
+    state.membership = t.badge;
+    if (tierId === 'diplomatic') {
+      COUNTRIES.forEach(c => {
+        if (!state.visas[c.id]) {
+          state.visas[c.id] = { status: 'Active', tier: 'diplomatic', number: `#DIPLO-${c.short}-${Math.floor(1000+Math.random()*9000)}`, issued: 'Today' };
+        }
+      });
+    }
+    award(120, 0, `Upgraded to ${t.name}`);
+    save();
+    toast(`🌟 Upgraded to ${t.name}!`, 'success');
+    openVisaCenterModal();
+  }
+
+  function focusUaeIsland(islandId) {
+    const isl = UAE_ISLANDS.find(i => i.id === islandId);
+    if (!isl) return;
+    if (isl.status === 'expansion') return openExpansionIslandModal(islandId);
+    if (isl.districtId) state.currentDistrict = isl.districtId;
+    save();
+    if (typeof window.engineFocusIsland === 'function') {
+      window.engineFocusIsland(islandId);
+    }
+    toast(`${isl.icon} Focused on ${isl.name}`, 'info');
+  }
+
+  function openExpansionIslandModal(islandId) {
+    const isl = UAE_ISLANDS.find(i => i.id === islandId) || UAE_ISLANDS[5];
+    const voted = (state.islandVotes || []).includes(isl.id);
+    modal(`🏗️ UAE 10+ Island Masterplan: ${isl.name}`, `
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="padding:18px;border-radius:14px;background:var(--bg-tertiary);border:1px solid var(--border-accent);display:flex;align-items:center;gap:14px">
+          <div style="font-size:36px">${isl.icon}</div>
+          <div>
+            <span class="tag tag-cyan">${esc(isl.phase || 'Future Expansion')}</span>
+            <h4 style="font-size:16px;font-weight:800;margin-top:6px;color:var(--text-primary)">${esc(isl.name)}</h4>
+            <div style="font-size:12px;color:var(--text-secondary);margin-top:4px">${esc(isl.focus)}</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="padding:12px;border-radius:10px;background:var(--bg-secondary);border:1px solid var(--border)">
+            <div class="metric-label">Anchor Developments</div>
+            <div style="font-size:12px;font-weight:700;margin-top:4px">${esc(isl.anchors)}</div>
+          </div>
+          <div style="padding:12px;border-radius:10px;background:var(--bg-secondary);border:1px solid var(--border)">
+            <div class="metric-label">Planned Sovereign Parcels</div>
+            <div style="font-size:12px;font-weight:700;margin-top:4px;color:var(--accent-text)">${isl.plots} Prime Plots (Golden Visa Priority)</div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);line-height:1.6">
+          As the initial 5 UAE District-Islands reach capacity, Nexus Island expands dynamically to 10+ connected islands. Citizens with a <b>UAE Golden Visa</b> receive 48-hour priority land reservation access.
+        </p>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid var(--border)">
+          <span style="font-size:11px;color:var(--text-dim)">Priority Votes: <b>${340 + (isl.num * 29) + (voted ? 1 : 0)} Citizens</b></span>
+          <div style="display:flex;gap:8px">
+            ${btn('🛂 Upgrade to Golden Visa', 'closeModal();openVisaCenterModal()', 'ghost')}
+            ${voted
+              ? `<span class="tag tag-emerald">✓ Priority Reserved</span>`
+              : btn('🗳️ Vote & Reserve Priority Access', `voteExpansionIsland('${isl.id}')`, 'primary')
+            }
+          </div>
+        </div>
+      </div>
+    `);
+  }
+
+  function voteExpansionIsland(islandId) {
+    if (!Array.isArray(state.islandVotes)) state.islandVotes = [];
+    if (!state.islandVotes.includes(islandId)) {
+      state.islandVotes.push(islandId);
+      const isl = UAE_ISLANDS.find(i => i.id === islandId);
+      award(30, 15, `Voted to unlock ${isl ? isl.name : 'Expansion Island'}`);
+      save();
+    }
+    closeModal();
+    toast('🗳️ Priority reservation & vote registered (+30 XP / +15 ISL)!', 'success');
+    if (typeof location !== 'undefined' && location.pathname.endsWith('island.html')) refresh();
   }
 
   /* ═══════════════════════════════════════════════
@@ -783,7 +1085,7 @@
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:24px 0">
-          ${[['Citizen Name',esc(entry.name),''],['District',esc(entry.district),'color:#22d3ee'],['Role',esc(entry.role),'color:#fbbf24'],['Issue Date',esc(entry.date),'']].map(([label,val,style]) => `
+          ${[['Citizen Name',esc(entry.name),''],['District',esc(entry.district),'color:var(--accent-text)'],['Role',esc(entry.role),'color:#fbbf24'],['Issue Date',esc(entry.date),'']].map(([label,val,style]) => `
             <div style="padding:14px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)">
               <div class="metric-label">${label}</div>
               <div style="font-size:14px;font-weight:700;margin-top:4px;${style}">${val}</div>
@@ -937,7 +1239,7 @@
   function openAlphaJoinModal(code='FOUNDER-50', invitee='') {
     modal('Closed Alpha Onboarding', `
       <form onsubmit="submitAlphaJoin(event)" style="display:flex;flex-direction:column;gap:16px">
-        <div style="padding:16px;border-radius:16px;background:linear-gradient(135deg,rgba(6,182,212,0.08),rgba(99,102,241,0.06));border:1px solid rgba(6,182,212,0.15);display:flex;align-items:center;justify-content:space-between">
+        <div style="padding:16px;border-radius:16px;background:linear-gradient(135deg,var(--accent-soft),rgba(99,102,241,0.06));border:1px solid var(--border-accent);display:flex;align-items:center;justify-content:space-between">
           <div>
             <div class="tag tag-cyan">EXCLUSIVE · COHORT 1</div>
             <div style="font-size:16px;font-weight:900;margin-top:8px">Founding Alpha Citizen Pass</div>
@@ -1042,7 +1344,7 @@
       <!-- NAV -->
       <nav style="position:relative;z-index:10;max-width:1280px;margin:0 auto;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.05)">
         <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none">
-          <div style="width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#06b6d4,#6366f1);display:grid;place-items:center;font-weight:900;color:#fff;font-size:18px;box-shadow:0 4px 16px -2px rgba(6,182,212,0.4)">N</div>
+          <div style="width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#06b6d4,#6366f1);display:grid;place-items:center;font-weight:900;color:#fff;font-size:18px;box-shadow:0 4px 16px -2px var(--border-accent)">N</div>
           <span style="font-size:18px;font-weight:900;color:var(--text-primary)">Nexus Island <span class="tag tag-cyan" style="margin-left:6px">Abu Dhabi MVP</span></span>
         </a>
         <div style="display:flex;align-items:center;gap:12px">
@@ -1070,7 +1372,7 @@
 
           <!-- Stats Row -->
           <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap;padding-top:24px;border-top:1px solid rgba(255,255,255,0.06)">
-            ${[['7','Districts','#22d3ee'],['21','Land Parcels','#34d399'],['12','Revenue Streams','#fbbf24'],
+            ${[['7','Districts','var(--accent-text)'],['21','Land Parcels','#34d399'],['12','Revenue Streams','#fbbf24'],
               [`${alphaTel.cohort.length}/100`,'Alpha Cohort','#fb7185']].map(([v,l,c]) => `
               <div style="text-align:center">
                 <div style="font-size:24px;font-weight:900;color:${c};letter-spacing:-0.02em">${v}</div>
@@ -1083,7 +1385,7 @@
 
       <!-- ISLAND MAP PREVIEW -->
       <section style="position:relative;z-index:5;max-width:1000px;margin:0 auto 40px;padding:0 24px">
-        <div class="map-container map-ocean" style="border:1px solid rgba(6,182,212,0.15);position:relative">
+        <div class="map-container map-ocean" style="border:1px solid var(--border-accent);position:relative">
           <div class="wave-shimmer"></div>
           <!-- Water ripples -->
           <div class="water-ripple" style="width:60px;height:60px;left:10%;top:20%;animation-delay:0s"></div>
@@ -1138,7 +1440,7 @@
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
           ${[
-            ['🌐','Spatial Permanence','Organized around real landmarks and waterfronts. When you return, your home and friends are exactly where you left them.','rgba(6,182,212,0.08)','rgba(6,182,212,0.15)'],
+            ['🌐','Spatial Permanence','Organized around real landmarks and waterfronts. When you return, your home and friends are exactly where you left them.','var(--accent-soft)','var(--border-accent)'],
             ['🏝️','Utility Ownership','Land isn\'t speculative — it\'s where you build homes, host gatherings, and operate businesses with real value.','rgba(16,185,129,0.08)','rgba(16,185,129,0.15)'],
             ['🧠','AI-Native Society','NOVA AI evaluates your level, wallet, and interests to recommend personalized next actions and opportunities.','rgba(139,92,246,0.08)','rgba(139,92,246,0.15)']
           ].map(([ic,title,desc,bg,border]) => `
@@ -1249,7 +1551,7 @@
           <button class="btn btn-primary btn-lg" style="width:100%;margin-top:8px">${login ? 'Sign In' : 'Create Account'}</button>
         </form>
         ${login ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">${btn('Demo Login', 'demo()', 'gold')}${btn('Forgot Pass', 'forgot()', 'ghost')}</div>` : ''}
-        <div style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:20px">${login ? `New? <a href="register.html" style="color:#22d3ee;font-weight:700">Register</a>` : `Existing? <a href="login.html" style="color:#22d3ee;font-weight:700">Sign In</a>`}</div>
+        <div style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:20px">${login ? `New? <a href="register.html" style="color:var(--accent-text);font-weight:700">Register</a>` : `Existing? <a href="login.html" style="color:var(--accent-text);font-weight:700">Sign In</a>`}</div>
       </div>
     </div>`;
   }
@@ -1270,11 +1572,11 @@
       const prog = `<div style="display:flex;gap:6px;margin-bottom:24px">${titles.map((_,i)=>`<div style="height:4px;flex:1;border-radius:9999px;background:${i<=step?'var(--cyan)':'rgba(255,255,255,0.06)'};transition:all 0.3s"></div>`).join('')}</div>`;
       let inner = '';
       if (step === 0) {
-        inner = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px">${['🧑‍💻','👩🏻‍🎨','🧑🏽‍🚀','👩🏾‍💼','🧑🏻‍🎮','👨🏽‍💻','👩🏻‍🎤','🧑🏽‍💼'].map(a=>`<button type="button" onclick="window.__selAvatar('${a}')" style="height:64px;border-radius:16px;background:${sel.avatar===a?'rgba(6,182,212,0.15)':'rgba(255,255,255,0.03)'};border:1px solid ${sel.avatar===a?'rgba(6,182,212,0.4)':'rgba(255,255,255,0.06)'};font-size:28px;display:grid;place-items:center;cursor:pointer;transition:all 0.2s">${a}</button>`).join('')}</div>`;
+        inner = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px">${['🧑‍💻','👩🏻‍🎨','🧑🏽‍🚀','👩🏾‍💼','🧑🏻‍🎮','👨🏽‍💻','👩🏻‍🎤','🧑🏽‍💼'].map(a=>`<button type="button" onclick="window.__selAvatar('${a}')" style="height:64px;border-radius:16px;background:${sel.avatar===a?'var(--border-accent)':'rgba(255,255,255,0.03)'};border:1px solid ${sel.avatar===a?'var(--border-accent)':'rgba(255,255,255,0.06)'};font-size:28px;display:grid;place-items:center;cursor:pointer;transition:all 0.2s">${a}</button>`).join('')}</div>`;
       } else if (step === 1) {
-        inner = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">${['Spatial AI','Gaming & Esports','ADGM Startups','Architecture','Creative Arts','Tourism','Fintech','Eco-Tech'].map(it=>`<button type="button" onclick="window.__selInterest('${it}')" style="padding:12px;border-radius:12px;font-weight:700;font-size:13px;text-align:left;border:1px solid ${sel.interests.includes(it)?'rgba(6,182,212,0.4)':'rgba(255,255,255,0.06)'};background:${sel.interests.includes(it)?'rgba(6,182,212,0.12)':'rgba(255,255,255,0.03)'};color:${sel.interests.includes(it)?'#22d3ee':'var(--text-secondary)'};cursor:pointer;transition:all 0.2s">${it}</button>`).join('')}</div>`;
+        inner = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">${['Spatial AI','Gaming & Esports','ADGM Startups','Architecture','Creative Arts','Tourism','Fintech','Eco-Tech'].map(it=>`<button type="button" onclick="window.__selInterest('${it}')" style="padding:12px;border-radius:12px;font-weight:700;font-size:13px;text-align:left;border:1px solid ${sel.interests.includes(it)?'var(--border-accent)':'rgba(255,255,255,0.06)'};background:${sel.interests.includes(it)?'var(--accent-soft)':'rgba(255,255,255,0.03)'};color:${sel.interests.includes(it)?'var(--accent-text)':'var(--text-secondary)'};cursor:pointer;transition:all 0.2s">${it}</button>`).join('')}</div>`;
       } else {
-        inner = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">${['Live in Coastal Villa','Launch Enterprise','Compete in Esports','Create Digital Art','Network with Investors','Explore the Island'].map(g=>`<button type="button" onclick="window.__selGoal('${g}')" style="padding:12px;border-radius:12px;font-weight:700;font-size:13px;text-align:left;border:1px solid ${sel.goal===g?'rgba(6,182,212,0.4)':'rgba(255,255,255,0.06)'};background:${sel.goal===g?'rgba(6,182,212,0.12)':'rgba(255,255,255,0.03)'};color:${sel.goal===g?'#22d3ee':'var(--text-secondary)'};cursor:pointer;transition:all 0.2s">${g}</button>`).join('')}</div>`;
+        inner = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px">${['Live in Coastal Villa','Launch Enterprise','Compete in Esports','Create Digital Art','Network with Investors','Explore the Island'].map(g=>`<button type="button" onclick="window.__selGoal('${g}')" style="padding:12px;border-radius:12px;font-weight:700;font-size:13px;text-align:left;border:1px solid ${sel.goal===g?'var(--border-accent)':'rgba(255,255,255,0.06)'};background:${sel.goal===g?'var(--accent-soft)':'rgba(255,255,255,0.03)'};color:${sel.goal===g?'var(--accent-text)':'var(--text-secondary)'};cursor:pointer;transition:all 0.2s">${g}</button>`).join('')}</div>`;
       }
       h.innerHTML = `${prog}<h4 class="heading-md">${titles[step]}</h4>${inner}<div style="display:flex;justify-content:space-between;align-items:center;margin-top:28px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06)">${step>0?btn('Back','window.__step(-1)','ghost'):'<span></span>'}${step<2?btn('Continue','window.__step(1)','primary'):btn('Enter Island →','window.__finishOnboard()','gold')}</div>`;
     };
@@ -1297,153 +1599,212 @@
   function dashboard() {
     const need = levelNeed();
     const pct = Math.min(100, Math.round((state.user.xp / need) * 100));
+    const firstName = esc(state.user.name.split(' ')[0]);
+    const onlineCount = DATA.users.filter(u => u.online).length;
     const next = state.ownedLand.length === 0
-      ? ['Claim Your First Island Parcel', 'land.html', 'Own a permanent stake to unlock home construction.', '🏝️']
+      ? ['Claim Sovereign Parcel', 'land.html', 'Own a permanent stake to unlock residency construction.', '🏝️']
       : !state.home.built
-      ? ['Build Your Residence', 'property.html', 'Construct your personal space and open your interior.', '🏠']
+      ? ['Construct Estate Villa', 'property.html', 'Design and furnish your personal space in the archipelago.', '🏠']
       : state.friends.length < 7
-      ? ['Connect with Founders', 'friends.html', 'Expand your resident social graph.', '👥']
-      : ['Play a Mini-Game', 'games.html', 'Compete in Yas Sprint or Pearl Sonar.', '🎮'];
+      ? ['Expand Resident Graph', 'friends.html', 'Connect with fellow founders and creators across Abu Dhabi.', '👥']
+      : ['Enter Arena Mini-Game', 'games.html', 'Compete in Yas Cyber Sprint or Pearl Sonar challenges.', '🎮'];
 
-    return `<section class="fade" style="display:flex;flex-direction:column;gap:20px">
-      <!-- Hero Welcome -->
-      <div class="glass-card" style="padding:0;overflow:hidden;border-color:rgba(6,182,212,0.1)">
-        <div style="position:relative;padding:36px 32px;background:linear-gradient(135deg,rgba(6,182,212,0.06) 0%,rgba(99,102,241,0.04) 50%,rgba(6,182,212,0.02) 100%)">
-          <div class="wave-shimmer"></div>
-          <div style="position:relative;z-index:1">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-              <span class="live-dot"></span>
-              <span class="metric-label">Abu Dhabi · UAE Digital Society</span>
+    return `<section class="fade" style="display:flex;flex-direction:column;gap:24px">
+      <!-- Executive Hero Panel -->
+      <div class="glass-card" style="padding:0;overflow:hidden;position:relative">
+        <div style="position:relative;padding:40px 36px;background:linear-gradient(135deg,rgba(59,130,246,0.05) 0%,rgba(139,92,246,0.03) 50%,transparent 100%)">
+          <div style="display:flex;flex-direction:column;gap:12px;max-width:680px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="live-dot" style="width:7px;height:7px"></span>
+              <span class="metric-label" style="letter-spacing:0.04em">Abu Dhabi Sovereign Digital Territory · UAE</span>
+              <span style="font-size:11px;color:var(--text-dim)">·</span>
+              <span style="font-size:11px;font-weight:600;color:var(--accent-text)">${onlineCount} Residents Active</span>
             </div>
-            <h1 class="heading-xl">Marhaba, ${esc(state.user.name.split(' ')[0])}.</h1>
-            <p style="font-size:15px;color:var(--text-muted);margin-top:10px;max-width:520px;line-height:1.6">There is always somewhere to go, someone to meet, something to build, and something that belongs to you.</p>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:24px">
-              ${btn('🌐 Island Map', "nav('island.html')", 'primary')}
-              ${btn('✨ Ask NOVA', 'nova()', 'ghost')}
-              ${btn('▶ Investor Tour', "nav('investor.html')", 'ghost')}
+            <h1 class="heading-xl" style="margin:4px 0 0 0;font-weight:800;letter-spacing:-0.03em">Marhaba, ${firstName}.</h1>
+            <p style="font-size:0.9375rem;color:var(--text-secondary);line-height:1.6;margin:0">
+              Welcome to your persistent virtual society. Explore 5 archipelago islands, acquire sovereign deeds, design custom architecture, and build businesses alongside fellow innovators.
+            </p>
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px">
+              ${btn('🌐 Launch GTA Island Map', "nav('island.html')", 'primary')}
+              ${btn('🛂 4-Country Visa Portal', 'openVisaCenterModal()', 'gold')}
+              ${btn('✨ NOVA Resident AI', 'nova()', 'ghost')}
+              ${btn('▶ Investor Overview', "nav('investor.html')", 'ghost')}
             </div>
           </div>
-          <!-- Floating stats -->
-          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06);position:relative;z-index:1">
-            ${[['Citizenship',state.membership,''],['Home Status',state.home.built?'Active':'Unbuilt',state.home.built?'color:#34d399':''],['Treasury',money(state.wallet),'color:#22d3ee']].map(([l,v,s]) => `
-              <div style="padding:12px 16px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);min-width:140px">
-                <div class="metric-label">${l}</div>
-                <div style="font-size:14px;font-weight:800;margin-top:4px;${s}">${v}</div>
+
+          <!-- 4-Country Virtual Visa Status Bar -->
+          <div style="margin-top:24px;padding:14px 18px;border-radius:var(--radius-md);background:rgba(59,130,246,0.06);border:1px solid var(--border-accent);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--accent-text)">🛂 Virtual Visa Network:</span>
+              ${COUNTRIES.map(c => {
+                const hasVisa = Boolean(state.visas && state.visas[c.id]) || state.visaTier === 'diplomatic';
+                const isCurrent = state.currentCountry === c.id;
+                return `<button onclick="openVisaCenterModal()" style="padding:4px 10px;border-radius:var(--radius-full);background:${isCurrent ? 'var(--accent)' : hasVisa ? 'rgba(34,197,94,0.12)' : 'var(--bg-tertiary)'};border:1px solid ${isCurrent ? 'var(--accent)' : hasVisa ? 'rgba(34,197,94,0.3)' : 'var(--border)'};color:${isCurrent ? '#fff' : hasVisa ? '#4ade80' : 'var(--text-muted)'};font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:5px">${c.flag} ${c.short} ${isCurrent ? '● Active' : hasVisa ? '✓ Visa' : '🔒 Visa'}</button>`;
+              }).join('')}
+            </div>
+            <span style="font-size:11px;color:var(--text-secondary)">🛡️ <b>Nexus Shield Escrow:</b> Active (${(VISA_TIERS.find(t=>t.id===state.visaTier)||VISA_TIERS[1]).escrowFee} Fee)</span>
+          </div>
+
+          <!-- Bottom Stat Strip -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid var(--border)">
+            ${[
+              ['Residency Tier', state.membership, 'Sovereign Status'],
+              ['Estate Plot', state.home.built ? 'Active Villa' : 'Plot Unbuilt', state.home.built ? 'color:var(--success)' : 'color:var(--text-muted)'],
+              ['Treasury', money(state.wallet), aed(state.wallet)],
+              ['Current District', (DISTRICTS.find(d => d.id === state.currentDistrict) || DISTRICTS[0]).name, 'Archipelago Hub']
+            ].map(([lbl, val, sub]) => `
+              <div style="padding:12px 14px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid var(--border)">
+                <div class="metric-label">${lbl}</div>
+                <div style="font-size:0.9375rem;font-weight:700;margin-top:4px;color:var(--text-primary)">${val}</div>
+                <div style="font-size:0.6875rem;color:var(--text-dim);margin-top:2px">${sub}</div>
               </div>
             `).join('')}
           </div>
         </div>
       </div>
 
-      <!-- Identity Card + Quick Stats -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
-        ${card(`<div style="padding:24px;display:flex;flex-direction:column;justify-content:space-between;height:100%">
+      <!-- Resident Passport + Financial & Network Snapshot -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px">
+        ${card(`<div style="padding:28px;display:flex;flex-direction:column;justify-content:space-between;height:100%;gap:24px">
           <div>
-            <div style="display:flex;align-items:start;justify-content:space-between;gap:12px">
-              <div>
-                <div class="metric-label">Resident Identity</div>
-                <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-                  <span style="font-size:28px">${state.user.avatar}</span>
-                  <div>
-                    <div style="font-size:18px;font-weight:900">${esc(state.user.name)}</div>
-                    <div style="font-size:11px;color:var(--text-muted);font-weight:600">@${esc(state.user.username)} · ${esc(state.user.country)}</div>
+            <div style="display:flex;align-items:start;justify-content:space-between;gap:16px">
+              <div style="display:flex;align-items:center;gap:14px">
+                <div style="width:54px;height:54px;border-radius:50%;background:var(--bg-tertiary);border:2px solid var(--border);display:grid;place-items:center;font-size:26px;flex-shrink:0">
+                  ${state.user.avatar}
+                </div>
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span style="font-size:1.125rem;font-weight:700;color:var(--text-primary)">${esc(state.user.name)}</span>
+                    <span style="padding:2px 8px;border-radius:var(--radius-full);background:var(--accent-soft);color:var(--accent-text);font-size:0.6875rem;font-weight:600">Lvl ${state.user.level}</span>
+                  </div>
+                  <div style="font-size:0.75rem;color:var(--text-muted);font-weight:500;margin-top:2px">
+                    @${esc(state.user.username)} · ${esc(state.user.country)} · ID #${state.user.id || 'NX-7092'}
                   </div>
                 </div>
               </div>
-              <span class="tag tag-cyan">Level ${state.user.level}</span>
             </div>
-            <div style="margin-top:20px">
-              <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:6px">
-                <span>To Level ${state.user.level+1}</span><span style="color:#22d3ee">${state.user.xp}/${need} XP (${pct}%)</span>
+
+            <div style="margin-top:24px">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;font-weight:600;margin-bottom:8px">
+                <span style="color:var(--text-muted)">Progress to Level ${state.user.level + 1}</span>
+                <span style="color:var(--text-primary);font-family:'JetBrains Mono',monospace">${state.user.xp} / ${need} XP (${pct}%)</span>
               </div>
-              <div style="height:6px;border-radius:9999px;background:rgba(255,255,255,0.06);overflow:hidden">
-                <div style="width:${pct}%;height:100%;border-radius:9999px;background:linear-gradient(90deg,#06b6d4,#6366f1);transition:width 0.5s"></div>
+              <div style="height:6px;border-radius:var(--radius-full);background:var(--bg-tertiary);overflow:hidden;border:1px solid var(--border)">
+                <div style="width:${pct}%;height:100%;border-radius:var(--radius-full);background:var(--accent);transition:width 0.5s var(--ease-out)"></div>
               </div>
             </div>
           </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border)">
+            <span style="font-size:0.75rem;color:var(--text-muted)">Reputation Trust Index</span>
+            <span style="font-size:0.875rem;font-weight:700;color:var(--accent-text)">✦ ${state.user.reputation || '98'} / 100</span>
+          </div>
         </div>`)}
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          ${metric('Treasury', money(state.wallet), aed(state.wallet), '◈')}
-          ${metric('Connections', state.friends.length, 'Resident graph', '👥')}
-          ${metric('Communities', state.joined.length, 'Memberships', '◎')}
-          ${metric('Reputation', state.user.reputation, 'Trust score', '✦')}
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          ${metric('ISL Treasury', money(state.wallet), aed(state.wallet), '◈')}
+          ${metric('Resident Graph', `${state.friends.length} peers`, 'Active contacts', '👥')}
+          ${metric('Society Guilds', `${state.joined.length} joined`, 'Communities', '◎')}
+          ${metric('Parcels Owned', `${state.ownedLand.length} deed${state.ownedLand.length===1?'':'s'}`, 'Title registered', '🏝️')}
         </div>
       </div>
 
-      <!-- Recommended Action + Activity -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
-        ${card(`<div style="padding:24px">
-          <div class="metric-label">Recommended Next</div>
-          <div style="display:flex;align-items:start;gap:14px;margin-top:12px">
-            <div style="width:48px;height:48px;border-radius:14px;background:rgba(6,182,212,0.08);display:grid;place-items:center;font-size:24px;flex-shrink:0">${next[3]}</div>
-            <div style="flex:1">
-              <div style="font-size:16px;font-weight:900">${next[0]}</div>
-              <p style="font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.5">${next[2]}</p>
-              <div style="margin-top:12px">${btn('Complete →', `nav('${next[1]}')`, 'primary')}</div>
+      <!-- Recommended Next Milestone + Live Island Feed -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px">
+        ${card(`<div style="padding:26px;display:flex;flex-direction:column;justify-content:space-between;height:100%">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+              <div class="metric-label">Recommended Next Action</div>
+              <span style="padding:2px 8px;border-radius:var(--radius-full);background:var(--bg-tertiary);border:1px solid var(--border);font-size:0.6875rem;color:var(--accent-text);font-weight:600">Priority</span>
+            </div>
+            <div style="display:flex;align-items:start;gap:16px;margin-top:10px">
+              <div style="width:48px;height:48px;border-radius:var(--radius-md);background:var(--accent-soft);display:grid;place-items:center;font-size:24px;flex-shrink:0">
+                ${next[3]}
+              </div>
+              <div style="flex:1">
+                <div style="font-size:1rem;font-weight:700;color:var(--text-primary)">${next[0]}</div>
+                <p style="font-size:0.8125rem;color:var(--text-secondary);margin-top:4px;line-height:1.5">
+                  ${next[2]}
+                </p>
+                <div style="margin-top:14px">${btn('Proceed Now →', `nav('${next[1]}')`, 'primary')}</div>
+              </div>
             </div>
           </div>
         </div>`)}
 
-        ${card(`<div style="padding:24px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-            <div class="metric-label">Activity Feed</div>
-            ${btn('View All', "nav('notifications.html')", 'ghost', 'class="btn btn-ghost btn-sm"')}
+        ${card(`<div style="padding:26px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div class="metric-label">Live Activity Stream</div>
+            <a href="notifications.html" style="font-size:0.75rem;font-weight:600;color:var(--accent-text);text-decoration:none">View All →</a>
           </div>
-          <div style="display:flex;flex-direction:column;gap:6px">
-            ${state.activity.slice(0,4).map(a => `
-              <div style="padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center;font-size:12px">
-                <span style="font-weight:600;color:var(--text-secondary)">${esc(a.text)}</span>
-                <span style="font-size:10px;color:var(--text-dim);flex-shrink:0;margin-left:8px">${esc(a.time)}</span>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${state.activity.slice(0, 4).map(a => `
+              <div style="padding:10px 14px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:0.75rem">
+                <div style="display:flex;align-items:center;gap:8px;min-width:0">
+                  <span style="width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0"></span>
+                  <span style="font-weight:500;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.text)}</span>
+                </div>
+                <span style="font-size:0.6875rem;color:var(--text-dim);flex-shrink:0;font-family:'JetBrains Mono',monospace">${esc(a.time)}</span>
               </div>
             `).join('')}
           </div>
         </div>`)}
       </div>
 
-      <!-- Ecosystem Quick Nav -->
-      ${card(`<div style="padding:24px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <!-- Core Ecosystem Operating Loop -->
+      ${card(`<div style="padding:28px">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px">
           <div>
-            <div class="metric-label">Core Product Loop</div>
-            <div style="font-size:16px;font-weight:900;margin-top:4px">Ecosystem Navigation</div>
+            <div class="metric-label">Resident Journey & Product Loop</div>
+            <div style="font-size:1.125rem;font-weight:700;margin-top:4px;color:var(--text-primary)">Ecosystem Navigation</div>
           </div>
-          <span class="tag tag-emerald">FULL WORKING MVP</span>
+          <span style="padding:3px 10px;border-radius:var(--radius-full);background:rgba(34,197,94,0.1);color:var(--success);font-size:0.6875rem;font-weight:700">VERIFIED WORKING MVP</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px">
-          ${[['1. Explore','island.html','🌐'],['2. Meet','friends.html','👥'],['3. Own','land.html','🏝️'],['4. Style','property.html','🏠'],['5. Play','games.html','🎮'],['6. Join','communities.html','◎'],['7. Trade','marketplace.html','▦'],['8. Attend','events.html','◷']].map(([l,f,i]) => `
-            <a href="${f}" style="padding:14px;border-radius:14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);text-align:center;text-decoration:none;transition:all 0.2s;display:block" onmouseover="this.style.background='rgba(6,182,212,0.06)';this.style.borderColor='rgba(6,182,212,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.02)';this.style.borderColor='rgba(255,255,255,0.05)'">
-              <div style="font-size:24px;margin-bottom:6px">${i}</div>
-              <div style="font-size:11px;font-weight:800;color:var(--text-primary)">${l}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:10px">
+          ${[
+            ['1. Explore', 'island.html', '🌐', 'Archipelago Map'],
+            ['2. Connect', 'friends.html', '👥', 'Resident Graph'],
+            ['3. Acquire', 'land.html', '🏝️', 'Title Deeds'],
+            ['4. Construct', 'property.html', '🏠', 'Estate Living'],
+            ['5. Compete', 'games.html', '🎮', 'Arena Games'],
+            ['6. Guilds', 'communities.html', '◎', 'Societies'],
+            ['7. Exchange', 'marketplace.html', '▦', 'Commerce'],
+            ['8. Gather', 'events.html', '◷', 'Live Stages']
+          ].map(([l, f, i, sub]) => `
+            <a href="${f}" style="padding:16px 12px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid var(--border);text-align:center;text-decoration:none;transition:all 0.2s var(--ease-out);display:flex;flex-direction:column;align-items:center;gap:6px" onmouseover="this.style.borderColor='var(--border-hover)';this.style.background='var(--bg-hover)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg-tertiary)';this.style.transform='none'">
+              <div style="font-size:24px;line-height:1">${i}</div>
+              <div style="font-size:0.75rem;font-weight:700;color:var(--text-primary)">${l}</div>
+              <div style="font-size:0.625rem;color:var(--text-muted)">${sub}</div>
             </a>
           `).join('')}
         </div>
       </div>`)}
 
-      <!-- Viral & Social Growth Loops -->
-      ${card(`<div style="padding:24px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <!-- Viral Growth & Social Mechanics -->
+      ${card(`<div style="padding:28px">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px">
           <div>
             <div class="metric-label" style="display:flex;align-items:center;gap:6px">
-              <span class="live-dot" style="background:#f43f5e"></span> Viral Growth Mechanics
+              <span class="live-dot" style="background:var(--rose)"></span> Viral Expansion Loops
             </div>
-            <div style="font-size:16px;font-weight:900;margin-top:4px">Social Loops & Viral Sharing</div>
+            <div style="font-size:1.125rem;font-weight:700;margin-top:4px;color:var(--text-primary)">Social Ingestion & High K-Factor Mechanics</div>
           </div>
-          <span class="badge badge-accent">HIGH K-FACTOR</span>
+          <span style="padding:3px 10px;border-radius:var(--radius-full);background:var(--accent-soft);color:var(--accent-text);font-size:0.6875rem;font-weight:700">GROWTH ENGINE</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
           ${[
-            ['Neighbor Drop', 'neighbor-drop.html', '🤝', 'Invite friends to claim the land right next to yours', 'Invite Neighbors →', 'rgba(6,182,212,0.1)'],
-            ['Island Flex Card', 'flex-card.html', '💳', 'Showcase net worth on Instagram & WhatsApp status', 'Generate Card →', 'rgba(245,158,11,0.1)'],
-            ['Treasure Hunt', 'treasure-hunt.html', '🏴‍☠️', 'Hide & find reward chests scattered on islands', 'Go Hunting →', 'rgba(244,63,94,0.1)'],
-            ['Island Guestbook', 'guestbook.html', '📖', 'Leave verified tips & comments on friends’ homes', 'Sign & Tip →', 'rgba(16,185,129,0.1)']
+            ['Neighbor Drop', 'neighbor-drop.html', '🤝', 'Invite peers to claim adjacent sovereign plots and build together', 'Invite Neighbors →', 'var(--accent-soft)'],
+            ['Resident Flex Card', 'flex-card.html', '💳', 'Generate luxury proof-of-asset cards for WhatsApp & Instagram', 'Generate Card →', 'rgba(234,179,8,0.1)'],
+            ['Treasure Hunt', 'treasure-hunt.html', '🏴‍☠️', 'Discover or hide high-value reward caches across archipelago coordinates', 'Go Hunting →', 'rgba(239,68,68,0.1)'],
+            ['Majlis Guestbook', 'guestbook.html', '📖', 'Leave verified on-chain style signatures & token tips at resident homes', 'Sign Guestbook →', 'rgba(34,197,94,0.1)']
           ].map(([title, href, ic, desc, cta, bg]) => `
-            <div style="padding:16px;border-radius:14px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);display:flex;flex-direction:column;justify-content:space-between;gap:12px;transition:all 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(6,182,212,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.02)';this.style.borderColor='rgba(255,255,255,0.05)'">
+            <div style="padding:20px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between;gap:14px;transition:all 0.2s var(--ease-out)" onmouseover="this.style.borderColor='var(--border-hover)';this.style.background='var(--bg-hover)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg-tertiary)'">
               <div>
-                <div style="width:40px;height:40px;border-radius:12px;background:${bg};display:grid;place-items:center;font-size:20px;margin-bottom:10px">${ic}</div>
-                <div style="font-size:14px;font-weight:800;color:var(--text-primary)">${title}</div>
-                <p style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.4">${desc}</p>
+                <div style="width:42px;height:42px;border-radius:var(--radius-md);background:${bg};display:grid;place-items:center;font-size:20px;margin-bottom:12px">${ic}</div>
+                <div style="font-size:0.875rem;font-weight:700;color:var(--text-primary)">${title}</div>
+                <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:6px;line-height:1.5">${desc}</p>
               </div>
-              <a href="${href}" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;text-decoration:none">${cta}</a>
+              <a href="${href}" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;text-decoration:none;font-weight:600">${cta}</a>
             </div>
           `).join('')}
         </div>
@@ -1451,291 +1812,184 @@
     </section>`;
   }
 
-  /* ═══════════════════════════════════════════════════════════════
-     WORLD & ASSETS: GOOGLE MAPS + GTA INTERACTIVE ENGINE
-     ═══════════════════════════════════════════════════════════════ */
-  const WORLD_DATA = {
-    width: 2400,
-    height: 1800,
-    districts: {
-      harbor: { id: 'harbor', name: 'Harbor District', icon: '⚓', x: 500, y: 520, radius: 260, color: '#0891b2', landmark: 'Marina Grand Promenade' },
-      creator: { id: 'creator', name: 'Creator District', icon: '🎨', x: 1640, y: 440, radius: 280, color: '#ea580c', landmark: 'Louvre Crystal Pavilion' },
-      gaming: { id: 'gaming', name: 'Gaming District', icon: '🎮', x: 740, y: 1180, radius: 290, color: '#7c3aed', landmark: 'Yas Cyber Arena & Circuit' },
-      downtown: { id: 'downtown', name: 'Downtown Core', icon: '🏢', x: 1720, y: 1020, radius: 280, color: '#0ea5e9', landmark: 'ADGM Apex Tower & Core' },
-      residential: { id: 'residential', name: 'Residential District', icon: '🏡', x: 1200, y: 1420, radius: 260, color: '#059669', landmark: 'Palm Sanctuary Lagoon' },
-      nature: { id: 'nature', name: 'Nature Zone', icon: '🌿', x: 380, y: 1260, radius: 240, color: '#16a34a', landmark: 'Eastern Mangrove Reserve' },
-      future: { id: 'future', name: 'Future Zone', icon: '∞', x: 1960, y: 1440, radius: 250, color: '#6366f1', landmark: 'NOVA Quantum Spire' }
-    },
-    roads: [
-      { id: 'r1', name: 'Corniche Grand Blvd', from: [380, 520], to: [520, 520] },
-      { id: 'r2', name: 'Corniche Grand Blvd', from: [520, 520], to: [840, 560] },
-      { id: 'r3', name: 'Corniche Grand Blvd', from: [840, 560], to: [1150, 950] },
-      { id: 'r4', name: 'Saadiyat Causeway', from: [840, 560], to: [1250, 480], bridge: true },
-      { id: 'r5', name: 'Saadiyat Cultural Way', from: [1250, 480], to: [1640, 440] },
-      { id: 'r6', name: 'ADGM Tech Spine', from: [1150, 950], to: [1720, 1020] },
-      { id: 'r7', name: 'NOVA Quantum Way', from: [1720, 1020], to: [1960, 1440] },
-      { id: 'r8', name: 'Palm Sanctuary Drive', from: [1150, 950], to: [1200, 1420] },
-      { id: 'r9', name: 'Yas Coastal Highway', from: [1200, 1420], to: [740, 1180] },
-      { id: 'r10', name: 'Marina Express Link', from: [520, 520], to: [740, 1180] },
-      { id: 'r11', name: 'Mangrove Boardwalk', from: [740, 1180], to: [380, 1260] }
-    ],
-    yasCircuit: [
-      { x: 620, y: 1080 }, { x: 860, y: 1080 }, { x: 920, y: 1180 },
-      { x: 880, y: 1280 }, { x: 680, y: 1300 }, { x: 580, y: 1200 }
-    ],
-    plots: [
-      { id: 'L-101', name: 'Marina Edge Plot', district: 'harbor', x: 440, y: 480, w: 70, h: 55, price: 450 },
-      { id: 'L-102', name: 'Bluewater Promenade', district: 'harbor', x: 580, y: 470, w: 75, h: 60, price: 670 },
-      { id: 'L-103', name: 'Corniche Gateway', district: 'harbor', x: 490, y: 590, w: 80, h: 65, price: 850 },
-      { id: 'L-201', name: 'Saadiyat Studio Lane', district: 'creator', x: 1560, y: 400, w: 70, h: 60, price: 670 },
-      { id: 'L-202', name: 'Louvre Vista Atelier', district: 'creator', x: 1710, y: 410, w: 80, h: 65, price: 890 },
-      { id: 'L-203', name: 'Artisan Plaza Parcel', district: 'creator', x: 1640, y: 510, w: 85, h: 70, price: 1070 },
-      { id: 'L-301', name: 'Yas Circuit West', district: 'gaming', x: 660, y: 1120, w: 75, h: 60, price: 890 },
-      { id: 'L-302', name: 'Apex Arena Row', district: 'gaming', x: 810, y: 1140, w: 80, h: 65, price: 1110 },
-      { id: 'L-303', name: 'Pixel Boulevard', district: 'gaming', x: 740, y: 1250, w: 85, h: 70, price: 1290 },
-      { id: 'L-401', name: 'ADGM Global Square', district: 'downtown', x: 1650, y: 960, w: 75, h: 60, price: 1110 },
-      { id: 'L-402', name: 'Al Maryah Center', district: 'downtown', x: 1790, y: 980, w: 80, h: 65, price: 1330 },
-      { id: 'L-403', name: 'Fintech Tower Parcel', district: 'downtown', x: 1720, y: 1090, w: 85, h: 70, price: 1510 },
-      { id: 'L-501', name: 'Palm Grove Haven', district: 'residential', x: 1140, y: 1360, w: 75, h: 60, price: 1330 },
-      { id: 'L-502', name: 'Nurai Vista Villa', district: 'residential', x: 1260, y: 1380, w: 80, h: 65, price: 1550 },
-      { id: 'L-503', name: 'Coastal Sanctuary', district: 'residential', x: 1200, y: 1490, w: 85, h: 70, price: 1730 },
-      { id: 'L-601', name: 'Eastern Mangrove Point', district: 'nature', x: 330, y: 1220, w: 70, h: 60, price: 1550 },
-      { id: 'L-602', name: 'Falcon Dune View', district: 'nature', x: 430, y: 1230, w: 75, h: 65, price: 1770 },
-      { id: 'L-603', name: 'Flamingo Lagoon', district: 'nature', x: 380, y: 1330, w: 80, h: 70, price: 1950 },
-      { id: 'L-701', name: 'Masdar Eco Hub', district: 'future', x: 1900, y: 1390, w: 75, h: 60, price: 1770 },
-      { id: 'L-702', name: 'NOVA Quantum Axis', district: 'future', x: 2020, y: 1410, w: 80, h: 65, price: 1990 },
-      { id: 'L-703', name: 'Spatial Portal West', district: 'future', x: 1960, y: 1510, w: 85, h: 70, price: 2170 }
-    ],
-    businesses: [
-      { id: 'b1', name: 'Harbor & Co. Roastery', type: 'Artisan Cafe', icon: '☕', x: 570, y: 550, district: 'harbor' },
-      { id: 'b2', name: 'Yas Cyber Forge', type: 'Game Studio', icon: '🎮', x: 710, y: 1130, district: 'gaming' },
-      { id: 'b3', name: 'Nexus AI Labs', type: 'AI & Tech', icon: '🧪', x: 1690, y: 970, district: 'downtown' },
-      { id: 'b4', name: 'Canvas House Saadiyat', type: 'Art Gallery', icon: '🎨', x: 1590, y: 430, district: 'creator' },
-      { id: 'b5', name: 'Emirates Gourmet Food', type: 'Fine Dining', icon: '🍽️', x: 470, y: 570, district: 'harbor' },
-      { id: 'b6', name: 'ADGM Founders Circle', type: 'Advisory & Law', icon: '🏛️', x: 1760, y: 1040, district: 'downtown' },
-      { id: 'b7', name: 'Oceanic Yacht Charters', type: 'Tourism', icon: '🌊', x: 440, y: 490, district: 'harbor' },
-      { id: 'b8', name: 'Motion Works VFX', type: 'Digital VFX', icon: '✨', x: 1690, y: 460, district: 'creator' },
-      { id: 'b9', name: 'Arena Esports League', type: 'Esports Org', icon: '🏆', x: 790, y: 1210, district: 'gaming' },
-      { id: 'b10', name: 'Green Oasis Eco-Tech', type: 'Sustainability', icon: '🌱', x: 420, y: 1240, district: 'nature' }
-    ],
-    parkedVehicles: [
-      { id: 'v1', name: 'Pulse Hyper-GT', icon: '🏎️', type: 'Supercar', x: 610, y: 520, angle: 0 },
-      { id: 'v2', name: 'Aero-Hover Superbike', icon: '🏍️', type: 'Hover Bike', x: 800, y: 1130, angle: 1.57 },
-      { id: 'v3', name: 'Seaglass Taycan EV', icon: '🚙', type: 'Electric Sedan', x: 1670, y: 1010, angle: -0.8 },
-      { id: 'v4', name: 'Gulfstream 42 Speedboat', icon: '🛥️', type: 'Speedboat', x: 410, y: 470, angle: 0.4 }
-    ],
-    atms: [
-      { id: 'atm-1', name: 'Harbor Marina ATM', x: 530, y: 490 },
-      { id: 'atm-2', name: 'ADGM Financial ATM', x: 1750, y: 990 },
-      { id: 'atm-3', name: 'Yas Arena ATM', x: 720, y: 1200 }
-    ],
-    stuntRamps: [
-      { id: 'stunt-1', name: 'Yas Canal Stunt Ramp', x: 920, y: 1060, angle: -0.6 },
-      { id: 'stunt-2', name: 'Saadiyat Causeway Stunt Ramp', x: 1020, y: 540, angle: 0.5 }
-    ],
-    npcs: [
-      { id: 'npc-1', name: 'Omar Al-Zaabi', avatar: '👨🏽‍💻', role: 'Island Pioneer', x: 510, y: 540, mission: 'courier' },
-      { id: 'npc-2', name: 'Maya Chen', avatar: '👩🏻‍🎨', role: 'Spatial Creator', x: 1620, y: 460, mission: 'art' },
-      { id: 'npc-3', name: 'Noah Williams', avatar: '🧑🏼‍🎮', role: 'Esports Pro', x: 730, y: 1160, mission: 'circuit' }
-    ]
-  };
-
-  /* World Engine Global Instance */
-  const worldEngine = {
-    canvas: null,
-    ctx: null,
-    radarCanvas: null,
-    radarCtx: null,
-    animId: null,
-    mode: 'map', // 'map' or 'drive'
-    layer: 'satellite', // 'satellite', 'street', 'cyber', 'deeds'
-    camera: { x: 520, y: 520, zoom: 0.75, targetX: 520, targetY: 520, targetZoom: 0.75 },
-    player: {
-      x: 520, y: 520,
-      vx: 0, vy: 0,
-      speed: 0,
-      maxSpeed: 11,
-      accel: 0.35,
-      friction: 0.94,
-      angle: 0,
-      inVehicle: 'v1',
-      drifting: false,
-      nitro: 100,
-      inAir: false
-    },
-    keys: {},
-    skidMarks: [],
-    particles: [],
-    gpsRoute: null,
-    activeMission: null,
-    lapTimer: { active: false, startTime: 0, currentTime: 0, bestTime: null, lastCheckpoint: -1 },
-    streetCred: 3,
-    radioStation: 'Nexus Synth 94.2',
-    drag: { isDown: false, startX: 0, startY: 0, camStartX: 0, camStartY: 0 },
-    nearestInteract: null,
-    wavePhase: 0
-  };
-
   /* ═══════════════════════════════════════════════
-     ROUTE: ISLAND MAP (Google Maps meets GTA Engine)
+     ROUTE: ISLAND MAP (Immersive Centerpiece)
      ═══════════════════════════════════════════════ */
   function island() {
-    const layer = state.worldLayer || 'satellite';
-    const mode = state.worldMode || 'map';
+    const mapTheme = state.settings.mapTheme || 'day';
     const currentD = DISTRICTS.find(d => d.id === state.currentDistrict) || DISTRICTS[0];
+    const onlineCount = DATA.users.filter(u => u.online).length;
 
-    return `<section class="fade" style="display:flex;flex-direction:column;gap:18px">
-      <!-- HEADER -->
-      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+    return `<section class="fade" style="display:flex;flex-direction:column;gap:24px">
+      <!-- Header -->
+      <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px">
         <div>
-          <div class="metric-label" style="display:flex;align-items:center;gap:6px">
-            <span class="live-dot" style="background:#22d3ee"></span> Persistent Abu Dhabi Archipelago
-          </div>
-          <h1 class="heading-lg" style="margin-top:4px">Nexus World &amp; Geospatial Engine</h1>
-          <p style="font-size:13px;color:var(--text-muted);margin-top:2px">Switch between Google Maps satellite view and GTA-style interactive vehicle free-roam.</p>
+          <div class="metric-label">${(COUNTRIES.find(c=>c.id===state.currentCountry)||COUNTRIES[0]).flag} ${(COUNTRIES.find(c=>c.id===state.currentCountry)||COUNTRIES[0]).name} · 5 Active District-Islands + 10+ Island Masterplan</div>
+          <h1 class="heading-lg" style="margin-top:4px;font-weight:800;letter-spacing:-0.03em">GTA & Google Maps Open World</h1>
+          <p style="font-size:0.875rem;color:var(--text-secondary);margin-top:4px">Drive across 5 connected UAE islands via highway bridges · Walk with WASD · Drive vehicles [F] · Enter Emaar, LuLu, ADGM, Hub71 & Skyport [E]</p>
         </div>
-
-        <!-- Right Quick Stats & Actions -->
         <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <div class="gta-stars-meter" title="Street Credibility Rating">
-            <span style="font-size:11px;font-weight:800;color:var(--text-dim);margin-right:4px">CRED</span>
-            ${[1,2,3,4,5].map(s => `<span class="gta-star ${s <= (state.streetCred||3) ? 'filled' : ''}">★</span>`).join('')}
-          </div>
-
-          <div style="display:flex;align-items:center;gap:6px">
-            <button onclick="toggleWorldMode('map')" class="btn ${mode==='map'?'btn-primary':'btn-ghost'} btn-sm">🧭 Google Maps</button>
-            <button onclick="toggleWorldMode('drive')" class="btn ${mode==='drive'?'btn-gold':'btn-ghost'} btn-sm">🏎️ GTA Free-Roam</button>
-            ${btn('✨ NOVA Guide', 'nova()', 'ghost', 'class="btn btn-ghost btn-sm"')}
-          </div>
+          ${btn('🛂 4-Country Visa Skyport', 'openVisaCenterModal()', 'gold')}
+          ${btn('🚀 Multiplayer Stage', 'launchMultiplayerDemo()', 'ghost')}
+          ${btn('✨ NOVA Assistant', 'nova()', 'primary')}
         </div>
       </div>
 
-      <!-- MAIN INTERACTIVE WORLD ENGINE FRAME -->
-      <div class="world-engine-frame">
-        <!-- TOP TOOLBAR & CONTROLS -->
-        <div class="map-top-bar">
-          <!-- Search POIs & Locations -->
-          <div class="map-search-wrap">
-            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none">🔍</span>
-            <input type="text" id="mapSearchInput" class="map-search-input" placeholder="Search districts, plots, shops, cars..." oninput="searchWorldPois(this.value)" onfocus="searchWorldPois(this.value)">
-            <div id="mapSearchDropdown" class="map-search-dropdown"></div>
-          </div>
+      <!-- 5 Active UAE District-Islands Selector -->
+      <div style="padding:16px;border-radius:var(--radius-lg);background:var(--bg-secondary);border:1px solid var(--border);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px">
+          <div class="metric-label" style="color:var(--accent-text)">🏝️ UAE 5 Active Islands (Connected by Drivable GTA Highway Bridges)</div>
+          <span style="font-size:11px;color:var(--text-muted)">Click any island to teleport & focus camera</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
+          ${UAE_ISLANDS.filter(i => i.status === 'active').map(isl => `
+            <button onclick="focusUaeIsland('${isl.id}')" style="padding:10px 12px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid var(--border);text-align:left;cursor:pointer;transition:all 0.15s;display:flex;align-items:start;gap:10px" onmouseover="this.style.borderColor='var(--border-accent)'" onmouseout="this.style.borderColor='var(--border)'">
+              <span style="font-size:20px">${isl.icon}</span>
+              <div style="min-width:0">
+                <div style="font-size:12px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(isl.name)}</div>
+                <div style="font-size:10px;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(isl.anchors)}</div>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
 
-          <!-- Layer Switcher -->
-          <div class="map-layer-pill-group">
-            ${[
-              ['satellite', '🛰️', 'Satellite'],
-              ['street', '🗺️', 'Street'],
-              ['cyber', '🌃', 'Cyber'],
-              ['deeds', '📐', 'Deeds']
-            ].map(([l, ic, txt]) => `
-              <button onclick="setWorldLayer('${l}')" class="map-layer-btn ${layer === l ? 'active' : ''}">
-                <span>${ic}</span> <span>${txt}</span>
-              </button>
+      <!-- CANVAS MAP ENGINE -->
+      <div class="map-engine-wrap" id="map-engine-wrap">
+        <canvas id="nexus-map-canvas"></canvas>
+
+        <!-- HUD: Top-Left — Status & Breadcrumb -->
+        <div class="map-hud-tl">
+          <div class="hud-panel" style="margin-bottom:8px">
+            <div class="metric-label">Current Territory</div>
+            <div id="map-breadcrumb" style="font-size:0.8125rem;font-weight:700;margin-top:3px">${currentD.icon} ${currentD.name}</div>
+          </div>
+          <div class="hud-panel">
+            <div style="display:flex;align-items:center;gap:8px;font-size:0.75rem;font-weight:600">
+              <span class="live-dot" style="width:6px;height:6px"></span> ${onlineCount} Online
+              <span style="color:var(--text-dim)">·</span>
+              <span style="font-size:10px;padding:2px 8px;border-radius:var(--radius-full);background:var(--accent-soft);color:var(--accent-text);font-weight:600">Visited: ${state.districtsVisited.length}/7</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- HUD: Top-Right — Theme Toggle -->
+        <div class="map-hud-tr">
+          <div class="map-theme-toggle">
+            ${[['day','☀️'],['sunset','🌅'],['night','🌙']].map(([t,i]) => `
+              <button onclick="setMapTheme('${t}')" class="map-theme-btn ${mapTheme===t?'active':''}">${i}</button>
             `).join('')}
           </div>
+        </div>
 
-          <!-- Vehicle & Mission Hub -->
-          <div style="display:flex;gap:6px">
-            <select onchange="spawnVehicleInWorld(this.value);this.selectedIndex=0;" style="padding:6px 12px;border-radius:12px;background:rgba(8,20,42,0.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.12);color:var(--text-primary);font-size:12px;font-weight:700;cursor:pointer;outline:none">
-              <option value="">🚗 Spawn Vehicle...</option>
-              ${DATA.vehicles.map(v => `<option value="${v.id}">${v.icon} ${v.name}</option>`).join('')}
-            </select>
-            <button onclick="startWorldMission('courier')" class="btn btn-gold btn-sm" style="box-shadow:0 4px 16px rgba(245,158,11,0.3)">⚡ Courier Sprint</button>
+        <!-- HUD: Bottom-Left — Coordinates & Controls -->
+        <div class="map-hud-bl">
+          <div class="hud-panel" style="margin-bottom:8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:14px">🧊</span>
+              <span id="map-coords" style="font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent-text)">604, 500 · 3D Perspective</span>
+            </div>
+          </div>
+          <div class="control-hints" id="control-hints">
+            <b>WASD</b> Move · <b>Q/R</b> Rotate 3D · <b>Right-Drag</b> Orbit 3D · <b>E</b> Interact · <b>F</b> Vehicle · <b>V</b> 3D/2D
           </div>
         </div>
 
-        <!-- CANVAS VIEWPORT -->
-        <div id="worldCanvasContainer" class="world-canvas-container ${mode==='drive'?'free-roam-cursor':''}">
-          <canvas id="nexusWorldCanvas"></canvas>
-        </div>
-
-        <!-- FLOATING ZOOM & RECENTER CONTROLS -->
-        <div class="map-nav-controls">
-          <button onclick="zoomWorld(0.2)" class="map-nav-btn" title="Zoom In">+</button>
-          <button onclick="zoomWorld(-0.2)" class="map-nav-btn" title="Zoom Out">−</button>
-          <button onclick="recenterWorld()" class="map-nav-btn" title="Recenter Camera">⌖</button>
-          <button onclick="cycleRadio()" class="map-nav-btn" title="Island Radio">📻</button>
-        </div>
-
-        <!-- GTA RADAR MINIMAP (Bottom-Left) -->
-        <div class="gta-radar-wrapper">
-          <div class="gta-radar-outer">
-            <canvas id="nexusRadarCanvas" width="144" height="144"></canvas>
-            <div class="gta-radar-heading">N</div>
-          </div>
-          <div id="gtaLocationBadge" class="gta-location-badge">⚓ Harbor Marina Promenade</div>
-        </div>
-
-        <!-- GTA SPEEDOMETER & NITRO GAUGE (Bottom-Right, Drive Mode) -->
-        <div id="gtaSpeedometer" class="gta-speedometer" style="display:${mode==='drive'?'block':'none'}">
-          <div style="display:flex;align-items:baseline;justify-content:space-between">
-            <div id="speedoVal" class="gta-speedo-val">0</div>
-            <div style="font-size:10px;font-weight:800;color:var(--text-dim);letter-spacing:0.1em">KM / H</div>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
-            <span id="vehicleGear" style="font-size:11px;font-weight:900;color:#22d3ee">GEAR D</span>
-            <span id="vehicleModelName" style="font-size:10px;font-weight:700;color:var(--text-muted)">Pulse Hyper-GT</span>
-          </div>
-          <div class="gta-nitro-track">
-            <div id="nitroBar" class="gta-nitro-fill" style="width:100%"></div>
+        <!-- HUD: Bottom-Right — Minimap -->
+        <div class="map-hud-br">
+          <div class="minimap-box">
+            <canvas id="nexus-minimap" width="180" height="135"></canvas>
           </div>
         </div>
 
-        <!-- CONTEXTUAL GTA PROXIMITY INTERACT PROMPT -->
-        <div id="gtaPromptBox" class="gta-prompt-box" style="display:none" onclick="triggerGtaInteract()">
-          <div class="gta-key-pill">[E]</div>
-          <div id="gtaPromptText" style="font-size:12px;font-weight:800;color:#fff">Enter Harbor &amp; Co. Roastery</div>
+        <!-- HUD: Bottom-Center — 3D Spatial Camera & Zoom Controls -->
+        <div class="map-hud-bc">
+          <div class="zoom-controls" style="gap:6px;padding:5px 8px">
+            <button id="btn-toggle-3d" class="zoom-btn" onclick="if(window.engineToggle3D)engineToggle3D()" title="Toggle 3D / 2D View (Key: V)" style="width:auto;padding:0 10px;font-size:11px;background:var(--accent-soft);color:var(--accent-text);border:1px solid var(--border-accent)">🧊 3D Active</button>
+            <button class="zoom-btn" onclick="if(window.engineRotateCamera)engineRotateCamera(-0.35)" title="Rotate 3D Camera Left (Key: Q)">⟲</button>
+            <button class="zoom-btn" onclick="if(window.engineRotateCamera)engineRotateCamera(0.35)" title="Rotate 3D Camera Right (Key: R)">⟳</button>
+            <button class="zoom-btn" onclick="if(window.engineTiltCamera)engineTiltCamera(-0.12)" title="Increase 3D Pitch Tilt">📐</button>
+            <button class="zoom-btn" onclick="if(window.engineResetCamera)engineResetCamera()" title="Reset 3D Camera">🧭</button>
+            <button class="zoom-btn" onclick="engineZoomOut()" title="Zoom Out">−</button>
+            <button class="zoom-btn" onclick="engineZoomIn()" title="Zoom In">+</button>
+          </div>
         </div>
 
-        <!-- ACTIVE MISSION HUD BANNER -->
-        <div id="gtaMissionHud" class="gta-mission-hud" style="display:none">
-          <span style="font-size:24px">📦</span>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:11px;font-weight:800;text-transform:uppercase;color:#fbbf24">Active Contract</div>
-            <div id="missionTitle" style="font-size:12px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Harbor to Saadiyat Express</div>
-            <div id="missionCountdown" style="font-size:13px;font-weight:900;color:#22d3ee;font-family:'JetBrains Mono'">Time Left: 45s</div>
-          </div>
-          <button onclick="cancelWorldMission()" style="background:transparent;border:none;color:var(--text-dim);font-weight:900;cursor:pointer;font-size:14px">✕</button>
-        </div>
+        <!-- Proximity Prompt (dynamically positioned by engine) -->
+        <div id="proximity-prompt" class="proximity-prompt" style="display:none"></div>
 
-        <!-- MOBILE ON-SCREEN TOUCH CONTROLS -->
-        <div id="gtaTouchControls" class="gta-touch-controls">
-          <div class="touch-btn-pad">
-            <button class="touch-action-btn" ontouchstart="touchControlPress('gas')" ontouchend="touchControlRelease('gas')">▲ GAS</button>
-            <button class="touch-action-btn" ontouchstart="touchControlPress('brake')" ontouchend="touchControlRelease('brake')">▼ BRK</button>
-            <button class="touch-action-btn" style="background:rgba(245,158,11,0.3);border-color:#f59e0b" ontouchstart="touchControlPress('nitro')" ontouchend="touchControlRelease('nitro')">⚡</button>
-            <button class="touch-action-btn" style="background:rgba(16,185,129,0.3);border-color:#10b981" onclick="triggerGtaInteract()">[E]</button>
-          </div>
+        <!-- Driving HUD (shown when in vehicle) -->
+        <div id="driving-hud" class="driving-hud" style="display:none">
+          <canvas id="speedometer-canvas" width="120" height="120"></canvas>
+          <div id="speed-value" style="font-size:20px;font-weight:800;color:#fff;margin-top:-4px">0</div>
+          <div id="vehicle-badge"></div>
         </div>
       </div>
 
-      <!-- CURRENT DISTRICT DETAILS -->
+      <!-- Quick-Travel Buttons -->
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${DISTRICTS.map(d => {
+          const active = d.id === state.currentDistrict;
+          return `<button onclick="zone('${d.id}')" class="btn ${active ? 'btn-primary' : 'btn-ghost'} btn-sm" style="gap:6px">
+            <span>${d.icon}</span> ${d.name.replace(' District','')}
+          </button>`;
+        }).join('')}
+      </div>
+
+      <!-- Current District Detail -->
       <div id="zoneHost">
         ${renderDistrictDetail(currentD)}
       </div>
 
-      <!-- ALL 7 DISTRICTS CARD GRID -->
-      <div>
-        <div class="metric-label" style="margin-bottom:12px">All Abu Dhabi Island Districts</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
-          ${DISTRICTS.map(d => card(`
-            <div style="padding:20px;display:flex;flex-direction:column;justify-content:space-between;height:100%">
-              <div>
-                <div style="display:flex;justify-content:space-between;align-items:start">
-                  <div style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.04);display:grid;place-items:center;font-size:20px">${d.icon}</div>
-                  <span style="font-size:9px;font-weight:800;text-transform:uppercase;color:${d.color};letter-spacing:0.1em">${d.tagline}</span>
-                </div>
-                <h3 style="font-size:16px;font-weight:900;margin-top:12px">${d.name}</h3>
-                <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.6">${d.description}</p>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)">
-                <span style="font-size:11px;font-weight:600;color:var(--text-dim)">${DATA.land.filter(l=>l.district===d.name).length} plots</span>
-                ${btn('Travel Here', `zone('${d.id}')`, d.id===state.currentDistrict?'primary':'ghost', 'class="btn btn-sm"')}
-              </div>
-            </div>
-          `)).join('')}
+      <!-- Islands 6–10+ Future Expansion Masterplan -->
+      ${card(`<div style="padding:24px">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px">
+          <div>
+            <div class="metric-label" style="color:#fbbf24">UAE Archipelago Expansion Masterplan (Islands 6–10+)</div>
+            <h3 style="font-size:1.125rem;font-weight:800;margin-top:4px">Future District-Islands Pipeline</h3>
+            <p style="font-size:12px;color:var(--text-muted);margin-top:2px">Golden Visa holders receive 48-hour priority land claim access as each expansion island unlocks.</p>
+          </div>
+          ${btn('🛂 Upgrade to Golden Visa', 'openVisaCenterModal()', 'gold', 'class="btn btn-gold btn-sm"')}
         </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+          ${UAE_ISLANDS.filter(i => i.status === 'expansion').map(isl => {
+            const voted = (state.islandVotes || []).includes(isl.id);
+            return `<div style="padding:16px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid ${voted ? 'rgba(34,197,94,0.35)' : 'var(--border)'};display:flex;flex-direction:column;justify-content:space-between;gap:10px">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-size:22px">${isl.icon}</span>
+                  <span class="tag ${voted ? 'tag-emerald' : 'tag-cyan'}" style="font-size:9px">${voted ? '✓ Reserved' : isl.phase}</span>
+                </div>
+                <div style="font-size:13px;font-weight:800;margin-top:8px;color:var(--text-primary)">${esc(isl.name)}</div>
+                <p style="font-size:11px;color:var(--text-secondary);margin-top:4px;line-height:1.4">${esc(isl.focus)}</p>
+              </div>
+              <div style="padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:10px;color:var(--text-dim)">${isl.plots} Prime Plots</span>
+                ${btn(voted ? 'Inspect' : 'Reserve Priority', `openExpansionIslandModal('${isl.id}')`, voted ? 'ghost' : 'primary', 'class="btn btn-sm"')}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`)}
+
+      <!-- All Districts Grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+        ${DISTRICTS.map(d => card(`
+          <div style="padding:24px;display:flex;flex-direction:column;justify-content:space-between;height:100%;gap:16px">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:start">
+                <div style="width:42px;height:42px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid var(--border);display:grid;place-items:center;font-size:20px">${d.icon}</div>
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.06em">${d.tagline}</span>
+              </div>
+              <h3 style="font-size:1.0625rem;font-weight:700;margin-top:14px;color:var(--text-primary)">${d.name}</h3>
+              <p style="font-size:0.8125rem;color:var(--text-secondary);margin-top:6px;line-height:1.6">${d.description}</p>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:14px;border-top:1px solid var(--border)">
+              <span style="font-size:0.75rem;font-weight:600;color:var(--text-muted)">${DATA.land.filter(l=>l.district===d.name).length} parcels</span>
+              ${btn('Travel Here', `zone('${d.id}')`, d.id===state.currentDistrict?'primary':'ghost', 'class="btn btn-sm"')}
+            </div>
+          </div>
+        `)).join('')}
       </div>
     </section>`;
   }
@@ -1745,61 +1999,55 @@
     const nearbyPlots = DATA.land.filter(l => l.district === d.name);
 
     return card(`
-      <div style="padding:28px">
-        <div style="display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:start">
+      <div style="padding:32px">
+        <div style="display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between;align-items:start">
           <div style="flex:1;min-width:280px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
               <span class="live-dot"></span>
-              <span class="metric-label">District Arrival &amp; Fast-Travel Hub</span>
+              <span class="metric-label">District Active Focus</span>
             </div>
-            <h2 style="font-size:28px;font-weight:900;display:flex;align-items:center;gap:10px;margin-top:8px">
+            <h2 style="font-size:1.75rem;font-weight:800;display:flex;align-items:center;gap:12px;margin-top:6px;letter-spacing:-0.02em">
               <span>${d.icon}</span> ${d.name}
             </h2>
-            <p style="font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.6;max-width:480px">${d.description}</p>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">
+            <p style="font-size:0.875rem;color:var(--text-secondary);margin-top:8px;line-height:1.6;max-width:540px">${d.description}</p>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px">
               ${[['Landmark',d.landmark],['Parcels',nearbyPlots.length+' Available'],['Enterprises',nearbyBiz.length+' Active']].map(([l,v]) => `
-                <div style="padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)">
+                <div style="padding:10px 14px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid var(--border)">
                   <div class="metric-label">${l}</div>
-                  <div style="font-size:12px;font-weight:800;margin-top:3px">${v}</div>
+                  <div style="font-size:0.8125rem;font-weight:700;margin-top:3px;color:var(--text-primary)">${v}</div>
                 </div>
               `).join('')}
             </div>
           </div>
 
-          <div style="width:280px;flex-shrink:0;padding:20px;border-radius:18px;background:rgba(6,182,212,0.04);border:1px solid rgba(6,182,212,0.1)">
-            <div class="metric-label" style="color:#22d3ee">Fast-Travel Active</div>
-            <div style="font-size:16px;font-weight:900;margin-top:4px">Current Sector</div>
-            <p style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5">Launch into free-roam driving from this district or inspect available real estate deeds.</p>
-            <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px">
-              ${btn('🏎️ Drive Here Now', `toggleWorldMode('drive')`, 'gold', 'class="btn btn-gold btn-sm" style="width:100%"')}
-              ${btn('🏝️ Browse District Deeds', "nav('land.html')", 'primary', 'class="btn btn-primary btn-sm" style="width:100%"')}
+          <div style="width:280px;flex-shrink:0;padding:24px;border-radius:var(--radius-xl);background:var(--bg-elevated);border:1px solid var(--border)">
+            <div class="metric-label" style="color:var(--accent-text)">Fast-Travel Active</div>
+            <div style="font-size:1.0625rem;font-weight:700;margin-top:4px">Current Sector</div>
+            <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:6px;line-height:1.5">All nearby services and title deeds are accessible for immediate interaction.</p>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+              ${btn('🏝️ Browse Land Plots', "nav('land.html')", 'primary', 'class="btn btn-primary btn-sm" style="width:100%"')}
+              ${btn('🏢 Sector Storefronts', "nav('businesses.html')", 'ghost', 'class="btn btn-ghost btn-sm" style="width:100%"')}
             </div>
           </div>
         </div>
 
         <!-- Nearby listings -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.05)">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:28px;padding-top:24px;border-top:1px solid var(--border)">
           <div>
-            <div style="font-size:13px;font-weight:900;margin-bottom:10px">Active Storefronts</div>
+            <div style="font-size:0.875rem;font-weight:700;margin-bottom:12px;color:var(--text-primary)">Enterprises & Storefronts</div>
             ${nearbyBiz.length ? nearbyBiz.map(b => `
-              <div style="padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px">
-                <div style="display:flex;align-items:center;gap:10px;min-width:0">
-                  <span style="font-size:20px">${b.icon}</span>
-                  <div style="min-width:0"><div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.name)}</div><div style="font-size:10px;color:var(--text-dim)">${esc(b.type)} · ⭐ ${b.rating}</div></div>
-                </div>
-                ${btn('GPS Route', `selectWorldPoi('${b.id}')`, 'ghost', 'class="btn btn-ghost btn-sm"')}
+              <div style="padding:12px 14px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid var(--border);display:flex;align-items:center;gap:12px;margin-bottom:8px">
+                <span style="font-size:20px">${b.icon}</span>
+                <div style="flex:1;min-width:0"><div style="font-size:0.8125rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.name)}</div><div style="font-size:0.6875rem;color:var(--text-dim)">${esc(b.type)} · ⭐ ${b.rating}</div></div>
               </div>
-            `).join('') : '<div style="font-size:11px;color:var(--text-dim)">No storefronts yet.</div>'}
+            `).join('') : '<div style="font-size:0.75rem;color:var(--text-dim)">No storefronts registered yet.</div>'}
           </div>
           <div>
-            <div style="font-size:13px;font-weight:900;margin-bottom:10px">Land Parcels</div>
+            <div style="font-size:0.875rem;font-weight:700;margin-bottom:12px;color:var(--text-primary)">Title Deed Parcels</div>
             ${nearbyPlots.slice(0,3).map(l => `
-              <div style="padding:10px 12px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
-                <div><div style="font-size:12px;font-weight:700">${l.id} · ${esc(l.name)}</div><div style="font-size:10px;color:var(--text-dim)">${l.size}</div></div>
-                <div style="display:flex;align-items:center;gap:6px">
-                  <span style="font-size:12px;font-weight:800;color:#22d3ee">${money(l.price)}</span>
-                  ${btn('Inspect', `selectWorldPoi('${l.id}')`, 'primary', 'class="btn btn-primary btn-sm"')}
-                </div>
+              <div style="padding:12px 14px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px">
+                <div><div style="font-size:0.8125rem;font-weight:600">${l.id} · ${esc(l.name)}</div><div style="font-size:0.6875rem;color:var(--text-dim)">${l.size}</div></div>
+                <div style="font-size:0.8125rem;font-weight:700;color:var(--accent-text);font-family:'JetBrains Mono',monospace">${money(l.price)}</div>
               </div>
             `).join('')}
           </div>
@@ -1808,7 +2056,25 @@
     `);
   }
 
-  function setMapTheme(t) { state.settings.mapTheme = t; save(); refresh(); }
+  function setMapTheme(t) {
+    state.settings.mapTheme = t;
+    save();
+    // Update engine theme without full refresh
+    if (typeof window.engineSetTheme === 'function') {
+      window.engineSetTheme(t);
+      // Update theme toggle button active states
+      document.querySelectorAll('.map-theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.trim().toLowerCase().includes(t === 'day' ? '☀' : t === 'sunset' ? '🌅' : '🌙'));
+      });
+      // Re-match active class: simpler approach
+      document.querySelectorAll('.map-theme-btn').forEach(b => b.classList.remove('active'));
+      const btns = document.querySelectorAll('.map-theme-btn');
+      const idx = t === 'day' ? 0 : t === 'sunset' ? 1 : 2;
+      if (btns[idx]) btns[idx].classList.add('active');
+    } else {
+      refresh();
+    }
+  }
 
   function zone(id) {
     const d = DISTRICTS.find(x => x.id === id) || DISTRICTS[0];
@@ -1818,960 +2084,20 @@
     const firstVisit = !state.districtsVisited.includes(id);
     if (firstVisit) { state.districtsVisited.push(id); award(35, 20, `Explored ${d.name}`); }
     else { toast(`Traveled to ${d.name}.`, 'info'); }
+
+    // If world engine is active, focus the camera + teleport player
+    if (typeof window.engineFocusDistrict === 'function') {
+      window.engineFocusDistrict(id);
+    }
+
+    // Update district detail panel
     const h = document.getElementById('zoneHost');
     if (h) { h.innerHTML = renderDistrictDetail(d); h.scrollIntoView({ behavior: 'smooth' }); }
-    
-    // Also smoothly fly the world camera to this district in the interactive engine!
-    const targetDistrict = WORLD_DATA.districts[id];
-    if (targetDistrict && worldEngine.canvas) {
-      worldEngine.camera.targetX = targetDistrict.x;
-      worldEngine.camera.targetY = targetDistrict.y;
-      worldEngine.camera.targetZoom = 0.9;
-    }
-  }
 
-  /* ═══════════════════════════════════════════════════════════════
-     WORLD ENGINE CONTROLLER & GAME LOOP IMPLEMENTATION
-     ═══════════════════════════════════════════════════════════════ */
-  function setWorldLayer(l) {
-    worldEngine.layer = l;
-    state.worldLayer = l;
-    save();
-    document.querySelectorAll('.map-layer-btn').forEach(btn => btn.classList.remove('active'));
-    event?.currentTarget?.classList?.add('active');
-    playBeep('click');
-  }
-
-  function toggleWorldMode(mode) {
-    worldEngine.mode = mode;
-    state.worldMode = mode;
-    save();
-    playBeep(mode === 'drive' ? 'engine' : 'click');
-    const container = document.getElementById('worldCanvasContainer');
-    if (container) {
-      if (mode === 'drive') container.classList.add('free-roam-cursor');
-      else container.classList.remove('free-roam-cursor');
-    }
-    const speedo = document.getElementById('gtaSpeedometer');
-    if (speedo) speedo.style.display = mode === 'drive' ? 'block' : 'none';
-
-    if (mode === 'drive') {
-      worldEngine.camera.targetZoom = 1.6;
-      worldEngine.camera.targetX = worldEngine.player.x;
-      worldEngine.camera.targetY = worldEngine.player.y;
-      toast('🏎️ Free-roam mode: Use WASD / Arrows to drive, Space to drift, Shift for Nitro!', 'info');
-    } else {
-      worldEngine.camera.targetZoom = 0.75;
-      toast('🧭 Google Maps view: Drag to pan, scroll wheel to zoom.', 'info');
-    }
-  }
-
-  function zoomWorld(delta) {
-    worldEngine.camera.targetZoom = Math.max(0.35, Math.min(2.4, worldEngine.camera.targetZoom + delta));
-    playBeep('click');
-  }
-
-  function recenterWorld() {
-    worldEngine.camera.targetX = worldEngine.player.x;
-    worldEngine.camera.targetY = worldEngine.player.y;
-    worldEngine.camera.targetZoom = worldEngine.mode === 'drive' ? 1.6 : 0.85;
-    playBeep('click');
-    toast('Camera centered on player.', 'info');
-  }
-
-  function searchWorldPois(query) {
-    const dropdown = document.getElementById('mapSearchDropdown');
-    if (!dropdown) return;
-    const q = String(query || '').trim().toLowerCase();
-    if (!q) { dropdown.style.display = 'none'; return; }
-
-    const results = [];
-    Object.values(WORLD_DATA.districts).forEach(d => {
-      if (d.name.toLowerCase().includes(q)) results.push({ id: d.id, name: d.name, type: 'District', icon: d.icon, x: d.x, y: d.y });
-    });
-    WORLD_DATA.plots.forEach(p => {
-      if (p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q)) results.push({ id: p.id, name: `${p.id} · ${p.name}`, type: 'Land Deed', icon: '🏝️', x: p.x, y: p.y });
-    });
-    WORLD_DATA.businesses.forEach(b => {
-      if (b.name.toLowerCase().includes(q) || b.type.toLowerCase().includes(q)) results.push({ id: b.id, name: b.name, type: b.type, icon: b.icon, x: b.x, y: b.y });
-    });
-    WORLD_DATA.parkedVehicles.forEach(v => {
-      if (v.name.toLowerCase().includes(q)) results.push({ id: v.id, name: v.name, type: 'Vehicle', icon: v.icon, x: v.x, y: v.y });
-    });
-
-    if (results.length === 0) {
-      dropdown.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--text-dim);text-align:center">No locations found.</div>';
-    } else {
-      dropdown.innerHTML = results.slice(0, 6).map(r => `
-        <div onclick="selectWorldPoi('${r.id}')" style="padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:10px;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='rgba(6,182,212,0.1)'" onmouseout="this.style.background='transparent'">
-          <span style="font-size:18px">${r.icon}</span>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:12px;font-weight:800;color:#fff">${r.name}</div>
-            <div style="font-size:10px;color:#22d3ee">${r.type}</div>
-          </div>
-        </div>
-      `).join('');
-    }
-    dropdown.style.display = 'block';
-  }
-
-  function selectWorldPoi(id) {
-    const dropdown = document.getElementById('mapSearchDropdown');
-    if (dropdown) dropdown.style.display = 'none';
-
-    // Find POI
-    let target = Object.values(WORLD_DATA.districts).find(d => d.id === id) ||
-                 WORLD_DATA.plots.find(p => p.id === id) ||
-                 WORLD_DATA.businesses.find(b => b.id === id) ||
-                 WORLD_DATA.parkedVehicles.find(v => v.id === id);
-
-    if (!target) return;
-
-    worldEngine.camera.targetX = target.x;
-    worldEngine.camera.targetY = target.y;
-    worldEngine.camera.targetZoom = 1.35;
-
-    // Set GPS Route
-    worldEngine.gpsRoute = [
-      { x: worldEngine.player.x, y: worldEngine.player.y },
-      { x: (worldEngine.player.x + target.x) / 2, y: (worldEngine.player.y + target.y) / 2 - 40 },
-      { x: target.x, y: target.y }
-    ];
-
-    playBeep('reward');
-    toast(`🧭 GPS destination set: ${target.name || id}!`, 'success');
-  }
-
-  function spawnVehicleInWorld(vehId) {
-    if (!vehId) return;
-    const v = DATA.vehicles.find(x => x.id === vehId);
-    if (!v) return;
-    worldEngine.player.inVehicle = vehId;
-    worldEngine.player.maxSpeed = 8 + (v.speed / 10);
-    worldEngine.player.accel = 0.25 + (v.acceleration / 300);
-    state.activeVehicle = vehId;
-    save();
-    playBeep('engine');
-    toast(`🏎️ Spawned ${v.name}! You are in the driver seat.`, 'success');
-    toggleWorldMode('drive');
-  }
-
-  function cycleRadio() {
-    const stations = ['Nexus Synth 94.2', 'Abu Dhabi Lo-Fi Beats', 'Desert Cyber Bass', 'Radio Off'];
-    const idx = stations.indexOf(worldEngine.radioStation);
-    worldEngine.radioStation = stations[(idx + 1) % stations.length];
-    playBeep('chat');
-    toast(`📻 Island Radio: ${worldEngine.radioStation}`, 'info');
-  }
-
-  function startWorldMission(type) {
-    if (type === 'courier') {
-      worldEngine.activeMission = {
-        type: 'courier',
-        title: 'Harbor to Saadiyat Express',
-        timeLeft: 45,
-        targetX: 1640,
-        targetY: 440,
-        reward: 500,
-        xp: 150
-      };
-      // Set GPS line
-      worldEngine.gpsRoute = [
-        { x: worldEngine.player.x, y: worldEngine.player.y },
-        { x: 840, y: 560 },
-        { x: 1250, y: 480 },
-        { x: 1640, y: 440 }
-      ];
-      playBeep('reward');
-      toast('📦 Express Contract: Deliver package to Saadiyat Atelier in 45s!', 'gold');
-      const hud = document.getElementById('gtaMissionHud');
-      if (hud) hud.style.display = 'flex';
-      toggleWorldMode('drive');
-    }
-  }
-
-  function cancelWorldMission() {
-    worldEngine.activeMission = null;
-    worldEngine.gpsRoute = null;
-    const hud = document.getElementById('gtaMissionHud');
-    if (hud) hud.style.display = 'none';
-    toast('Mission cancelled.', 'info');
-  }
-
-  function triggerGtaInteract() {
-    if (!worldEngine.nearestInteract) return;
-    const item = worldEngine.nearestInteract;
-    playBeep('click');
-
-    if (item.type === 'business') {
-      enterWorldBusiness(item.ref.id);
-    } else if (item.type === 'plot') {
-      inspectWorldDeed(item.ref.id);
-    } else if (item.type === 'atm') {
-      accessWorldAtm(item.ref.id);
-    } else if (item.type === 'vehicle') {
-      spawnVehicleInWorld(item.ref.id);
-    } else if (item.type === 'npc') {
-      modal(`Chat with ${item.ref.name}`, `
-        <div style="text-align:center;padding:12px">
-          <div style="font-size:54px">${item.ref.avatar}</div>
-          <h3 style="font-size:16px;font-weight:900;margin-top:8px">${item.ref.name} (${item.ref.role})</h3>
-          <p style="font-size:12px;color:var(--text-muted);margin-top:6px;line-height:1.6">"Welcome to Nexus Island! Need fast cash? I have an urgent courier delivery package headed to Saadiyat Atelier. Can you deliver it in 45 seconds?"</p>
-          <div style="display:flex;gap:8px;margin-top:20px;justify-content:center">
-            ${btn('📦 Accept Delivery Contract (+500 ISL)', 'closeModal();startWorldMission("courier")', 'gold')}
-            ${btn('Maybe later', 'closeModal()', 'ghost')}
-          </div>
-        </div>
-      `);
-    }
-  }
-
-  function enterWorldBusiness(bId) {
-    const b = DATA.businesses.find(x => x.id === bId);
-    if (!b) return;
-    playBeep('reward');
-    modal(`${b.name} (${b.type})`, `
-      <div style="padding:12px">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-          <span style="font-size:42px">${b.icon}</span>
-          <div>
-            <h3 style="font-size:18px;font-weight:900">${esc(b.name)}</h3>
-            <div style="font-size:11px;color:#22d3ee">${b.type} · ⭐ ${b.rating} · ${b.followers} followers</div>
-          </div>
-        </div>
-        <p style="font-size:12px;color:var(--text-muted);line-height:1.5">${esc(b.description)}</p>
-        <div style="display:flex;gap:8px;margin-top:20px">
-          ${btn('🛒 Browse Menu & Shop', `closeModal();nav('marketplace.html')`, 'primary', 'style="flex:1"')}
-          ${btn(state.following.includes(b.id)?'Following':'Follow', `toggleFollow('${b.id}')`, 'ghost')}
-        </div>
-      </div>
-    `);
-  }
-
-  function inspectWorldDeed(plotId) {
-    const p = DATA.land.find(x => x.id === plotId);
-    if (!p) return;
-    landDetail(plotId);
-  }
-
-  function accessWorldAtm(atmId) {
-    playBeep('cash');
-    modal('Nexus Central ATM Terminal', `
-      <div style="text-align:center;padding:16px">
-        <div style="font-size:48px;margin-bottom:8px">🏧</div>
-        <div class="metric-label">Autonomous Liquid Reserve</div>
-        <div style="font-size:24px;font-weight:900;color:#22d3ee;margin-top:6px">${money(state.wallet)}</div>
-        <p style="font-size:11px;color:var(--text-muted);margin-top:4px">Instant demo liquidity for testing island asset transactions.</p>
-        <div style="display:flex;gap:8px;margin-top:20px;justify-content:center">
-          ${btn('+1,000 ISL Demo Cash', 'closeModal();demoFunds(1000)', 'gold')}
-          ${btn('+5,000 ISL Whale Deposit', 'closeModal();demoFunds(5000)', 'primary')}
-        </div>
-      </div>
-    `);
-  }
-
-  function touchControlPress(action) {
-    if (action === 'gas') worldEngine.keys['ArrowUp'] = true;
-    if (action === 'brake') worldEngine.keys['ArrowDown'] = true;
-    if (action === 'nitro') worldEngine.keys['ShiftLeft'] = true;
-  }
-
-  function touchControlRelease(action) {
-    if (action === 'gas') delete worldEngine.keys['ArrowUp'];
-    if (action === 'brake') delete worldEngine.keys['ArrowDown'];
-    if (action === 'nitro') delete worldEngine.keys['ShiftLeft'];
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     CANVAS INITIALIZATION AND RENDER LOOP
-     ═══════════════════════════════════════════════════════════════ */
-  function initWorldEngine() {
-    if (typeof window === 'undefined' || typeof document === 'undefined') return;
-    const canvas = document.getElementById('nexusWorldCanvas');
-    if (!canvas || !canvas.getContext) return;
-
-    worldEngine.canvas = canvas;
-    worldEngine.ctx = canvas.getContext('2d');
-    worldEngine.radarCanvas = document.getElementById('nexusRadarCanvas');
-    if (worldEngine.radarCanvas && worldEngine.radarCanvas.getContext) {
-      worldEngine.radarCtx = worldEngine.radarCanvas.getContext('2d');
-    }
-
-    // Set canvas dimensions
-    const resize = () => {
-      if (!canvas.parentElement) return;
-      canvas.width = canvas.parentElement.clientWidth || 900;
-      canvas.height = canvas.parentElement.clientHeight || 620;
-    };
-    resize();
-    window.addEventListener('resize', resize);
-
-    // Parse URL params for deep-links (?drive=v1, ?inspect=L-101, ?target=b1)
-    if (window.location && window.location.search && typeof URLSearchParams !== 'undefined') {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const driveTarget = params.get('drive');
-        const inspectTarget = params.get('inspect') || params.get('target');
-        if (driveTarget) {
-          spawnVehicleInWorld(driveTarget);
-        } else if (inspectTarget) {
-          setTimeout(() => selectWorldPoi(inspectTarget), 250);
-        }
-      } catch {}
-    }
-
-    // Bind Mouse Drag & Wheel
-    canvas.addEventListener('mousedown', (e) => {
-      worldEngine.drag.isDown = true;
-      worldEngine.drag.startX = e.clientX;
-      worldEngine.drag.startY = e.clientY;
-      worldEngine.drag.camStartX = worldEngine.camera.x;
-      worldEngine.drag.camStartY = worldEngine.camera.y;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-      if (!worldEngine.drag.isDown) return;
-      const dx = (e.clientX - worldEngine.drag.startX) / worldEngine.camera.zoom;
-      const dy = (e.clientY - worldEngine.drag.startY) / worldEngine.camera.zoom;
-      worldEngine.camera.targetX = worldEngine.drag.camStartX - dx;
-      worldEngine.camera.targetY = worldEngine.drag.camStartY - dy;
-    });
-
-    window.addEventListener('mouseup', () => { worldEngine.drag.isDown = false; });
-
-    canvas.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.87;
-      worldEngine.camera.targetZoom = Math.max(0.35, Math.min(2.4, worldEngine.camera.targetZoom * zoomFactor));
-    }, { passive: false });
-
-    // Keyboard bindings for GTA Controls
-    window.addEventListener('keydown', (e) => {
-      worldEngine.keys[e.code] = true;
-      worldEngine.keys[e.key] = true;
-
-      if (e.key === 'e' || e.key === 'E' || e.key === 'f' || e.key === 'F') {
-        triggerGtaInteract();
-      }
-      if (e.key === 'h' || e.key === 'H') {
-        playBeep('horn');
-      }
-      if (e.key === 'r' || e.key === 'R') {
-        cycleRadio();
-      }
-    });
-
-    window.addEventListener('keyup', (e) => {
-      delete worldEngine.keys[e.code];
-      delete worldEngine.keys[e.key];
-    });
-
-    // Touch support detection
-    if ('ontouchstart' in window) {
-      const touchHud = document.getElementById('gtaTouchControls');
-      if (touchHud) touchHud.classList.add('mobile-active');
-    }
-
-    // Start Animation Loop
-    if (worldEngine.animId) cancelAnimationFrame(worldEngine.animId);
-    let lastTime = performance.now();
-
-    function loop(now) {
-      const dt = Math.min(0.06, (now - lastTime) / 1000);
-      lastTime = now;
-      updateWorldPhysics(dt);
-      renderWorldCanvas();
-      renderRadarMinimap();
-      worldEngine.animId = requestAnimationFrame(loop);
-    }
-    worldEngine.animId = requestAnimationFrame(loop);
-  }
-
-  function updateWorldPhysics(dt) {
-    const p = worldEngine.player;
-    const keys = worldEngine.keys;
-    const isDrive = worldEngine.mode === 'drive';
-
-    // Player Movement (Driving or Walking)
-    const forward = keys['KeyW'] || keys['ArrowUp'];
-    const backward = keys['KeyS'] || keys['ArrowDown'];
-    const left = keys['KeyA'] || keys['ArrowLeft'];
-    const right = keys['KeyD'] || keys['ArrowRight'];
-    const drift = keys['Space'];
-    const nitro = (keys['ShiftLeft'] || keys['ShiftRight']) && isDrive;
-
-    if (isDrive) {
-      // Vehicle Dynamics
-      const maxSpd = nitro ? p.maxSpeed * 1.6 : p.maxSpeed;
-      if (forward) {
-        p.speed = Math.min(maxSpd, p.speed + (p.accel * (nitro ? 2.0 : 1.0)));
-        if (Math.random() < 0.2) playBeep('engine');
-      } else if (backward) {
-        p.speed = Math.max(-p.maxSpeed * 0.4, p.speed - p.accel * 0.8);
-      } else {
-        p.speed *= p.friction;
-      }
-
-      // Steering
-      const turnAmt = 0.05 * (p.speed / p.maxSpeed);
-      if (left) p.angle -= turnAmt;
-      if (right) p.angle += turnAmt;
-
-      // Drift Skid Marks
-      if (drift && Math.abs(p.speed) > 3) {
-        p.drifting = true;
-        p.speed *= 0.97;
-        worldEngine.skidMarks.push({ x: p.x, y: p.y, angle: p.angle, alpha: 0.8 });
-        if (Math.random() < 0.3) playBeep('drift');
-      } else {
-        p.drifting = false;
-      }
-
-      // Velocity vectors
-      p.vx = Math.cos(p.angle) * p.speed;
-      p.vy = Math.sin(p.angle) * p.speed;
-      p.x += p.vx;
-      p.y += p.vy;
-
-      // Bounds clamping
-      p.x = Math.max(150, Math.min(WORLD_DATA.width - 150, p.x));
-      p.y = Math.max(150, Math.min(WORLD_DATA.height - 150, p.y));
-
-      // Nitro Depletion & Refill
-      if (nitro && p.speed > 4) {
-        p.nitro = Math.max(0, p.nitro - 0.4);
-        worldEngine.particles.push({ x: p.x - Math.cos(p.angle)*25, y: p.y - Math.sin(p.angle)*25, color: '#06b6d4', size: 6, alpha: 1 });
-      } else {
-        p.nitro = Math.min(100, p.nitro + 0.15);
-      }
-
-      // Camera Follows Player
-      worldEngine.camera.targetX = p.x;
-      worldEngine.camera.targetY = p.y;
-    } else {
-      // Walking mode
-      let mx = 0, my = 0;
-      if (forward) my -= 1;
-      if (backward) my += 1;
-      if (left) mx -= 1;
-      if (right) mx += 1;
-      const len = Math.hypot(mx, my);
-      if (len > 0) {
-        const walkSpeed = (keys['ShiftLeft'] || keys['ShiftRight']) ? 6.5 : 3.8;
-        p.x += (mx / len) * walkSpeed;
-        p.y += (my / len) * walkSpeed;
-        p.angle = Math.atan2(my, mx);
-      }
-    }
-
-    // Camera smoothing
-    const c = worldEngine.camera;
-    c.x += (c.targetX - c.x) * 0.12;
-    c.y += (c.targetY - c.y) * 0.12;
-    c.zoom += (c.targetZoom - c.zoom) * 0.12;
-
-    // Fade skidmarks and particles
-    for (let i = worldEngine.skidMarks.length - 1; i >= 0; i--) {
-      worldEngine.skidMarks[i].alpha -= 0.003;
-      if (worldEngine.skidMarks[i].alpha <= 0) worldEngine.skidMarks.splice(i, 1);
-    }
-    for (let i = worldEngine.particles.length - 1; i >= 0; i--) {
-      worldEngine.particles[i].alpha -= 0.04;
-      worldEngine.particles[i].size *= 0.95;
-      if (worldEngine.particles[i].alpha <= 0) worldEngine.particles.splice(i, 1);
-    }
-
-    // Proximity Detection
-    detectNearestInteraction();
-
-    // Mission Countdown Timer
-    if (worldEngine.activeMission) {
-      worldEngine.activeMission.timeLeft -= dt;
-      const countEl = document.getElementById('missionCountdown');
-      if (countEl) countEl.innerText = `Time Left: ${Math.max(0, Math.ceil(worldEngine.activeMission.timeLeft))}s`;
-
-      // Check destination arrival
-      const distToTarget = Math.hypot(p.x - worldEngine.activeMission.targetX, p.y - worldEngine.activeMission.targetY);
-      if (distToTarget < 90) {
-        // Mission Completed!
-        const rew = worldEngine.activeMission.reward;
-        state.wallet += rew;
-        state.streetCred = Math.min(5, (state.streetCred || 3) + 1);
-        worldEngine.streetCred = state.streetCred;
-        award(100, 50, 'Completed Express Courier Contract');
-        playBeep('cash');
-        toast(`🎉 Mission Success! Earned +${money(rew)} &amp; +1 Street Cred Star!`, 'success');
-        cancelWorldMission();
-      } else if (worldEngine.activeMission.timeLeft <= 0) {
-        toast('⏳ Time expired! Contract failed.', 'warn');
-        cancelWorldMission();
-      }
-    }
-
-    // DOM HUD Updates
-    const speedo = document.getElementById('speedoVal');
-    if (speedo) speedo.innerText = Math.round(Math.abs(p.speed) * 18);
-    const nitroBar = document.getElementById('nitroBar');
-    if (nitroBar) nitroBar.style.width = `${p.nitro}%`;
-
-    // Detect Current Location
-    updateLocationBadge();
-  }
-
-  function detectNearestInteraction() {
-    const p = worldEngine.player;
-    let closest = null;
-    let minD = 75;
-
-    // Check businesses
-    WORLD_DATA.businesses.forEach(b => {
-      const d = Math.hypot(p.x - b.x, p.y - b.y);
-      if (d < minD) { minD = d; closest = { type: 'business', ref: b, label: `Enter ${b.name}` }; }
-    });
-    // Check plots
-    WORLD_DATA.plots.forEach(l => {
-      const d = Math.hypot(p.x - (l.x + l.w/2), p.y - (l.y + l.h/2));
-      if (d < minD) { minD = d; closest = { type: 'plot', ref: l, label: `Inspect Deed ${l.id} (${l.name})` }; }
-    });
-    // Check ATMs
-    WORLD_DATA.atms.forEach(a => {
-      const d = Math.hypot(p.x - a.x, p.y - a.y);
-      if (d < minD) { minD = d; closest = { type: 'atm', ref: a, label: `Access ${a.name}` }; }
-    });
-    // Check Parked Cars
-    WORLD_DATA.parkedVehicles.forEach(v => {
-      const d = Math.hypot(p.x - v.x, p.y - v.y);
-      if (d < minD) { minD = d; closest = { type: 'vehicle', ref: v, label: `Drive ${v.name}` }; }
-    });
-    // Check NPCs
-    WORLD_DATA.npcs.forEach(n => {
-      const d = Math.hypot(p.x - n.x, p.y - n.y);
-      if (d < minD) { minD = d; closest = { type: 'npc', ref: n, label: `Talk to ${n.name}` }; }
-    });
-
-    worldEngine.nearestInteract = closest;
-    const prompt = document.getElementById('gtaPromptBox');
-    const promptText = document.getElementById('gtaPromptText');
-    if (prompt && promptText) {
-      if (closest) {
-        promptText.innerText = closest.label;
-        prompt.style.display = 'flex';
-      } else {
-        prompt.style.display = 'none';
-      }
-    }
-  }
-
-  function updateLocationBadge() {
-    const p = worldEngine.player;
-    let nearestDistrict = Object.values(WORLD_DATA.districts)[0];
-    let minD = 99999;
-    Object.values(WORLD_DATA.districts).forEach(d => {
-      const dist = Math.hypot(p.x - d.x, p.y - d.y);
-      if (dist < minD) { minD = dist; nearestDistrict = d; }
-    });
-    const badge = document.getElementById('gtaLocationBadge');
-    if (badge) badge.innerText = `${nearestDistrict.icon} ${nearestDistrict.name}`;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     CANVAS RENDERING: GOOGLE MAPS + GTA SCENE
-     ═══════════════════════════════════════════════════════════════ */
-  function renderWorldCanvas() {
-    const ctx = worldEngine.ctx;
-    const canvas = worldEngine.canvas;
-    if (!ctx || !canvas) return;
-
-    const w = canvas.width;
-    const h = canvas.height;
-    const cam = worldEngine.camera;
-    const layer = worldEngine.layer;
-
-    ctx.clearRect(0, 0, w, h);
-
-    // Camera Transform Matrix
-    ctx.save();
-    ctx.translate(w / 2, h / 2);
-    ctx.scale(cam.zoom, cam.zoom);
-    ctx.translate(-cam.x, -cam.y);
-
-    // 1. OCEAN BACKGROUND & WATER RIPPLES
-    worldEngine.wavePhase += 0.02;
-    const oceanGrad = ctx.createRadialGradient(cam.x, cam.y, 100, cam.x, cam.y, 1600);
-    if (layer === 'cyber') {
-      oceanGrad.addColorStop(0, '#020713');
-      oceanGrad.addColorStop(1, '#010309');
-    } else {
-      oceanGrad.addColorStop(0, '#083344');
-      oceanGrad.addColorStop(0.5, '#042238');
-      oceanGrad.addColorStop(1, '#021324');
-    }
-    ctx.fillStyle = oceanGrad;
-    ctx.fillRect(-800, -800, WORLD_DATA.width + 1600, WORLD_DATA.height + 1600);
-
-    // Water rings
-    ctx.strokeStyle = layer === 'cyber' ? 'rgba(99,102,241,0.1)' : 'rgba(34,211,238,0.15)';
-    ctx.lineWidth = 2;
-    for (let r = 0; r < 4; r++) {
-      const rad = 250 + ((r * 120 + worldEngine.wavePhase * 50) % 600);
-      ctx.beginPath();
-      ctx.arc(520, 520, rad, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    // 2. ISLAND ARCHIPELAGO MAIN LANDMASS
-    Object.values(WORLD_DATA.districts).forEach(d => {
-      // Sand Beach Buffer Ring
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, d.radius + 30, 0, Math.PI * 2);
-      ctx.fillStyle = layer === 'cyber' ? 'rgba(99,102,241,0.06)' : 'rgba(251,191,36,0.25)';
-      ctx.fill();
-
-      // Landmass Body
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
-      if (layer === 'cyber') {
-        ctx.fillStyle = '#061325';
-        ctx.strokeStyle = 'rgba(6,182,212,0.4)';
-        ctx.lineWidth = 2;
-        ctx.fill();
-        ctx.stroke();
-      } else if (layer === 'street') {
-        ctx.fillStyle = '#0c233c';
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.lineWidth = 3;
-        ctx.fill();
-        ctx.stroke();
-      } else {
-        // Satellite Photorealistic Greens & Terrain
-        const landGrad = ctx.createRadialGradient(d.x - 30, d.y - 30, 20, d.x, d.y, d.radius);
-        landGrad.addColorStop(0, d.color + '55');
-        landGrad.addColorStop(0.7, '#064e3b');
-        landGrad.addColorStop(1, '#065f46');
-        ctx.fillStyle = landGrad;
-        ctx.fill();
-      }
-
-      // District Center Pulse Beacon
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, 8, 0, Math.PI * 2);
-      ctx.fillStyle = d.color;
-      ctx.fill();
-    });
-
-    // 3. YAS GRAND PRIX CIRCUIT ROAD
-    ctx.beginPath();
-    const pts = WORLD_DATA.yasCircuit;
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
-    ctx.closePath();
-    ctx.lineWidth = 32;
-    ctx.strokeStyle = layer === 'cyber' ? '#1e1b4b' : '#1e293b';
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();
-
-    // Circuit Neon Curbs
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = layer === 'cyber' ? '#a855f7' : '#f43f5e';
-    ctx.stroke();
-
-    // 4. ROAD NETWORK & BRIDGES
-    WORLD_DATA.roads.forEach(r => {
-      // Under-shadow / bridge deck
-      ctx.beginPath();
-      ctx.moveTo(r.from[0], r.from[1]);
-      ctx.lineTo(r.to[0], r.to[1]);
-      ctx.lineWidth = r.bridge ? 36 : 28;
-      ctx.strokeStyle = layer === 'cyber' ? '#040d1a' : r.bridge ? '#334155' : '#1e293b';
-      ctx.lineCap = 'round';
-      ctx.stroke();
-
-      // Road Surface
-      ctx.beginPath();
-      ctx.moveTo(r.from[0], r.from[1]);
-      ctx.lineTo(r.to[0], r.to[1]);
-      ctx.lineWidth = r.bridge ? 28 : 22;
-      ctx.strokeStyle = layer === 'cyber' ? '#061a33' : '#334155';
-      ctx.stroke();
-
-      // Road Center Divider
-      ctx.beginPath();
-      ctx.moveTo(r.from[0], r.from[1]);
-      ctx.lineTo(r.to[0], r.to[1]);
-      ctx.lineWidth = 2;
-      ctx.setLineDash([12, 8]);
-      ctx.strokeStyle = layer === 'cyber' ? '#22d3ee' : '#fbbf24';
-      ctx.stroke();
-      ctx.setLineDash([]);
-    });
-
-    // 5. LAND PARCELS & DEEDS (When in Deeds or Map Mode)
-    WORLD_DATA.plots.forEach(plot => {
-      ctx.beginPath();
-      ctx.rect(plot.x, plot.y, plot.w, plot.h);
-      if (layer === 'deeds') {
-        ctx.fillStyle = 'rgba(6,182,212,0.12)';
-        ctx.strokeStyle = '#22d3ee';
-        ctx.lineWidth = 2;
-      } else {
-        ctx.fillStyle = 'rgba(255,255,255,0.03)';
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-        ctx.lineWidth = 1;
-      }
-      ctx.fill();
-      ctx.stroke();
-
-      // Plot ID label
-      ctx.fillStyle = layer === 'deeds' ? '#22d3ee' : 'rgba(255,255,255,0.5)';
-      ctx.font = 'bold 10px JetBrains Mono';
-      ctx.fillText(plot.id, plot.x + 8, plot.y + 18);
-    });
-
-    // 6. TIRE SKID MARKS
-    worldEngine.skidMarks.forEach(sm => {
-      ctx.save();
-      ctx.translate(sm.x, sm.y);
-      ctx.rotate(sm.angle);
-      ctx.fillStyle = `rgba(15, 23, 42, ${sm.alpha})`;
-      ctx.fillRect(-6, -6, 12, 4);
-      ctx.fillRect(-6, 4, 12, 4);
-      ctx.restore();
-    });
-
-    // 7. GPS WAYPOINT LINE (When Active)
-    if (worldEngine.gpsRoute && worldEngine.gpsRoute.length > 1) {
-      ctx.beginPath();
-      ctx.moveTo(worldEngine.gpsRoute[0].x, worldEngine.gpsRoute[0].y);
-      for (let i = 1; i < worldEngine.gpsRoute.length; i++) {
-        ctx.lineTo(worldEngine.gpsRoute[i].x, worldEngine.gpsRoute[i].y);
-      }
-      ctx.lineWidth = 8;
-      ctx.strokeStyle = '#fbbf24';
-      ctx.setLineDash([14, 8]);
-      ctx.lineCap = 'round';
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-
-    // 8. STOREFRONTS & ENTERPRISES
-    WORLD_DATA.businesses.forEach(b => {
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, 16, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(8,20,42,0.9)';
-      ctx.strokeStyle = '#06b6d4';
-      ctx.lineWidth = 2;
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.font = '16px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(b.icon, b.x, b.y);
-
-      // Name Label in Map Mode
-      if (cam.zoom > 0.8) {
-        ctx.font = 'bold 9px Plus Jakarta Sans';
-        ctx.fillStyle = '#fff';
-        ctx.fillText(b.name, b.x, b.y + 24);
-      }
-    });
-
-    // 9. PARKED VEHICLES & ATMS
-    WORLD_DATA.parkedVehicles.forEach(v => {
-      if (v.id === worldEngine.player.inVehicle && worldEngine.mode === 'drive') return;
-      ctx.save();
-      ctx.translate(v.x, v.y);
-      ctx.rotate(v.angle);
-      ctx.font = '22px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(v.icon, 0, 0);
-      ctx.restore();
-    });
-
-    WORLD_DATA.atms.forEach(a => {
-      ctx.beginPath();
-      ctx.arc(a.x, a.y, 12, 0, Math.PI * 2);
-      ctx.fillStyle = '#059669';
-      ctx.fill();
-      ctx.font = '12px sans-serif';
-      ctx.fillStyle = '#fff';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('🏧', a.x, a.y);
-    });
-
-    // 10. STUNT RAMPS
-    WORLD_DATA.stuntRamps.forEach(sr => {
-      ctx.save();
-      ctx.translate(sr.x, sr.y);
-      ctx.rotate(sr.angle);
-      ctx.fillStyle = '#eab308';
-      ctx.fillRect(-14, -8, 28, 16);
-      ctx.fillStyle = '#000';
-      ctx.font = '9px monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('▲▲', 0, 0);
-      ctx.restore();
-    });
-
-    // 11. NPC RESIDENTS
-    WORLD_DATA.npcs.forEach(n => {
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, 14, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(245,158,11,0.2)';
-      ctx.strokeStyle = '#f59e0b';
-      ctx.lineWidth = 2;
-      ctx.fill();
-      ctx.stroke();
-      ctx.font = '16px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(n.avatar, n.x, n.y);
-    });
-
-    // 12. EXHAUST & NITRO PARTICLES
-    worldEngine.particles.forEach(pt => {
-      ctx.beginPath();
-      ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
-      ctx.fillStyle = pt.color;
-      ctx.globalAlpha = pt.alpha;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    });
-
-    // 13. PLAYER AVATAR & ACTIVE DRIVEN VEHICLE
-    const p = worldEngine.player;
-    ctx.save();
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.angle);
-
-    if (worldEngine.mode === 'drive') {
-      // Vehicle Chassis
-      const veh = DATA.vehicles.find(v => v.id === p.inVehicle) || DATA.vehicles[0];
-      // Car Body
-      ctx.fillStyle = '#0ea5e9';
-      ctx.shadowColor = '#06b6d4';
-      ctx.shadowBlur = 15;
-      ctx.fillRect(-22, -12, 44, 24);
-      ctx.shadowBlur = 0;
-
-      // Windshield & Roof
-      ctx.fillStyle = '#041428';
-      ctx.fillRect(-8, -9, 20, 18);
-
-      // Headlights
-      ctx.fillStyle = '#fef08a';
-      ctx.fillRect(20, -11, 4, 6);
-      ctx.fillRect(20, 5, 4, 6);
-
-      // Taillights
-      ctx.fillStyle = p.speed < 0 ? '#fff' : '#f43f5e';
-      ctx.fillRect(-24, -10, 3, 5);
-      ctx.fillRect(-24, 5, 3, 5);
-    } else {
-      // Avatar Walking Circle
-      ctx.beginPath();
-      ctx.arc(0, 0, 14, 0, Math.PI * 2);
-      ctx.fillStyle = '#06b6d4';
-      ctx.fill();
-      ctx.font = '16px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(state.user?.avatar || '👤', 0, 0);
-    }
-    ctx.restore();
-
-    ctx.restore();
-  }
-
-  /* ═══════════════════════════════════════════════════════════════
-     GTA CIRCULAR RADAR MINIMAP RENDERER
-     ═══════════════════════════════════════════════════════════════ */
-  function renderRadarMinimap() {
-    const rctx = worldEngine.radarCtx;
-    const rcan = worldEngine.radarCanvas;
-    if (!rctx || !rcan) return;
-
-    const rw = rcan.width;
-    const rh = rcan.height;
-    const p = worldEngine.player;
-
-    rctx.clearRect(0, 0, rw, rh);
-
-    // Circular clip
-    rctx.save();
-    rctx.beginPath();
-    rctx.arc(rw / 2, rh / 2, rw / 2, 0, Math.PI * 2);
-    rctx.clip();
-
-    // Radar Dark Oceanic Background
-    rctx.fillStyle = '#040d1a';
-    rctx.fillRect(0, 0, rw, rh);
-
-    // Radar Transform centered on player
-    rctx.translate(rw / 2, rh / 2);
-    const rScale = 0.22;
-    rctx.scale(rScale, rScale);
-    rctx.translate(-p.x, -p.y);
-
-    // Roads on radar
-    rctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    rctx.lineWidth = 18;
-    rctx.lineCap = 'round';
-    WORLD_DATA.roads.forEach(r => {
-      rctx.beginPath();
-      rctx.moveTo(r.from[0], r.from[1]);
-      rctx.lineTo(r.to[0], r.to[1]);
-      rctx.stroke();
-    });
-
-    // POI Blips
-    WORLD_DATA.businesses.forEach(b => {
-      rctx.beginPath();
-      rctx.arc(b.x, b.y, 18, 0, Math.PI * 2);
-      rctx.fillStyle = '#06b6d4';
-      rctx.fill();
-    });
-
-    WORLD_DATA.npcs.forEach(n => {
-      rctx.beginPath();
-      rctx.arc(n.x, n.y, 16, 0, Math.PI * 2);
-      rctx.fillStyle = '#f59e0b';
-      rctx.fill();
-    });
-
-    // GPS route on radar
-    if (worldEngine.gpsRoute && worldEngine.gpsRoute.length > 1) {
-      rctx.beginPath();
-      rctx.moveTo(worldEngine.gpsRoute[0].x, worldEngine.gpsRoute[0].y);
-      for (let i = 1; i < worldEngine.gpsRoute.length; i++) {
-        rctx.lineTo(worldEngine.gpsRoute[i].x, worldEngine.gpsRoute[i].y);
-      }
-      rctx.lineWidth = 14;
-      rctx.strokeStyle = '#fbbf24';
-      rctx.stroke();
-    }
-
-    rctx.restore();
-
-    // Player Heading Arrow in Center of Radar
-    rctx.save();
-    rctx.translate(rw / 2, rh / 2);
-    rctx.rotate(p.angle);
-    rctx.beginPath();
-    rctx.moveTo(10, 0);
-    rctx.lineTo(-8, -7);
-    rctx.lineTo(-4, 0);
-    rctx.lineTo(-8, 7);
-    rctx.closePath();
-    rctx.fillStyle = '#22d3ee';
-    rctx.shadowColor = '#22d3ee';
-    rctx.shadowBlur = 8;
-    rctx.fill();
-    rctx.restore();
+    // Update quick-travel button active states
+    document.querySelectorAll('.district-pin').forEach(el => el.classList.remove('district-pin-active'));
+    const pins = document.querySelectorAll('.district-pin');
+    pins.forEach(pin => { if (pin.getAttribute('onclick')?.includes(id)) pin.classList.add('district-pin-active'); });
   }
 
   /* ═══════════════════════════════════════════════
@@ -2801,26 +2127,88 @@
 
   /* LAND */
   function land() {
-    return `<section class="fade" style="display:flex;flex-direction:column;gap:16px">
-      ${pageHeader('Utility Ownership','Land Marketplace & Deeds','Own permanent plots to build residences, studios, or businesses.',btn('Build Home','buildHome()','primary')+btn('Guide','nova()','ghost'))}
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">
-        ${DATA.land.map(l => card(`
-          <div style="padding:20px">
-            <div style="display:flex;justify-content:space-between;align-items:start">
-              <div><span class="tag tag-cyan">${l.id}</span><h3 style="font-size:15px;font-weight:900;margin-top:8px">${esc(l.name)}</h3><div style="font-size:11px;color:var(--text-muted);margin-top:4px">${l.district} · ${l.size}</div></div>
-              <div style="text-align:right"><div style="font-size:16px;font-weight:900;color:#22d3ee">${money(l.price)}</div><div style="font-size:10px;color:var(--text-dim)">${aed(l.price)}</div></div>
+    const myLandIds = state.ownedLand || [];
+    const myBuildings = state.landBuildings || {};
+    const visaTier = VISA_TIERS.find(v => v.id === (state.visaTier || 'resident')) || VISA_TIERS[1];
+
+    return `<section class="fade" style="display:flex;flex-direction:column;gap:20px">
+      ${pageHeader('Utility Ownership, Emaar Architecture & Escrow','Land Marketplace, House Builder & Secondary Resale','Buy sovereign UAE plots, construct custom Emaar villas & penthouses, and sell appreciated real estate via ADGM Atomic Escrow.',btn('🏗️ Build House','openHouseBuilderModal("'+(myLandIds[0]||'L-101')+'")','gold')+btn('NOVA Advisor','nova()','ghost'))}
+
+      <!-- MY SOVEREIGN LAND & HOUSE BUILDER -->
+      ${card(`<div style="padding:22px;background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(6,182,212,0.04))">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px">
+          <div>
+            <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#fbbf24;font-weight:800">My Sovereign Land Portfolio · ${myLandIds.length} Deed${myLandIds.length===1?'':'s'} Owned</div>
+            <div style="font-size:16px;font-weight:900;margin-top:2px">Construct Custom Houses & Resell via Atomic Escrow</div>
+          </div>
+          <span class="tag tag-emerald">🛡️ ADGM Atomic Escrow Protected · ${visaTier.id==='golden'||visaTier.id==='diplomatic'?'0% Golden Visa Fee':'5% Escrow Fee'}</span>
+        </div>
+        ${myLandIds.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">
+          ${myLandIds.map(lid => {
+            const l = DATA.land.find(x => x.id === lid);
+            if (!l) return '';
+            const bld = myBuildings[lid];
+            const bp = bld ? HOUSE_BLUEPRINTS.find(h => h.id === bld.blueprintId) : null;
+            const marketVal = Math.round((l.price + (bp ? bp.valueBoost : 0)) * 1.12);
+            return `<div style="padding:16px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;justify-content:space-between;gap:12px">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:start">
+                  <div>
+                    <span class="tag tag-cyan">${l.id}</span>
+                    <div style="font-size:14px;font-weight:800;margin-top:6px">${esc(l.name)}</div>
+                    <div style="font-size:11px;color:var(--text-muted)">${l.district} · ${l.size}</div>
+                  </div>
+                  <div style="text-align:right">
+                    <div style="font-size:10px;color:var(--text-dim)">Est. Market Value</div>
+                    <div style="font-size:15px;font-weight:900;color:#34d399;font-family:'JetBrains Mono',monospace">${money(marketVal)}</div>
+                  </div>
+                </div>
+                <div style="margin-top:10px;padding:10px;border-radius:10px;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.05)">
+                  ${bp ? `<div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px">${bp.icon}</span><div><div style="font-size:12px;font-weight:800;color:#fbbf24">${esc(bp.name)}</div><div style="font-size:10px;color:var(--text-dim)">${esc(bp.developer)} · +${money(bp.valueBoost)} value boost</div></div></div>` : `<div style="font-size:11px;color:var(--text-muted)">🏗️ Unbuilt Sovereign Land — Ready for Emaar or Custom Blueprint Construction</div>`}
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                ${btn(bp ? '🏗️ Upgrade House' : '🏗️ Build House', `openHouseBuilderModal('${l.id}')`, 'gold', 'class="btn btn-gold btn-sm" style="flex:1"')}
+                ${btn('💰 Sell Deed / House', `sellLandModal('${l.id}')`, 'ghost', 'class="btn btn-ghost btn-sm"')}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>` : `<div style="font-size:13px;color:var(--text-muted)">You do not currently hold any land deeds. Acquire a parcel below to build a custom villa and trade on the secondary market.</div>`}
+      </div>`)}
+
+      <div class="metric-label">Primary & Secondary Land Registry (${DATA.land.length} Parcels)</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px">
+        ${DATA.land.map(l => {
+          const isMine = myLandIds.includes(l.id);
+          const bld = myBuildings[l.id];
+          const bp = bld ? HOUSE_BLUEPRINTS.find(h => h.id === bld.blueprintId) : null;
+          return card(`
+          <div style="padding:24px;display:flex;flex-direction:column;justify-content:space-between;height:100%;gap:16px">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:start;gap:12px">
+                <div>
+                  <span style="font-size:10px;padding:2px 8px;border-radius:var(--radius-full);background:var(--accent-soft);color:var(--accent-text);font-weight:600;font-family:'JetBrains Mono',monospace">${l.id}</span>
+                  ${isMine ? '<span class="tag tag-emerald" style="margin-left:6px">YOUR DEED</span>' : ''}
+                  <h3 style="font-size:1.0625rem;font-weight:700;margin-top:10px;color:var(--text-primary)">${esc(l.name)}</h3>
+                  <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">${l.district} · ${l.size}</div>
+                </div>
+                <div style="text-align:right;flex-shrink:0">
+                  <div style="font-size:1.0625rem;font-weight:800;color:var(--accent-text);font-family:'JetBrains Mono',monospace">${money(l.price)}</div>
+                  <div style="font-size:0.6875rem;color:var(--text-dim);margin-top:2px">${aed(l.price)}</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px">
+                <span style="font-size:10px;padding:4px 8px;border-radius:var(--radius-sm);background:var(--bg-tertiary);border:1px solid var(--border);font-weight:600;color:var(--text-secondary)">${l.zoning}</span>
+                <span style="font-size:10px;padding:4px 8px;border-radius:var(--radius-sm);background:var(--bg-tertiary);border:1px solid var(--border);font-weight:600;color:var(--text-secondary)">${l.potential}</span>
+                ${bp ? `<span class="tag tag-amber">${bp.icon} ${esc(bp.name)}</span>` : ''}
+              </div>
             </div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
-              <span style="font-size:10px;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted)">${l.zoning}</span>
-              <span style="font-size:10px;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted)">${l.potential}</span>
-            </div>
-            <div style="display:flex;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)">
-              ${btn('📍 Map View',`nav('island.html?inspect=${l.id}')`,'ghost','class="btn btn-ghost btn-sm"')}
-              ${btn('View Deed',`landDetail('${l.id}')`,'ghost','class="btn btn-ghost btn-sm"')}
-              ${l.available?btn('Acquire',`buyLand('${l.id}')`,'primary','class="btn btn-primary btn-sm"'):'<span class="tag tag-rose">Sold</span>'}
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px;padding-top:14px;border-top:1px solid var(--border)">
+              ${btn('View Title Deed',`landDetail('${l.id}')`,'ghost','class="btn btn-ghost btn-sm"')}
+              ${isMine ? btn('🏗️ Build / Manage',`openHouseBuilderModal('${l.id}')`,'gold','class="btn btn-gold btn-sm"') : l.available ? btn('Acquire Parcel',`buyLand('${l.id}')`,'primary','class="btn btn-primary btn-sm"') : '<span style="font-size:11px;padding:3px 10px;border-radius:var(--radius-full);background:rgba(239,68,68,0.1);color:var(--danger);font-weight:600">Registered</span>'}
             </div>
           </div>
-        `)).join('')}
+        `);}).join('')}
       </div>
     </section>`;
   }
@@ -2828,14 +2216,18 @@
   function landDetail(id) {
     const l = DATA.land.find(x=>x.id===id);
     if (!l) return;
-    modal(`Title Deed: ${l.id}`, `
-      <div style="display:flex;flex-direction:column;gap:16px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          ${[['Plot ID',l.id],['District',l.district],['Size',l.size],['Zoning',l.zoning],['Nearby',l.nearby],['Potential',l.potential]].map(([k,v])=>`<div style="padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05)"><div class="metric-label">${k}</div><div style="font-size:13px;font-weight:700;margin-top:4px">${esc(v)}</div></div>`).join('')}
+    const isMine = (state.ownedLand||[]).includes(l.id);
+    modal(`Title Deed Registry: ${l.id}`, `
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          ${[['Plot ID',l.id],['District',l.district],['Size Scale',l.size],['Zoning Code',l.zoning],['Nearby Landmark',l.nearby],['Development Potential',l.potential]].map(([k,v])=>`<div style="padding:12px 14px;border-radius:var(--radius-md);background:var(--bg-tertiary);border:1px solid var(--border)"><div class="metric-label">${k}</div><div style="font-size:0.875rem;font-weight:600;margin-top:4px;color:var(--text-primary)">${esc(v)}</div></div>`).join('')}
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
-          <div><div style="font-size:20px;font-weight:900;color:#22d3ee">${money(l.price)}</div><div style="font-size:11px;color:var(--text-dim)">${aed(l.price)}</div></div>
-          ${l.available?btn('Acquire Parcel',`closeModal();buyLand('${l.id}')`,'gold'):'<span class="tag tag-rose">Not Available</span>'}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--border)">
+          <div>
+            <div style="font-size:1.25rem;font-weight:800;color:var(--accent-text);font-family:'JetBrains Mono',monospace">${money(l.price)}</div>
+            <div style="font-size:0.75rem;color:var(--text-dim)">${aed(l.price)} equivalent</div>
+          </div>
+          ${isMine ? btn('🏗️ Build House on Plot',`closeModal();openHouseBuilderModal('${l.id}')`,'gold') : l.available ? btn('Acquire Sovereign Deed',`closeModal();buyLand('${l.id}')`,'primary') : '<span style="font-size:12px;padding:4px 12px;border-radius:var(--radius-full);background:rgba(239,68,68,0.1);color:var(--danger);font-weight:600">Already Registered</span>'}
         </div>
       </div>
     `);
@@ -2848,12 +2240,12 @@
   function buyLand(id) {
     const l = DATA.land.find(x=>x.id===id);
     if (!l) return;
-    if (state.wallet < l.price) return toast('Insufficient ISL balance.','warn');
-    modal(`Confirm: Acquire ${l.id}`, `
-      <p style="font-size:13px;color:var(--text-secondary)">Acquire <b>${esc(l.name)}</b> (${l.size}) in ${l.district} for <b style="color:#22d3ee">${money(l.price)}</b>?</p>
-      <div style="display:flex;gap:8px;margin-top:20px;justify-content:end">
+    if (state.wallet < l.price) return toast('Insufficient ISL balance in wallet.','warn');
+    modal(`Confirm Deed Acquisition: ${l.id}`, `
+      <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.6">Acquire sovereign title for <b>${esc(l.name)}</b> (${l.size}) in ${l.district} for <b style="color:var(--accent-text);font-family:'JetBrains Mono',monospace">${money(l.price)}</b> via ADGM Atomic Escrow?</p>
+      <div style="display:flex;gap:10px;margin-top:24px;justify-content:flex-end">
         ${btn('Cancel','closeModal()','ghost')}
-        ${btn('Confirm Purchase',`confirmLand('${l.id}')`,'gold')}
+        ${btn('Confirm & Sign Deed',`confirmLand('${l.id}')`,'primary')}
       </div>
     `);
   }
@@ -2862,18 +2254,140 @@
     const l = DATA.land.find(x=>x.id===id);
     if (!l || state.wallet < l.price) return toast('Cannot complete.','warn');
     state.wallet -= l.price;
-    state.ownedLand.push(id);
+    if (!state.ownedLand.includes(id)) state.ownedLand.push(id);
     l.available = false;
-    state.transactions.unshift({id:uid('tx'),description:`Acquired ${l.name} (${l.id})`,amount:-l.price,type:'Purchase',date:'Just now',status:'Settled'});
+    state.transactions.unshift({id:uid('tx'),description:`Acquired ${l.name} (${l.id})`,amount:-l.price,type:'Real Estate',date:'Just now',status:'Settled · Escrow Verified',hash:txHash(l.id+Date.now())});
     award(50, 0, `Acquired land ${l.id}`);
     closeModal();
     toast(`🏝️ Title deed for ${l.id} is yours!`, 'success');
     refresh();
   }
 
+  function openHouseBuilderModal(landId) {
+    const targetId = landId || (state.ownedLand && state.ownedLand[0]);
+    const l = DATA.land.find(x => x.id === targetId);
+    if (!l || !(state.ownedLand||[]).includes(l.id)) {
+      return toast('Acquire a land plot first to build a custom house!', 'warn');
+    }
+    const currentBld = (state.landBuildings || {})[l.id];
+    modal(`🏗️ Architectural Studio — Build on ${l.id} (${l.name})`, `
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="padding:14px;border-radius:12px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.18)">
+          <div style="font-size:12px;font-weight:800;color:#fbbf24">Emaar Virtual Developments & Custom Blueprints</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Constructing a certified blueprint permanently boosts your land parcel's resale value and unlocks 2.5D interior customization.</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">
+          ${HOUSE_BLUEPRINTS.map(bp => {
+            const isBuilt = currentBld && currentBld.blueprintId === bp.id;
+            return `<div style="padding:14px;border-radius:14px;background:${isBuilt?'rgba(16,185,129,0.08)':'rgba(255,255,255,0.03)'};border:1px solid ${isBuilt?'rgba(16,185,129,0.3)':'rgba(255,255,255,0.08)'};display:flex;flex-direction:column;justify-content:space-between;gap:10px">
+              <div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:26px">${bp.icon}</span>
+                  <div>
+                    <div style="font-size:13px;font-weight:800">${esc(bp.name)}</div>
+                    <div style="font-size:10px;color:var(--accent-text);font-weight:700">${esc(bp.developer)} · ${esc(bp.style)}</div>
+                  </div>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.05)">
+                  <span style="color:var(--text-muted)">Build Cost: <b style="color:var(--text-primary)">${money(bp.cost)}</b></span>
+                  <span style="color:#34d399;font-weight:800">+${money(bp.valueBoost)} Value</span>
+                </div>
+              </div>
+              ${isBuilt ? `<span class="tag tag-emerald" style="text-align:center">✓ Built on ${l.id}</span>` : btn(`Construct (${money(bp.cost)})`, `confirmBuildBlueprint('${l.id}','${bp.id}')`, 'gold', 'class="btn btn-gold btn-sm" style="width:100%"')}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    `);
+  }
+
+  function confirmBuildBlueprint(landId, blueprintId) {
+    const l = DATA.land.find(x => x.id === landId);
+    const bp = HOUSE_BLUEPRINTS.find(x => x.id === blueprintId);
+    if (!l || !bp) return;
+    if (state.wallet < bp.cost) return toast(`Insufficient ISL. Need ${money(bp.cost)}.`, 'warn');
+    state.wallet -= bp.cost;
+    if (!state.landBuildings) state.landBuildings = {};
+    state.landBuildings[landId] = { blueprintId: bp.id, builtAt: 'Just now', customName: `${state.user.name}'s ${bp.name}` };
+    state.home.built = true;
+    state.home.name = `${bp.name} (${landId})`;
+    state.transactions.unshift({
+      id: uid('tx'),
+      description: `Constructed ${bp.name} on ${landId} via ${bp.developer}`,
+      amount: -bp.cost,
+      type: 'Construction',
+      date: 'Just now',
+      status: 'Settled · Emaar Certified',
+      hash: txHash(landId + bp.id)
+    });
+    award(90, 40, `Built ${bp.name} on ${landId}`);
+    save();
+    closeModal();
+    toast(`🏗️ ${bp.name} constructed on ${landId}! Property value increased by ${money(bp.valueBoost)}.`, 'success');
+    refresh();
+  }
+
+  function sellLandModal(landId) {
+    const l = DATA.land.find(x => x.id === landId);
+    if (!l || !(state.ownedLand||[]).includes(landId)) return;
+    const bld = (state.landBuildings || {})[landId];
+    const bp = bld ? HOUSE_BLUEPRINTS.find(h => h.id === bld.blueprintId) : null;
+    const grossSale = Math.round((l.price + (bp ? bp.valueBoost : 0)) * 1.12);
+    const isFeeWaived = state.visaTier === 'golden' || state.visaTier === 'diplomatic';
+    const fee = isFeeWaived ? 0 : Math.round(grossSale * 0.05);
+    const netPayout = grossSale - fee;
+
+    modal(`💰 ADGM Atomic Escrow — Sell ${l.id} (${l.name})`, `
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.6">List and instantly settle your sovereign title deed${bp ? ` + <b>${esc(bp.name)}</b>` : ''} to institutional liquidity buyers on the ADGM Secondary Real Estate Exchange.</p>
+        <div style="padding:16px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:8px;font-size:13px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Base Land Valuation:</span><span>${money(l.price)}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Constructed Blueprint Value:</span><span style="color:#fbbf24">+${money(bp ? bp.valueBoost : 0)}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">District Appreciation (+12%):</span><span style="color:#34d399">+${money(grossSale - (l.price + (bp ? bp.valueBoost : 0)))}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Escrow Settlement Fee (${isFeeWaived ? '0% Golden Visa' : '5% Standard'}):</span><span style="color:#fb7185">-${money(fee)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);font-size:16px;font-weight:900"><span>Net Escrow Payout:</span><span style="color:#34d399">${money(netPayout)} (${aed(netPayout)})</span></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+          ${btn('Cancel','closeModal()','ghost')}
+          ${btn(`Execute Atomic Sale (+${money(netPayout)})`, `confirmSellLand('${l.id}')`, 'gold')}
+        </div>
+      </div>
+    `);
+  }
+
+  function confirmSellLand(landId) {
+    const l = DATA.land.find(x => x.id === landId);
+    if (!l || !(state.ownedLand||[]).includes(landId)) return;
+    const bld = (state.landBuildings || {})[landId];
+    const bp = bld ? HOUSE_BLUEPRINTS.find(h => h.id === bld.blueprintId) : null;
+    const grossSale = Math.round((l.price + (bp ? bp.valueBoost : 0)) * 1.12);
+    const isFeeWaived = state.visaTier === 'golden' || state.visaTier === 'diplomatic';
+    const fee = isFeeWaived ? 0 : Math.round(grossSale * 0.05);
+    const netPayout = grossSale - fee;
+
+    state.wallet += netPayout;
+    state.ownedLand = state.ownedLand.filter(id => id !== landId);
+    if (state.landBuildings) delete state.landBuildings[landId];
+    l.available = true;
+    l.price = grossSale;
+    state.transactions.unshift({
+      id: uid('tx'),
+      description: `Sold Deed ${l.id}${bp ? ` + ${bp.name}` : ''} via Atomic Escrow`,
+      amount: netPayout,
+      type: 'Real Estate Sale',
+      date: 'Just now',
+      status: 'Settled · Escrow Verified',
+      hash: txHash('sell-' + landId + Date.now())
+    });
+    award(65, 25, `Sold real estate ${landId} via Escrow`);
+    save();
+    closeModal();
+    toast(`💰 Sold ${l.id} for ${money(netPayout)} net payout!`, 'success');
+    refresh();
+  }
+
   function buildHome() {
-    if (state.home.built) return toast('Home already built!','info');
-    modal('Build Starter Home',`<p style="font-size:13px;color:var(--text-secondary)">Construct your personal coastal residence?</p><div style="margin-top:16px;display:flex;gap:8px;justify-content:end">${btn('Cancel','closeModal()','ghost')}${btn('Build Now','confirmHomeBuild()','gold')}</div>`);
+    openHouseBuilderModal((state.ownedLand && state.ownedLand[0]) || 'L-101');
   }
 
   function confirmHomeBuild() {
@@ -2886,10 +2400,45 @@
 
   /* PROPERTY */
   function property() {
+    const ownedProps = state.ownedProperties || [];
     return `<section class="fade" style="display:flex;flex-direction:column;gap:16px">
-      ${pageHeader('Digital Real Estate','Properties & Rooms','Browse, acquire, and customize your private spaces.',btn('My Interior','openRoomDesigner()','primary'))}
+      ${pageHeader('Digital Real Estate & Resale','Properties, Penthouses & Commercial Suites','Buy turnkey luxury properties, customize 2.5D interiors, or flip properties on the secondary escrow market.',btn('🎨 My Interior Studio','openRoomDesigner()','primary'))}
+
+      ${ownedProps.length ? card(`<div style="padding:20px;background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(6,182,212,0.04))">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div>
+            <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#34d399;font-weight:800">My Turnkey Property Portfolio (${ownedProps.length})</div>
+            <div style="font-size:15px;font-weight:900;margin-top:2px">Owned Residences & Secondary Market Liquidity</div>
+          </div>
+          <span class="tag tag-cyan">Instant Escrow Liquidity</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+          ${ownedProps.map(pid => {
+            const p = DATA.properties.find(x => x.id === pid);
+            if (!p) return '';
+            const resaleVal = Math.round(p.price * 1.10);
+            return `<div style="padding:14px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;gap:10px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:24px">${p.icon}</span>
+                <div>
+                  <div style="font-size:13px;font-weight:800">${esc(p.name)}</div>
+                  <div style="font-size:11px;color:#34d399;font-weight:700">Resale Valuation: ${money(resaleVal)}</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:6px">
+                ${btn('🎨 Room','openRoomDesigner()','ghost','class="btn btn-ghost btn-sm"')}
+                ${btn('💰 Sell',`sellPropertyModal('${p.id}')`,'gold','class="btn btn-gold btn-sm"')}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`) : ''}
+
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
-        ${DATA.properties.map(p => itemCard(p.icon, p.name, `${p.type} · ${p.district}`, `<div style="font-size:14px;font-weight:800;color:#22d3ee">${money(p.price)} <span style="font-size:10px;color:var(--text-dim)">${aed(p.price)}</span></div>`, btn('📍 Map',`nav('island.html?target=${p.id}')`,'ghost','class="btn btn-ghost btn-sm"') + btn('View','propertyDetail("'+p.id+'")','primary','class="btn btn-primary btn-sm"'))).join('')}
+        ${DATA.properties.map(p => {
+          const isOwned = ownedProps.includes(p.id);
+          return itemCard(p.icon, p.name, `${p.type} · ${p.district}`, `<div style="font-size:14px;font-weight:800;color:var(--accent-text)">${money(p.price)} <span style="font-size:10px;color:var(--text-dim)">${aed(p.price)}</span> ${isOwned?'<span class="tag tag-emerald" style="margin-left:4px">Owned</span>':''}</div>`, isOwned ? btn('💰 Sell',`sellPropertyModal('${p.id}')`,'gold','class="btn btn-gold btn-sm"') : btn('View','propertyDetail("'+p.id+'")','ghost','class="btn btn-ghost btn-sm"'));
+        }).join('')}
       </div>
     </section>`;
   }
@@ -2897,23 +2446,64 @@
   function propertyDetail(id) {
     const p = DATA.properties.find(x=>x.id===id);
     if (!p) return;
-    modal(p.name,`<p style="font-size:13px;color:var(--text-muted)">${esc(p.description)}</p><div style="margin-top:16px;display:flex;justify-content:between;align-items:center"><div style="font-size:20px;font-weight:900;color:#22d3ee">${money(p.price)}</div><div style="margin-left:auto">${btn('Acquire',`buyProperty('${p.id}')`,'gold')}</div></div>`);
+    const isOwned = (state.ownedProperties||[]).includes(p.id);
+    modal(p.name,`<p style="font-size:13px;color:var(--text-muted)">${esc(p.description)}</p><div style="margin-top:16px;display:flex;justify-content:between;align-items:center"><div style="font-size:20px;font-weight:900;color:var(--accent-text)">${money(p.price)}</div><div style="margin-left:auto">${isOwned ? btn('💰 Sell Property',`closeModal();sellPropertyModal('${p.id}')`,'gold') : btn('Acquire via Escrow',`buyProperty('${p.id}')`,'gold')}</div></div>`);
   }
 
   function buyProperty(id) {
     const p = DATA.properties.find(x=>x.id===id);
     if (!p) return;
     if (state.wallet < p.price) return toast('Insufficient ISL.','warn');
-    state.wallet -= p.price; state.ownedProperties.push(id);
-    state.transactions.unshift({id:uid('tx'),description:`Acquired ${p.name}`,amount:-p.price,type:'Purchase',date:'Just now',status:'Settled'});
+    state.wallet -= p.price;
+    if (!state.ownedProperties.includes(id)) state.ownedProperties.push(id);
+    state.transactions.unshift({id:uid('tx'),description:`Acquired ${p.name}`,amount:-p.price,type:'Real Estate',date:'Just now',status:'Settled · Escrow Verified',hash:txHash(p.id+Date.now())});
     award(60,0,`Acquired ${p.name}`);
     closeModal(); toast(`🏠 ${p.name} is yours!`,'success'); refresh();
+  }
+
+  function sellPropertyModal(id) {
+    const p = DATA.properties.find(x => x.id === id);
+    if (!p || !(state.ownedProperties||[]).includes(id)) return;
+    const gross = Math.round(p.price * 1.10);
+    const isFeeWaived = state.visaTier === 'golden' || state.visaTier === 'diplomatic';
+    const fee = isFeeWaived ? 0 : Math.round(gross * 0.05);
+    const net = gross - fee;
+    modal(`💰 Sell Property — ${p.name}`, `
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <p style="font-size:13px;color:var(--text-secondary)">Settle your turnkey property on the ADGM Secondary Real Estate Exchange (+10% market appreciation).</p>
+        <div style="padding:14px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-size:13px;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between"><span>Market Resale Price:</span><b>${money(gross)}</b></div>
+          <div style="display:flex;justify-content:space-between"><span>Escrow Fee (${isFeeWaived?'0% Golden Visa':'5%'}):</span><span style="color:#fb7185">-${money(fee)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);font-size:15px;font-weight:900"><span>Net Payout:</span><span style="color:#34d399">${money(net)} (${aed(net)})</span></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+          ${btn('Cancel','closeModal()','ghost')}
+          ${btn(`Confirm Sale (+${money(net)})`, `confirmSellProperty('${p.id}')`, 'gold')}
+        </div>
+      </div>
+    `);
+  }
+
+  function confirmSellProperty(id) {
+    const p = DATA.properties.find(x => x.id === id);
+    if (!p || !(state.ownedProperties||[]).includes(id)) return;
+    const gross = Math.round(p.price * 1.10);
+    const isFeeWaived = state.visaTier === 'golden' || state.visaTier === 'diplomatic';
+    const fee = isFeeWaived ? 0 : Math.round(gross * 0.05);
+    const net = gross - fee;
+    state.wallet += net;
+    state.ownedProperties = state.ownedProperties.filter(x => x !== id);
+    state.transactions.unshift({id:uid('tx'),description:`Sold ${p.name} via Atomic Escrow`,amount:net,type:'Real Estate Sale',date:'Just now',status:'Settled · Escrow Verified',hash:txHash('sellprop-'+id+Date.now())});
+    award(50, 20, `Sold ${p.name}`);
+    save(); closeModal();
+    toast(`💰 Sold ${p.name} for ${money(net)}!`, 'success');
+    refresh();
   }
 
   function openRoomDesigner() {
     if (!state.home.built) return toast('Build your home first!','warn');
     const ambiance = state.home.ambiance || 'sunset';
-    const ambianceStyles = { sunset:'linear-gradient(135deg,rgba(245,158,11,0.08),rgba(244,63,94,0.04))', cyber:'linear-gradient(135deg,rgba(99,102,241,0.08),rgba(6,182,212,0.04))', daylight:'linear-gradient(135deg,rgba(16,185,129,0.06),rgba(6,182,212,0.04))' };
+    const ambianceStyles = { sunset:'linear-gradient(135deg,rgba(245,158,11,0.08),rgba(244,63,94,0.04))', cyber:'linear-gradient(135deg,rgba(99,102,241,0.08),var(--accent-soft))', daylight:'linear-gradient(135deg,rgba(16,185,129,0.06),var(--accent-soft))' };
     modal('2.5D Room Interior Studio',`
       <div style="display:flex;flex-direction:column;gap:16px">
         <div style="padding:20px;border-radius:16px;background:${ambianceStyles[ambiance]||ambianceStyles.sunset};border:1px solid rgba(255,255,255,0.06);min-height:200px;display:flex;flex-direction:column;justify-content:space-between">
@@ -2927,7 +2517,7 @@
             }).join('')}
           </div>
           <div style="display:flex;gap:6px;margin-top:12px">
-            ${['sunset','cyber','daylight'].map(a=>`<button onclick="setRoomAmbiance('${a}')" style="padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid ${ambiance===a?'rgba(6,182,212,0.4)':'rgba(255,255,255,0.06)'};background:${ambiance===a?'rgba(6,182,212,0.12)':'transparent'};color:${ambiance===a?'#22d3ee':'var(--text-muted)'}">${a}</button>`).join('')}
+            ${['sunset','cyber','daylight'].map(a=>`<button onclick="setRoomAmbiance('${a}')" style="padding:4px 10px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:1px solid ${ambiance===a?'var(--border-accent)':'rgba(255,255,255,0.06)'};background:${ambiance===a?'var(--accent-soft)':'transparent'};color:${ambiance===a?'var(--accent-text)':'var(--text-muted)'}">${a}</button>`).join('')}
           </div>
         </div>
         <div style="display:flex;gap:8px;justify-content:space-between;align-items:center">
@@ -2970,7 +2560,7 @@
             </div>
             <p style="font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5">${esc(p.description).slice(0,100)}...</p>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)">
-              <div><div style="font-size:15px;font-weight:900;color:#22d3ee">${money(p.price)}</div><div style="font-size:10px;color:var(--text-dim)">${p.stock} in stock</div></div>
+              <div><div style="font-size:15px;font-weight:900;color:var(--accent-text)">${money(p.price)}</div><div style="font-size:10px;color:var(--text-dim)">${p.stock} in stock</div></div>
               <div style="display:flex;gap:6px">
                 ${btn('View',`productDetail('${p.id}')`,'ghost','class="btn btn-ghost btn-sm"')}
                 ${btn('Buy',`addCart('${p.id}')`,'primary','class="btn btn-primary btn-sm"')}
@@ -2984,7 +2574,7 @@
 
   function filterMarket(cat) { /* re-render filtered */ toast(`Filtering: ${cat}`, 'info'); }
   function showInventory() { modal('Your Inventory',`<div style="display:flex;flex-wrap:wrap;gap:8px">${state.inventory.map(id=>{const p=DATA.products.find(x=>x.id===id);return p?`<div style="padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);font-size:12px;font-weight:700">${p.icon} ${p.name}</div>`:'';}).join('')||'<div style="color:var(--text-muted);font-size:13px">Empty inventory.</div>'}</div>`); }
-  function productDetail(id) { const p=DATA.products.find(x=>x.id===id); if(!p)return; modal(p.name,`<div style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:center;gap:12px"><span style="font-size:40px">${p.icon}</span><div><div style="font-size:18px;font-weight:900">${esc(p.name)}</div><div style="font-size:11px;color:var(--text-dim)">${p.category} · ${p.rarity} · ${p.stock} left</div></div></div><p style="font-size:13px;color:var(--text-muted);line-height:1.6">${esc(p.description)}</p><div style="display:flex;justify-content:between;align-items:center"><div style="font-size:22px;font-weight:900;color:#22d3ee">${money(p.price)}</div><div style="margin-left:auto;display:flex;gap:8px">${btn('Add to Cart',`closeModal();addCart('${p.id}')`,'primary')}${btn('Buy Now',`closeModal();addCart('${p.id}');checkout()`,'gold')}</div></div></div>`); }
+  function productDetail(id) { const p=DATA.products.find(x=>x.id===id); if(!p)return; modal(p.name,`<div style="display:flex;flex-direction:column;gap:12px"><div style="display:flex;align-items:center;gap:12px"><span style="font-size:40px">${p.icon}</span><div><div style="font-size:18px;font-weight:900">${esc(p.name)}</div><div style="font-size:11px;color:var(--text-dim)">${p.category} · ${p.rarity} · ${p.stock} left</div></div></div><p style="font-size:13px;color:var(--text-muted);line-height:1.6">${esc(p.description)}</p><div style="display:flex;justify-content:between;align-items:center"><div style="font-size:22px;font-weight:900;color:var(--accent-text)">${money(p.price)}</div><div style="margin-left:auto;display:flex;gap:8px">${btn('Add to Cart',`closeModal();addCart('${p.id}')`,'primary')}${btn('Buy Now',`closeModal();addCart('${p.id}');checkout()`,'gold')}</div></div></div>`); }
 
   function addCart(id) { const p=DATA.products.find(x=>x.id===id); if(!p)return; const existing = state.cart.find(c=>c.id===id); if(existing){existing.qty=Math.min(existing.qty+1,p.stock);} else {state.cart.push({id,qty:1});} save(); toast(`${p.icon} ${p.name} added to cart.`,'success'); }
   function changeQty(id, delta) { const c=state.cart.find(x=>x.id===id); if(!c)return; c.qty=Math.max(0,c.qty+delta); if(c.qty<=0) state.cart=state.cart.filter(x=>x.id!==id); save(); refresh(); }
@@ -3007,24 +2597,46 @@
 
   /* BUSINESSES */
   function businesses() {
+    const allBiz = [...DATA.businesses, ...(state.createdBusinesses || [])];
     return `<section class="fade" style="display:flex;flex-direction:column;gap:16px">
-      ${pageHeader('Virtual Economy','Enterprises & Services','Discover or create businesses operating on the island.',btn('Start Business','createBusiness()','primary'))}
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">
-        ${DATA.businesses.map(b => card(`
-          <div style="padding:20px">
-            <div style="display:flex;align-items:start;gap:12px">
-              <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,0.04);display:grid;place-items:center;font-size:24px;flex-shrink:0">${b.icon}</div>
-              <div style="flex:1;min-width:0">
-                <div style="font-size:14px;font-weight:800">${esc(b.name)}</div>
-                <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${b.type} · ${b.district}</div>
-                <p style="font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.5">${esc(b.description)}</p>
+      ${pageHeader('Anchor Enterprises & Corporate HQ','Emaar, LuLu, ADGM, Hub71 & Dealerships','Enter flagship UAE enterprise hubs to commission villas, claim phygital retail vouchers, buy vehicles, or apply for startup grants.',btn('🏢 Launch Enterprise','createBusiness()','gold'))}
+
+      <!-- ANCHOR BRAND HIGHLIGHT STRIP -->
+      ${card(`<div style="padding:18px 22px;background:linear-gradient(135deg,rgba(6,182,212,0.06),rgba(245,158,11,0.05));display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px">
+        <div>
+          <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent-text);font-weight:800">UAE Flagship B2B Ecosystem</div>
+          <div style="font-size:14px;font-weight:800;margin-top:2px">Real-World Brands Operating Interactive Virtual Twins Across the 5 UAE Islands</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          ${btn('🏗️ Emaar Villas','enterBusinessStorefront("b1")','gold','class="btn btn-gold btn-sm"')}
+          ${btn('🛒 LuLu Hypermarket','enterBusinessStorefront("b2")','primary','class="btn btn-primary btn-sm"')}
+          ${btn('🏎️ Prestige Motors','enterBusinessStorefront("b3")','ghost','class="btn btn-ghost btn-sm"')}
+          ${btn('🏛️ ADGM Registry','enterBusinessStorefront("b4")','ghost','class="btn btn-ghost btn-sm"')}
+          ${btn('🚀 Hub71 Grants','enterBusinessStorefront("b5")','ghost','class="btn btn-ghost btn-sm"')}
+        </div>
+      </div>`)}
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px">
+        ${allBiz.map(b => card(`
+          <div style="padding:20px;display:flex;flex-direction:column;justify-content:space-between;height:100%;gap:12px">
+            <div>
+              <div style="display:flex;align-items:start;gap:12px">
+                <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,0.04);display:grid;place-items:center;font-size:24px;flex-shrink:0;border:1px solid rgba(255,255,255,0.06)">${b.icon}</div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                    <div style="font-size:14px;font-weight:800">${esc(b.name)}</div>
+                    ${b.anchor ? '<span class="tag tag-amber" style="font-size:9px">ANCHOR PARTNER</span>' : ''}
+                  </div>
+                  <div style="font-size:11px;color:var(--accent-text);font-weight:600;margin-top:2px">${esc(b.type)} · ${esc(b.district)}</div>
+                  <p style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.5">${esc(b.description)}</p>
+                </div>
               </div>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)">
-              <div style="font-size:11px;color:var(--text-dim)">⭐ ${b.rating} · ${b.followers} followers</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05);gap:8px">
+              <div style="font-size:11px;color:var(--text-dim)">⭐ ${b.rating || '4.9'} · ${b.followers || 120} followers</div>
               <div style="display:flex;gap:6px">
-                ${btn('🧭 Drive Here',`nav('island.html?target=${b.id}')`,'ghost','class="btn btn-ghost btn-sm"')}
-                ${btn(state.following.includes(b.id)?'Following':'Follow',`toggleFollow('${b.id}')`,state.following.includes(b.id)?'primary':'ghost','class="btn btn-sm"')}
+                ${btn(b.actionLabel || 'Enter Hub', `enterBusinessStorefront('${b.id}')`, 'gold', 'class="btn btn-gold btn-sm"')}
+                ${btn(state.following.includes(b.id)?'✓':'Follow',`toggleFollow('${b.id}')`,state.following.includes(b.id)?'primary':'ghost','class="btn btn-sm"')}
               </div>
             </div>
           </div>
@@ -3033,33 +2645,257 @@
     </section>`;
   }
 
-  function createBusiness() { modal('Launch Enterprise',`<p style="font-size:13px;color:var(--text-muted)">Create a virtual business on Nexus Island.</p><div style="margin-top:16px">${btn('Coming Soon','closeModal()','ghost')}</div>`); }
-  function createBusinessSave() {}
+  function enterBusinessStorefront(bizId) {
+    const allBiz = [...DATA.businesses, ...(state.createdBusinesses || [])];
+    const b = allBiz.find(x => x.id === bizId);
+    if (!b) return;
+
+    if (bizId === 'b1') {
+      // Emaar Virtual Developments
+      modal('🏗️ Emaar Virtual Developments — Architectural Pavilion', `
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <p style="font-size:13px;color:var(--text-secondary)">Commission official Emaar luxury villas and penthouses on your sovereign UAE land parcels, or claim your Emaar VIP Investor Preview Pass.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">
+            ${HOUSE_BLUEPRINTS.slice(0,4).map(bp => `
+              <div style="padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
+                <div style="font-size:22px">${bp.icon}</div>
+                <div style="font-size:13px;font-weight:800;margin-top:4px">${esc(bp.name)}</div>
+                <div style="font-size:10px;color:var(--text-dim)">${esc(bp.style)} · +${money(bp.valueBoost)} value</div>
+                <div style="font-size:12px;font-weight:800;color:#fbbf24;margin:8px 0">${money(bp.cost)}</div>
+                ${btn('Construct on My Land', `closeModal();openHouseBuilderModal('${(state.ownedLand&&state.ownedLand[0])||'L-101'}')`, 'gold', 'class="btn btn-gold btn-sm" style="width:100%"')}
+              </div>
+            `).join('')}
+          </div>
+          <div style="padding:12px;border-radius:12px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-size:12px;font-weight:800;color:#fbbf24">🎟️ Emaar Phygital Property Launch Pass</div><div style="font-size:10px;color:var(--text-muted)">Priority access & fee waiver consultation at Emaar Sales Center Dubai/Abu Dhabi</div></div>
+            ${btn('Claim VIP Pass', `claimPhygitalVoucher('Emaar Properties','EMAAR-VIP-2026','Priority Off-Plan Access & Advisory')`, 'primary', 'class="btn btn-primary btn-sm"')}
+          </div>
+        </div>
+      `);
+    } else if (bizId === 'b2') {
+      // LuLu Hypermarket Phygital Flagship
+      modal('🛒 LuLu Hypermarket & Mall — Phygital Retail Hub', `
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <p style="font-size:13px;color:var(--text-secondary)">Shop virtual goods for your avatar & home, or redeem ISL rewards for real-world LuLu Hypermarket discount vouchers across the UAE & GCC.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="padding:14px;border-radius:12px;background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2)">
+              <div style="font-size:13px;font-weight:800;color:#34d399">🎟️ 15% Off LuLu Hypermarket UAE</div>
+              <div style="font-size:11px;color:var(--text-muted);margin:6px 0">Valid on groceries & electronics via LuLu Online or UAE branches.</div>
+              ${btn('Claim Voucher (Free for Citizens)', `claimPhygitalVoucher('LuLu Hypermarket','LULU-UAE-15','15% Off In-Store & Online Delivery')`, 'gold', 'class="btn btn-gold btn-sm" style="width:100%"')}
+            </div>
+            <div style="padding:14px;border-radius:12px;background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.2)">
+              <div style="font-size:13px;font-weight:800;color:var(--accent-text)">🛍️ LuLu Express Drone Basket</div>
+              <div style="font-size:11px;color:var(--text-muted);margin:6px 0">Boosts citizen XP +50 & stocks your virtual villa kitchen.</div>
+              ${btn('Buy Basket (45 ISL)', `closeModal();addCart('pr3');checkout()`, 'primary', 'class="btn btn-primary btn-sm" style="width:100%"')}
+            </div>
+          </div>
+        </div>
+      `);
+    } else if (bizId === 'b3') {
+      // Prestige Motors
+      modal('🏎️ Prestige Motors & Hypercar Showroom', `
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <p style="font-size:13px;color:var(--text-secondary)">Test-drive or acquire EV supercars, desert dune buggies, and royal yachts to drive across the 5 UAE islands and highway bridges.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px">
+            ${DATA.vehicles.slice(0,4).map(v => {
+              const owned = (state.ownedVehicles||[]).includes(v.id);
+              return `<div style="padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">
+                <div style="font-size:24px">${v.icon}</div>
+                <div style="font-size:13px;font-weight:800;margin-top:4px">${esc(v.name)}</div>
+                <div style="font-size:11px;color:var(--accent-text);font-weight:700;margin:4px 0">${money(v.price)}</div>
+                ${owned ? btn('🏁 Drive Now', `closeModal();driveVehicle('${v.id}')`, 'success', 'class="btn btn-success btn-sm" style="width:100%"') : btn('Acquire Vehicle', `closeModal();buyVehicle('${v.id}')`, 'gold', 'class="btn btn-gold btn-sm" style="width:100%"')}
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      `);
+    } else if (bizId === 'b4') {
+      // ADGM Financial Authority
+      modal('🏛️ ADGM Financial Tower & Atomic Escrow Registry', `
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <p style="font-size:13px;color:var(--text-secondary)">Abu Dhabi Global Market (ADGM) RegLab Sandbox oversees atomic deed transfers, corporate licensing, and SHA-256 cryptographic receipts.</p>
+          <div style="padding:14px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-size:12px;display:flex;flex-direction:column;gap:6px">
+            <div>🛡️ <b>Escrow Protection Status:</b> <span style="color:#34d399">100% Atomic Settlement Active</span></div>
+            <div>📜 <b>Registered Sovereign Deeds:</b> ${(state.ownedLand||[]).length} Land Plots · ${(state.ownedProperties||[]).length} Properties</div>
+            <div>🪪 <b>Citizen Visa Tier:</b> ${(state.visaTier||'resident').toUpperCase()}</div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            ${btn('Open Sovereign Wallet & Receipts', `closeModal();nav('wallet.html')`, 'primary')}
+            ${btn('Register New Enterprise', `closeModal();createBusiness()`, 'gold')}
+          </div>
+        </div>
+      `);
+    } else if (bizId === 'b5') {
+      // Hub71 Tech Ecosystem
+      modal('🚀 Hub71 Startup Campus — Founder Grant & Incubator', `
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <p style="font-size:13px;color:var(--text-secondary)">Hub71 empowers tech founders building inside the UAE Virtual Ecosystem with non-dilutive ISL compute & land grants.</p>
+          <div style="padding:16px;border-radius:12px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.25)">
+            <div style="font-size:14px;font-weight:800;color:#818cf8">⚡ Hub71 Virtual Founder Grant — 500 ISL</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px">Instant sandbox grant for verified UAE Virtual Visa holders launching a startup or creator studio.</div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px">
+            ${btn('Close','closeModal()','ghost')}
+            ${btn('🚀 Claim 500 ISL Founder Grant', 'applyHub71Grant()', 'gold')}
+          </div>
+        </div>
+      `);
+    } else {
+      modal(`${b.icon} ${b.name}`, `
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:12px;color:var(--accent-text);font-weight:700">${esc(b.type)} · ${esc(b.district)}</div>
+          <p style="font-size:13px;color:var(--text-secondary);line-height:1.6">${esc(b.description)}</p>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            ${btn('Explore Marketplace Goods', `closeModal();nav('marketplace.html')`, 'primary')}
+            ${btn('Claim VIP Brand Voucher', `claimPhygitalVoucher('${escAttr(b.name)}','NEXUS-VIP-20','20% Phygital Partner Privilege')`, 'gold')}
+          </div>
+        </div>
+      `);
+    }
+  }
+
+  function claimPhygitalVoucher(brand, code, discount) {
+    if (!state.phygitalVouchers) state.phygitalVouchers = [];
+    if (state.phygitalVouchers.some(v => v.code === code)) {
+      closeModal();
+      return toast(`🎟️ Voucher ${code} is already in your Wallet!`, 'info');
+    }
+    state.phygitalVouchers.push({ id: uid('vch'), brand, code, discount, status: 'Active · Ready to Redeem' });
+    award(35, 15, `Claimed ${brand} Phygital Voucher`);
+    save();
+    closeModal();
+    toast(`🎟️ Claimed ${brand} voucher (${code})! View in Wallet.`, 'success');
+    refresh();
+  }
+
+  function applyHub71Grant() {
+    if (state.hub71GrantClaimed) {
+      closeModal();
+      return toast('Hub71 Founder Grant already claimed for this citizen ID.', 'info');
+    }
+    state.hub71GrantClaimed = true;
+    state.wallet += 500;
+    state.transactions.unshift({
+      id: uid('tx'),
+      description: 'Hub71 Tech Ecosystem Founder Grant',
+      amount: 500,
+      type: 'Grant',
+      date: 'Just now',
+      status: 'Settled · Hub71 Verified',
+      hash: txHash('hub71-' + Date.now())
+    });
+    award(80, 0, 'Awarded Hub71 Startup Grant');
+    save();
+    closeModal();
+    toast('🚀 +500 ISL Hub71 Founder Grant credited to your wallet!', 'success');
+    refresh();
+  }
+
+  function createBusiness() {
+    modal('🏢 Launch Virtual Enterprise (ADGM License — 250 ISL)', `
+      <form onsubmit="createBusinessSave(event)" style="display:flex;flex-direction:column;gap:12px">
+        <p style="font-size:12px;color:var(--text-muted)">Register an official commercial storefront on the UAE Archipelago. License fee: <b>250 ISL</b>.</p>
+        <div><div class="metric-label" style="margin-bottom:4px">Enterprise Name</div><input required name="name" class="field" placeholder="e.g. Al-Noor Spatial Architects"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><div class="metric-label" style="margin-bottom:4px">Sector</div><select name="type" class="field"><option>Real Estate & Architecture</option><option>Retail & Commerce</option><option>Automotive & Mobility</option><option>FinTech & Advisory</option><option>AI & Creator Studio</option></select></div>
+          <div><div class="metric-label" style="margin-bottom:4px">UAE Island District</div><select name="district" class="field">${UAE_ISLANDS.filter(i=>i.status==='active').map(i=>`<option value="${escAttr(i.name)}">${esc(i.name)}</option>`).join('')}</select></div>
+        </div>
+        <div><div class="metric-label" style="margin-bottom:4px">Storefront Description</div><input required name="description" class="field" placeholder="Describe your virtual services and phygital perks..."></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px">
+          ${btn('Cancel','closeModal()','ghost')}
+          <button type="submit" class="btn btn-gold">🏢 Issue License & Launch (250 ISL)</button>
+        </div>
+      </form>
+    `);
+  }
+
+  function createBusinessSave(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (state.wallet < 250) return toast('Insufficient ISL. Commercial license requires 250 ISL.', 'warn');
+    const f = new FormData(e.target);
+    const name = String(f.get('name')||'').trim();
+    const type = String(f.get('type')||'Enterprise');
+    const district = String(f.get('district')||'Al Maryah Financial Island');
+    const description = String(f.get('description')||' Official virtual enterprise.');
+    if (!name) return;
+    state.wallet -= 250;
+    if (!state.createdBusinesses) state.createdBusinesses = [];
+    const newBiz = { id: uid('biz'), name, type, district, rating: '5.0', followers: 1, icon: '🏢', description, actionLabel: 'Open Storefront', anchor: false };
+    state.createdBusinesses.unshift(newBiz);
+    state.transactions.unshift({ id: uid('tx'), description: `ADGM Commercial License: ${name}`, amount: -250, type: 'License', date: 'Just now', status: 'Settled · ADGM Registry', hash: txHash(name) });
+    award(75, 25, `Launched enterprise ${name}`);
+    save(); closeModal();
+    toast(`🏢 ${name} is now live on ${district}!`, 'success');
+    refresh();
+  }
+
   function toggleFollow(id) { if(state.following.includes(id)){state.following=state.following.filter(x=>x!==id);toast('Unfollowed.','info');} else {state.following.push(id);toast('Following!','success');} save(); refresh(); }
 
   /* VEHICLES */
   function vehicles() {
+    const owned = state.ownedVehicles || [];
     return `<section class="fade" style="display:flex;flex-direction:column;gap:16px">
-      ${pageHeader('Mobility','Vehicles & Garages','Acquire high-performance vehicles for island transit.')}
+      ${pageHeader('Mobility','Vehicles & Garage','Acquire and drive high-performance vehicles across the island archipelago.',btn('🌐 Open World','nav("island.html")','primary'))}
+
+      ${owned.length ? `<!-- YOUR GARAGE -->
+      ${card(`<div style="padding:24px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+          <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--accent-soft),rgba(99,102,241,0.08));display:grid;place-items:center;font-size:20px">🏎️</div>
+          <div>
+            <div style="font-size:16px;font-weight:900">Your Garage</div>
+            <div style="font-size:11px;color:var(--text-muted)">${owned.length} vehicle${owned.length>1?'s':''} owned · Drive on the Island Map</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">
+          ${owned.map(vid => {
+            const v = DATA.vehicles.find(x => x.id === vid);
+            if (!v) return '';
+            return `<div class="glass-card garage-card" style="padding:16px">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                <span style="font-size:28px">${v.icon}</span>
+                <div><div style="font-size:13px;font-weight:800">${esc(v.name)}</div><div style="font-size:10px;color:var(--text-dim)">${v.type}</div></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px">
+                ${[['Speed',v.speed],['Handling',v.handling],['Acceleration',v.acceleration]].map(([l,val]) => `<div>
+                  <div style="display:flex;justify-content:space-between;font-size:9px;font-weight:700;color:var(--text-dim);margin-bottom:2px"><span>${l}</span><span>${val}/100</span></div>
+                  <div class="vehicle-stat-bar"><div class="vehicle-stat-fill" style="width:${val}%"></div></div>
+                </div>`).join('')}
+              </div>
+              ${btn('🏁 Drive Now', `driveVehicle('${v.id}')`, 'primary', 'class="btn btn-primary btn-sm" style="width:100%"')}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`)}` : ''}
+
+      <!-- ALL VEHICLES -->
+      <div class="metric-label" style="margin-top:8px">Available Vehicles</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
-        ${DATA.vehicles.map(v => card(`
-          <div style="padding:20px">
+        ${DATA.vehicles.map(v => {
+          const isOwned = owned.includes(v.id);
+          return card(`
+          <div style="padding:20px" class="garage-card">
             <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
               <span style="font-size:32px">${v.icon}</span>
-              <div><div style="font-size:14px;font-weight:800">${esc(v.name)}</div><div style="font-size:11px;color:var(--text-muted)">${v.type}</div></div>
+              <div>
+                <div style="font-size:14px;font-weight:800">${esc(v.name)}</div>
+                <div style="font-size:11px;color:var(--text-muted)">${v.type}${isOwned ? ' · <span style="color:#34d399">✓ Owned</span>' : ''}</div>
+              </div>
             </div>
-            <div style="display:flex;gap:8px;margin-bottom:14px">
-              ${[['SPD',v.speed],['HDL',v.handling],['ACC',v.acceleration]].map(([l,v2])=>`<div style="flex:1;padding:6px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);text-align:center"><div style="font-size:9px;font-weight:700;color:var(--text-dim)">${l}</div><div style="font-size:13px;font-weight:900;color:#22d3ee">${v2}</div></div>`).join('')}
+            <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px">
+              ${[['Speed',v.speed,'SPD'],['Handling',v.handling,'HDL'],['Acceleration',v.acceleration,'ACC']].map(([label,val,short]) => `<div>
+                <div style="display:flex;justify-content:space-between;font-size:9px;font-weight:700;color:var(--text-dim);margin-bottom:2px"><span>${label}</span><span style="color:var(--accent-text)">${val}</span></div>
+                <div class="vehicle-stat-bar"><div class="vehicle-stat-fill" style="width:${val}%"></div></div>
+              </div>`).join('')}
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)">
-              <div style="font-size:15px;font-weight:900;color:#22d3ee">${money(v.price)}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)">
+              <div style="font-size:15px;font-weight:900;color:var(--accent-text)">${money(v.price)}</div>
               <div style="display:flex;gap:6px">
-                ${btn('🏎️ Test Drive',`driveVehicle('${v.id}')`,'gold','class="btn btn-gold btn-sm"')}
-                ${state.ownedVehicles.includes(v.id)?'<span class="badge badge-emerald" style="padding:4px 8px;font-size:10px">In Garage</span>':btn('Acquire',`buyVehicle('${v.id}')`,'primary','class="btn btn-primary btn-sm"')}
+                ${btn('Details', `vehicleDetail('${v.id}')`, 'ghost', 'class="btn btn-ghost btn-sm"')}
+                ${isOwned ? btn('🏁 Drive', `driveVehicle('${v.id}')`, 'success', 'class="btn btn-success btn-sm"') : btn('Acquire', `buyVehicle('${v.id}')`, 'primary', 'class="btn btn-primary btn-sm"')}
               </div>
             </div>
           </div>
-        `)).join('')}
+        `)}).join('')}
       </div>
     </section>`;
   }
@@ -3067,46 +2903,63 @@
   function vehicleDetail(id) {
     const v = DATA.vehicles.find(x => x.id === id);
     if (!v) return;
-    modal(`${v.name} (${v.type})`, `
-      <div style="text-align:center;padding:12px">
-        <div style="font-size:64px;margin-bottom:12px">${v.icon}</div>
-        <div style="display:flex;gap:10px;margin-bottom:16px">
-          ${[['Top Speed', v.speed + ' KM/H'], ['Handling', v.handling + '/100'], ['Acceleration', v.acceleration + '/100']].map(([l, val]) => `
-            <div style="flex:1;padding:10px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);text-align:center">
-              <div class="metric-label">${l}</div>
-              <div style="font-size:16px;font-weight:900;color:#22d3ee;margin-top:2px">${val}</div>
+    const isOwned = (state.ownedVehicles || []).includes(v.id);
+    modal(v.name, `
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:16px">
+          <span style="font-size:56px">${v.icon}</span>
+          <div>
+            <div style="font-size:22px;font-weight:900">${esc(v.name)}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${v.type}${isOwned ? ' · <span style="color:#34d399">✓ Owned</span>' : ''}</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          ${[['Speed',v.speed,'🏎️'],['Handling',v.handling,'🎯'],['Acceleration',v.acceleration,'⚡']].map(([l,val,ic]) => `
+            <div style="padding:14px;border-radius:14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);text-align:center">
+              <div style="font-size:20px;margin-bottom:4px">${ic}</div>
+              <div style="font-size:20px;font-weight:900;color:var(--accent-text)">${val}</div>
+              <div style="font-size:10px;font-weight:700;color:var(--text-dim);margin-top:2px">${l}</div>
+              <div class="vehicle-stat-bar" style="margin-top:6px"><div class="vehicle-stat-fill" style="width:${val}%"></div></div>
             </div>
           `).join('')}
         </div>
-        <div style="display:flex;gap:8px">
-          ${btn('🏎️ Spawn & Drive on Island', `closeModal();driveVehicle('${v.id}')`, 'gold', 'style="flex:1"')}
-          ${btn('Close', 'closeModal()', 'ghost')}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)">
+          <div><div style="font-size:22px;font-weight:900;color:var(--accent-text)">${money(v.price)}</div><div style="font-size:11px;color:var(--text-dim)">${aed(v.price)}</div></div>
+          <div style="display:flex;gap:8px">
+            ${isOwned ? btn('🏁 Drive on Island', `closeModal();driveVehicle('${v.id}')`, 'success') : btn('Acquire Vehicle', `closeModal();buyVehicle('${v.id}')`, 'gold')}
+          </div>
         </div>
       </div>
     `);
   }
+
   function buyVehicle(id) {
     const v = DATA.vehicles.find(x => x.id === id);
     if (!v) return;
-    if (state.wallet < v.price) return toast('Insufficient ISL.','warn');
+    if (state.wallet < v.price) return toast('Insufficient ISL.', 'warn');
     state.wallet -= v.price;
-    if (!state.ownedVehicles.includes(id)) state.ownedVehicles.push(id);
-    state.activeVehicle = id;
-    state.transactions.unshift({id:uid('tx'),description:`Acquired ${v.name}`,amount:-v.price,type:'Purchase',date:'Just now',status:'Settled'});
-    award(50, 25, `Acquired ${v.name}`);
-    toast(`🏎️ ${v.name} added to your garage!`, 'success');
+    state.ownedVehicles.push(id);
+    state.transactions.unshift({ id: uid('tx'), description: `Acquired ${v.name}`, amount: -v.price, type: 'Purchase', date: 'Just now', status: 'Settled' });
+    award(40, 0, `Acquired ${v.name}`);
+    toast(`🏎️ ${v.name} is yours!`, 'success');
     save();
     refresh();
   }
+
   function driveVehicle(id) {
-    const vId = id || state.activeVehicle || 'v1';
-    state.activeVehicle = vId;
-    state.worldMode = 'drive';
-    if (!state.ownedVehicles.includes(vId)) state.ownedVehicles.push(vId);
-    save();
-    playBeep('engine');
-    toast(`🏎️ Driving ${DATA.vehicles.find(v=>v.id===vId)?.name || 'vehicle'} in free-roam mode!`, 'success');
-    nav(`island.html?drive=${vId}`);
+    const v = DATA.vehicles.find(x => x.id === id);
+    if (!v) return;
+    // If on the island page with engine, enter vehicle directly
+    if (typeof window.engineEnterVehicle === 'function' && document.getElementById('nexus-map-canvas')) {
+      window.engineEnterVehicle(id);
+      toast(`🏎️ Driving ${v.name}! Use WASD to steer, F to exit.`, 'success');
+    } else {
+      // Navigate to island page and enter vehicle after load
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('nexus_drive_vehicle', id);
+      }
+      nav('island.html');
+    }
   }
 
   /* SOCIAL */
@@ -3139,7 +2992,7 @@
         <!-- Conversation List -->
         <div style="background:rgba(255,255,255,0.02);border-right:1px solid rgba(255,255,255,0.06);overflow-y:auto;max-height:600px">
           ${convos.map(c=>`
-            <button onclick="selectConversation('${c.user.id}')" style="width:100%;padding:14px;display:flex;align-items:center;gap:10px;border:none;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:all 0.2s;background:${c.user.id===sel?'rgba(6,182,212,0.06)':'transparent'};text-align:left" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='${c.user.id===sel?'rgba(6,182,212,0.06)':'transparent'}'">
+            <button onclick="selectConversation('${c.user.id}')" style="width:100%;padding:14px;display:flex;align-items:center;gap:10px;border:none;border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:all 0.2s;background:${c.user.id===sel?'var(--accent-soft)':'transparent'};text-align:left" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='${c.user.id===sel?'var(--accent-soft)':'transparent'}'">
               <span style="font-size:22px">${c.user.avatar}</span>
               <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.user.name)}</div><div style="font-size:10px;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.last?.text||'')}</div></div>
             </button>
@@ -3155,7 +3008,7 @@
             <div style="flex:1;padding:16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px">
               ${selConvo.msgs.slice().reverse().map(m=>`
                 <div style="display:flex;justify-content:${m.mine?'flex-end':'flex-start'}">
-                  <div style="max-width:70%;padding:10px 14px;border-radius:14px;font-size:12px;font-weight:600;${m.mine?'background:rgba(6,182,212,0.12);color:#22d3ee;border-bottom-right-radius:4px':'background:rgba(255,255,255,0.05);color:var(--text-secondary);border-bottom-left-radius:4px'}">${esc(m.text)}</div>
+                  <div style="max-width:70%;padding:10px 14px;border-radius:14px;font-size:12px;font-weight:600;${m.mine?'background:var(--accent-soft);color:var(--accent-text);border-bottom-right-radius:4px':'background:rgba(255,255,255,0.05);color:var(--text-secondary);border-bottom-left-radius:4px'}">${esc(m.text)}</div>
                 </div>
               `).join('')}
             </div>
@@ -3256,7 +3109,7 @@
             </div>
             <div style="display:flex;gap:8px;margin-bottom:16px">
               <div style="flex:1;padding:8px;border-radius:10px;background:rgba(255,255,255,0.03);text-align:center"><div class="metric-label">Plays</div><div style="font-size:16px;font-weight:900;margin-top:2px">${stats.plays}</div></div>
-              <div style="flex:1;padding:8px;border-radius:10px;background:rgba(255,255,255,0.03);text-align:center"><div class="metric-label">Best</div><div style="font-size:16px;font-weight:900;margin-top:2px;color:#22d3ee">${stats.best}</div></div>
+              <div style="flex:1;padding:8px;border-radius:10px;background:rgba(255,255,255,0.03);text-align:center"><div class="metric-label">Best</div><div style="font-size:16px;font-weight:900;margin-top:2px;color:var(--accent-text)">${stats.best}</div></div>
             </div>
             ${btn('▶ Play Now',`playGame('${key}')`, 'primary', 'class="btn btn-primary" style="width:100%"')}
           </div>
@@ -3279,7 +3132,7 @@
       if(!active) return;
       modal('🏎️ Yas Marina Speed Sprint',`
         <div style="text-align:center;padding:16px">
-          <div style="font-size:48px;font-weight:900;color:#22d3ee;margin:20px 0">${score}</div>
+          <div style="font-size:48px;font-weight:900;color:var(--accent-text);margin:20px 0">${score}</div>
           <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Tap the button as fast as you can!</p>
           <button onclick="droneTap()" class="btn btn-primary btn-lg" style="width:200px;height:60px;font-size:18px">⚡ TAP!</button>
           <div style="margin-top:16px">${btn('End Game','window.__endDrone()','ghost')}</div>
@@ -3301,7 +3154,7 @@
         <div style="font-size:36px;font-weight:900;margin:16px 0">Found: <span id="pearlCount" style="color:#fbbf24">0</span></div>
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Click to ping sonar — find pearls!</p>
         <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
-          ${Array.from({length:12},(_,i)=>`<button onclick="pearlPing(${i})" id="pearl-${i}" style="width:60px;height:60px;border-radius:14px;background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.15);font-size:24px;cursor:pointer;transition:all 0.2s">🌊</button>`).join('')}
+          ${Array.from({length:12},(_,i)=>`<button onclick="pearlPing(${i})" id="pearl-${i}" style="width:60px;height:60px;border-radius:14px;background:var(--accent-soft);border:1px solid var(--border-accent);font-size:24px;cursor:pointer;transition:all 0.2s">🌊</button>`).join('')}
         </div>
         <div style="margin-top:16px">${btn('End Dive','window.__endPearl()','ghost')}</div>
       </div>
@@ -3335,7 +3188,7 @@
       if(qIdx >= qs.length) {
         state.gameStats.tycoon.plays++; if(correct>state.gameStats.tycoon.best)state.gameStats.tycoon.best=correct; save();
         award(30,correct*15,`Strategy Arena: ${correct}/${qs.length}`);
-        modal('🧠 Results',`<div style="text-align:center"><div style="font-size:36px;font-weight:900;color:#22d3ee">${correct}/${qs.length}</div><p style="color:var(--text-muted);margin:12px 0">Questions answered correctly.</p>${btn('Close','closeModal()','primary')}</div>`);
+        modal('🧠 Results',`<div style="text-align:center"><div style="font-size:36px;font-weight:900;color:var(--accent-text)">${correct}/${qs.length}</div><p style="color:var(--text-muted);margin:12px 0">Questions answered correctly.</p>${btn('Close','closeModal()','primary')}</div>`);
         return;
       }
       const q = qs[qIdx];
@@ -3360,15 +3213,120 @@
 
   /* WALLET */
   function wallet() {
+    const sec = state.security || { score: 98, escrowActive: true, kycVerified: true, twoFactor: true, pinLocked: false };
+    const vouchers = state.phygitalVouchers || [];
+
     return `<section class="fade" style="display:flex;flex-direction:column;gap:16px">
-      ${pageHeader('Treasury','Wallet & Transactions','Manage your ISL balance and transaction history.',btn('+ Demo Funds','demoFunds(2500)','gold'))}
+      ${pageHeader('Sovereign Treasury & Nexus Shield','Wallet, Atomic Escrow & Cryptographic Receipts','1 ISL = 0.50 AED · Regulated Web2.5 ledger with SHA-256 receipt verification and phygital brand vouchers.',btn('🛂 Visa Center','openVisaCenterModal()','ghost')+btn('+ Demo Funds (2,500 ISL)','demoFunds(2500)','gold'))}
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
         ${metric('Balance', money(state.wallet), aed(state.wallet), '◈')}
-        ${metric('Transactions', state.transactions.length, 'All-time ledger', '📜')}
-        ${metric('Membership', state.membership, 'Active tier', '🎖️')}
+        ${metric('Nexus Shield Score', `${sec.score}/100`, 'UAE Pass + Escrow KYC', '🛡️')}
+        ${metric('Active Visa Tier', (VISA_TIERS.find(v=>v.id===(state.visaTier||'resident'))||VISA_TIERS[1]).name, `${Object.values(state.visas||{}).filter(v=>v.unlocked).length}/4 Countries Unlocked`, '🛂')}
+        ${metric('Transactions', state.transactions.length, 'SHA-256 signed ledger', '📜')}
       </div>
-      ${card(`<div style="padding:20px"><div style="font-size:14px;font-weight:900;margin-bottom:14px">Transaction Ledger</div><div style="display:flex;flex-direction:column;gap:6px">${state.transactions.slice(0,12).map(t=>`<div style="padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center;font-size:12px"><div><div style="font-weight:700">${esc(t.description)}</div><div style="font-size:10px;color:var(--text-dim);margin-top:2px">${t.date} · ${t.type}</div></div><div style="font-weight:800;color:${t.amount>=0?'#34d399':'#fb7185'}">${t.amount>=0?'+':''}${money(t.amount)}</div></div>`).join('')}</div></div>`)}
+
+      <!-- NEXUS SHIELD SECURITY & ATOMIC ESCROW VAULT -->
+      ${card(`<div style="padding:20px;background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(6,182,212,0.04))">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px">
+          <div>
+            <div style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#34d399;font-weight:800">🛡️ Nexus Shield — Zero-Trust Security Architecture</div>
+            <div style="font-size:15px;font-weight:900;margin-top:2px">ADGM Atomic Escrow Vault & Cryptographic Transaction Protection</div>
+          </div>
+          <button onclick="toggleSecurityPin()" class="btn ${sec.pinLocked?'btn-gold':'btn-ghost'} btn-sm">${sec.pinLocked?'🔒 Vault Hardware-Locked':'🔓 Lock Escrow Vault'}</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;font-size:12px">
+          <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)">
+            <div style="color:#34d399;font-weight:800">✓ Atomic Deed Escrow</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Title deeds & ISL settle simultaneously; zero counterparty default risk.</div>
+          </div>
+          <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)">
+            <div style="color:var(--accent-text);font-weight:800">✓ SHA-256 Audit Receipts</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Every land, house, vehicle, and visa transaction has a verifiable hash.</div>
+          </div>
+          <div style="padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)">
+            <div style="color:#fbbf24;font-weight:800">✓ Sovereign Identity KYC</div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Verified UAE Virtual Visa prevents sybil bots and wash trading.</div>
+          </div>
+        </div>
+      </div>`)}
+
+      <!-- PHYGITAL PARTNER VOUCHERS -->
+      ${card(`<div style="padding:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div style="font-size:14px;font-weight:900">🎟️ Phygital Partner Vouchers (Real-World UAE Redemption)</div>
+          ${btn('Claim More at Enterprises','nav("businesses.html")','ghost','class="btn btn-ghost btn-sm"')}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">
+          ${vouchers.map(v => `
+            <div style="padding:14px;border-radius:12px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);display:flex;justify-content:space-between;align-items:center;gap:10px">
+              <div>
+                <div style="font-size:13px;font-weight:800;color:#fbbf24">${esc(v.brand)}</div>
+                <div style="font-size:11px;color:var(--text-secondary);margin-top:2px">${esc(v.discount)}</div>
+                <div style="font-size:10px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;margin-top:4px">CODE: ${esc(v.code)}</div>
+              </div>
+              <span class="tag tag-emerald" style="font-size:9px">Active</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>`)}
+
+      <!-- CRYPTOGRAPHIC TRANSACTION LEDGER -->
+      ${card(`<div style="padding:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div style="font-size:14px;font-weight:900">Cryptographic Transaction Ledger (Click to Verify Receipt)</div>
+          <span style="font-size:11px;color:var(--text-dim)">SHA-256 Immutable Audit Trail</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${state.transactions.slice(0,15).map(t => {
+            const h = t.hash || txHash(t.id + t.description);
+            return `<div onclick="verifyTxReceipt('${t.id}')" style="padding:12px 14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between;align-items:center;font-size:12px;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
+              <div>
+                <div style="font-weight:700">${esc(t.description)}</div>
+                <div style="font-size:10px;color:var(--text-dim);margin-top:2px">${t.date} · ${t.type} · <span style="color:#34d399">${esc(t.status||'Settled')}</span> · <span style="font-family:'JetBrains Mono',monospace;color:var(--accent-text)">${h.slice(0,16)}...</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="font-weight:800;color:${t.amount>=0?'#34d399':'#fb7185'}">${t.amount>=0?'+':''}${money(t.amount)}</div>
+                <span class="tag tag-cyan" style="font-size:9px">🔒 Verify</span>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`)}
     </section>`;
+  }
+
+  function verifyTxReceipt(txId) {
+    const t = state.transactions.find(x => x.id === txId) || state.transactions[0];
+    if (!t) return;
+    const h = t.hash || txHash(t.id + t.description);
+    modal('🔒 Nexus Shield — Cryptographic Receipt Verification', `
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="padding:16px;border-radius:14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);text-align:center">
+          <div style="font-size:32px;margin-bottom:4px">🛡️</div>
+          <div style="font-size:15px;font-weight:900;color:#34d399">Cryptographic Signature Verified</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">ADGM Atomic Escrow & Nexus Shield Ledger</div>
+        </div>
+        <div style="padding:14px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);font-size:12px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Transaction ID:</span><span class="mono">${esc(t.id)}</span></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Description:</span><b>${esc(t.description)}</b></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Amount:</span><b style="color:${t.amount>=0?'#34d399':'#fb7185'}">${t.amount>=0?'+':''}${money(t.amount)} (${aed(Math.abs(t.amount))})</b></div>
+          <div style="display:flex;justify-content:space-between"><span style="color:var(--text-muted)">Settlement Status:</span><span style="color:#34d399;font-weight:700">${esc(t.status||'Settled · Escrow Verified')}</span></div>
+          <div style="padding-top:8px;border-top:1px solid rgba(255,255,255,0.06)">
+            <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px">SHA-256 AUDIT HASH</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent-text);word-break:break-all">${h}</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end">${btn('Close','closeModal()','primary')}</div>
+      </div>
+    `);
+  }
+
+  function toggleSecurityPin() {
+    if (!state.security) state.security = { score: 98, escrowActive: true, kycVerified: true, twoFactor: true, pinLocked: false };
+    state.security.pinLocked = !state.security.pinLocked;
+    save();
+    toast(state.security.pinLocked ? '🔒 Escrow Vault locked with hardware session guard.' : '🔓 Escrow Vault unlocked for trading.', 'success');
+    refresh();
   }
 
   /* PROFILE */
@@ -3377,11 +3335,11 @@
       ${pageHeader('Identity','Resident Profile','Your public identity on Nexus Island.',btn('Edit Profile','editProfile()','ghost'))}
       ${card(`<div style="padding:28px">
         <div style="display:flex;align-items:center;gap:16px">
-          <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,rgba(6,182,212,0.12),rgba(99,102,241,0.08));display:grid;place-items:center;font-size:40px;border:2px solid rgba(6,182,212,0.2)">${state.user.avatar}</div>
+          <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--accent-soft),rgba(99,102,241,0.08));display:grid;place-items:center;font-size:40px;border:2px solid var(--border-accent)">${state.user.avatar}</div>
           <div>
             <div style="font-size:22px;font-weight:900">${esc(state.user.name)}</div>
             <div style="font-size:12px;color:var(--text-muted);margin-top:2px">@${esc(state.user.username)} · ${esc(state.user.country)}</div>
-            <div style="font-size:11px;color:#22d3ee;font-weight:700;margin-top:4px">${esc(state.user.title)} · Level ${state.user.level}</div>
+            <div style="font-size:11px;color:var(--accent-text);font-weight:700;margin-top:4px">${esc(state.user.title)} · Level ${state.user.level}</div>
           </div>
         </div>
         <p style="font-size:13px;color:var(--text-secondary);margin-top:16px;line-height:1.6">${esc(state.user.bio)}</p>
@@ -3407,7 +3365,7 @@
       ${pageHeader('Activity','Notifications & Inbox','Island updates, social interactions, and system alerts.',btn('Mark All Read','readAll()','ghost')+btn('Clear Read','clearRead()','ghost'))}
       <div style="display:flex;flex-direction:column;gap:6px">
         ${state.notifications.map(n=>`
-          <div style="padding:12px 16px;border-radius:14px;background:${n.read?'rgba(255,255,255,0.01)':'rgba(6,182,212,0.04)'};border:1px solid ${n.read?'rgba(255,255,255,0.04)':'rgba(6,182,212,0.1)'};display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;transition:all 0.2s" onclick="readOne('${n.id}')" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='${n.read?'rgba(255,255,255,0.01)':'rgba(6,182,212,0.04)'}'">
+          <div style="padding:12px 16px;border-radius:14px;background:${n.read?'rgba(255,255,255,0.01)':'var(--accent-soft)'};border:1px solid ${n.read?'rgba(255,255,255,0.04)':'var(--accent-soft)'};display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;transition:all 0.2s" onclick="readOne('${n.id}')" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='${n.read?'rgba(255,255,255,0.01)':'var(--accent-soft)'}'">
             <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
               ${n.read?'':'<span class="live-dot" style="width:6px;height:6px;flex-shrink:0"></span>'}
               <span style="font-size:12px;font-weight:${n.read?'500':'700'};color:${n.read?'var(--text-muted)':'var(--text-primary)'}; overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(n.text)}</span>
@@ -3475,10 +3433,25 @@
   /* BUSINESS MODEL */
   function businessModel() {
     return `<section class="fade" style="display:flex;flex-direction:column;gap:16px">
-      ${pageHeader('Financial Engine','12 Revenue Streams & Unit Economics','Interactive model showing how Nexus Island monetizes.')}
+      ${pageHeader('Financial Engine','14 Revenue Streams & Unit Economics','Diversified B2C, B2B Enterprise, and Sovereign Escrow monetization across 4 Countries & 10+ Islands.')}
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
-        ${[['Citizen Memberships','$9.99/mo premium tier','👤'],['Creator Take-Rate','5% marketplace commission','🎨'],['Land Title Leases','Commercial ground rent','🏝️'],['Enterprise Branches','$2,500/mo virtual flagships','🏢'],['Event Hosting','Premium staged broadcasts','🎭'],['Advertising','Non-intrusive brand integration','📢'],['AI Services','NOVA premium features','🧠'],['Vehicle Economy','Transit & racing fees','🏎️'],['Education','Interactive courses','📚'],['Custom Worlds','Private realm hosting','🌐'],['Developer API','Platform access fees','⚙️'],['Licensing','White-label technology','📋']].map(([name,desc,ic])=>
-          card(`<div style="padding:18px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:10px;background:rgba(6,182,212,0.08);display:grid;place-items:center;font-size:18px">${ic}</div><div style="font-size:13px;font-weight:800">${name}</div></div><p style="font-size:11px;color:var(--text-muted)">${desc}</p></div>`)
+        ${[
+          ['Virtual Visa Issuance','Country & Golden Visa upgrades (0–1,200 ISL)','🛂'],
+          ['Primary Land Minting','Sovereign parcel releases across 5–10+ islands','🏝️'],
+          ['Secondary Property Escrow','5% atomic escrow fee on land & house sales','🏛️'],
+          ['Emaar Blueprint Royalties','20% platform cut on custom villa construction','🏗️'],
+          ['Anchor Brand Flagships','$2,500–$15,000/mo enterprise towers (LuLu, ADGM)','🏢'],
+          ['Phygital Retail Commissions','3–8% affiliate rev-share on real-world vouchers','🛒'],
+          ['Vehicle & Dealership Economy','Supercar sales, custom liveries & racing fees','🏎️'],
+          ['Citizen Memberships','$9.99/mo Gold & Founder Pass subscriptions','👤'],
+          ['Creator Marketplace Take-Rate','15% commission on 3D wearables & decor','🎨'],
+          ['Event & Summit Ticketing','Ticketed concerts, expos & VIP backstage passes','🎭'],
+          ['Spatial Brand Sponsorships','Highway bridge & Skyport terminal naming rights','📢'],
+          ['NOVA AI Concierge Pro','AI interior architect & automated shopkeeper','🧠'],
+          ['ADGM Commercial Licenses','250 ISL virtual business incorporation fees','📋'],
+          ['White-Label Sovereign Cloud','Licensing multi-country infrastructure to govs','🌐']
+        ].map(([name,desc,ic])=>
+          card(`<div style="padding:18px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;font-size:18px">${ic}</div><div style="font-size:13px;font-weight:800">${name}</div></div><p style="font-size:11px;color:var(--text-muted)">${desc}</p></div>`)
         ).join('')}
       </div>
       ${card(`<div style="padding:24px">
@@ -3486,7 +3459,7 @@
         <div style="display:flex;flex-direction:column;gap:12px">
           <div><div class="metric-label" style="margin-bottom:6px">Monthly Active Users</div><input type="range" min="10000" max="500000" value="100000" oninput="unitCalc()" id="mauSlider" style="width:100%;accent-color:#06b6d4"><div style="font-size:14px;font-weight:800;margin-top:4px" id="mauLabel">100,000 MAU</div></div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px" id="unitResults">
-            <div class="metric-card"><div class="metric-label">MRR</div><div class="metric-value" style="color:#22d3ee">$125K</div></div>
+            <div class="metric-card"><div class="metric-label">MRR</div><div class="metric-value" style="color:var(--accent-text)">$125K</div></div>
             <div class="metric-card"><div class="metric-label">ARR</div><div class="metric-value" style="color:#34d399">$1.5M</div></div>
             <div class="metric-card"><div class="metric-label">Gross Margin</div><div class="metric-value" style="color:#fbbf24">82%</div></div>
           </div>
@@ -3505,7 +3478,7 @@
     const arr = mrr * 12;
     document.getElementById('mauLabel').textContent = `${mau.toLocaleString()} MAU`;
     document.getElementById('unitResults').innerHTML = `
-      <div class="metric-card"><div class="metric-label">MRR</div><div class="metric-value" style="color:#22d3ee">$${(mrr/1000).toFixed(0)}K</div></div>
+      <div class="metric-card"><div class="metric-label">MRR</div><div class="metric-value" style="color:var(--accent-text)">$${(mrr/1000).toFixed(0)}K</div></div>
       <div class="metric-card"><div class="metric-label">ARR</div><div class="metric-value" style="color:#34d399">$${(arr/1000000).toFixed(1)}M</div></div>
       <div class="metric-card"><div class="metric-label">Gross Margin</div><div class="metric-value" style="color:#fbbf24">82%</div></div>
     `;
@@ -3516,7 +3489,7 @@
     return `<section class="fade" style="display:flex;flex-direction:column;gap:16px">
       ${pageHeader('Vision','Spatial Roadmap','The long-term evolution from browser-first to fully immersive.')}
       ${[['Q4 2026','Closed Alpha → Open Beta with 5,000 users + WebGL 3D district views'],['Q1 2027','Mobile companion app + Creator SDK + 50 registered creators'],['Q2 2027','Enterprise virtual branches + Government pilot programs'],['Q3 2027','Series A raise + VR/AR spatial extension + International expansion'],['2028+','Programmable world + 100K+ MAU + Full spatial computing integration']].map(([period,desc])=>
-        card(`<div style="padding:18px;display:flex;align-items:start;gap:14px"><div style="width:10px;height:10px;border-radius:50%;background:#06b6d4;margin-top:5px;flex-shrink:0;box-shadow:0 0 8px rgba(6,182,212,0.4)"></div><div><div style="font-size:13px;font-weight:800">${period}</div><p style="font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.5">${desc}</p></div></div>`)
+        card(`<div style="padding:18px;display:flex;align-items:start;gap:14px"><div style="width:10px;height:10px;border-radius:50%;background:#06b6d4;margin-top:5px;flex-shrink:0;box-shadow:0 0 8px var(--border-accent)"></div><div><div style="font-size:13px;font-weight:800">${period}</div><p style="font-size:12px;color:var(--text-muted);margin-top:4px;line-height:1.5">${desc}</p></div></div>`)
       ).join('')}
     </section>`;
   }
@@ -3575,8 +3548,8 @@
 
     modal('✨ NOVA AI Co-Pilot', `
       <div style="display:flex;flex-direction:column;gap:12px">
-        <div style="padding:14px;border-radius:14px;background:linear-gradient(135deg,rgba(6,182,212,0.06),rgba(99,102,241,0.04));border:1px solid rgba(6,182,212,0.12)">
-          <div style="font-size:12px;font-weight:800;color:#22d3ee;margin-bottom:6px">Context-Aware Recommendations</div>
+        <div style="padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--accent-soft),rgba(99,102,241,0.04));border:1px solid var(--accent-soft)">
+          <div style="font-size:12px;font-weight:800;color:var(--accent-text);margin-bottom:6px">Context-Aware Recommendations</div>
           <div style="font-size:11px;color:var(--text-muted)">Based on Level ${state.user.level} · ${money(state.wallet)} balance · ${state.ownedLand.length} parcels · ${state.friends.length} friends</div>
         </div>
         ${tips.map(t => `
@@ -3667,13 +3640,40 @@
     }
   }
 
-  // Plaza-related stubs for backward compat
-  function walkToPlazaPoint() {}
-  function submitDistrictSay() {}
-  function sendDistrictEmote() {}
-  function waveAtPeer() {}
-  function inspectPeer() {}
-  function tipPeer() {}
+  // Plaza-related functions — connected to world engine
+  function walkToPlazaPoint(districtId) {
+    if (typeof window.engineFocusDistrict === 'function') {
+      window.engineFocusDistrict(districtId || state.currentDistrict);
+      toast('Walking to plaza...', 'info');
+    }
+  }
+  function submitDistrictSay(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    toast('💬 Message sent to nearby residents!', 'success');
+  }
+  function sendDistrictEmote(emote) {
+    toast(`${emote || '👋'} Emote sent!`, 'info');
+    playBeep('emote');
+  }
+  function waveAtPeer(userId) {
+    const u = DATA.users.find(x => x.id === userId);
+    toast(`👋 Waved at ${u?.name || 'resident'}!`, 'success');
+    playBeep('emote');
+  }
+  function inspectPeer(userId) {
+    const u = DATA.users.find(x => x.id === userId);
+    if (u) person(userId);
+  }
+  function tipPeer(userId, amount) {
+    const tip = amount || 10;
+    if (state.wallet < tip) return toast('Insufficient ISL.', 'warn');
+    const u = DATA.users.find(x => x.id === userId);
+    state.wallet -= tip;
+    state.transactions.unshift({ id: uid('tx'), description: `Tip to ${u?.name || 'resident'}`, amount: -tip, type: 'Social', date: 'Just now', status: 'Settled' });
+    save();
+    toast(`💰 Tipped ${u?.name || 'resident'} ${money(tip)}!`, 'success');
+    playBeep('reward');
+  }
 
   /* ═══════════════════════════════════════════════
      VIRAL FEATURE 1: NEIGHBOR DROP
@@ -3707,7 +3707,7 @@
 
       <!-- How It Works -->
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
-        ${[['1. Choose Plot','Select the vacant land next to yours','🏝️','rgba(6,182,212,0.08)'],
+        ${[['1. Choose Plot','Select the vacant land next to yours','🏝️','var(--accent-soft)'],
           ['2. Send Invite','Share a personalized "Be My Neighbor" link','📨','rgba(245,158,11,0.08)'],
           ['3. Friend Joins','They claim the reserved plot instantly','🤝','rgba(16,185,129,0.08)'],
           ['4. Neighborhood!','Both earn Neighborhood Bonus XP & ISL','🎉','rgba(139,92,246,0.08)']].map(([t,d,i,bg]) => `
@@ -3727,7 +3727,7 @@
             <div style="padding:18px">
               <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px">
                 <div><span class="tag tag-cyan">${l.id}</span><h3 style="font-size:14px;font-weight:800;margin-top:6px">${esc(l.name)}</h3><div style="font-size:11px;color:var(--text-muted);margin-top:2px">${l.district} · ${l.size}</div></div>
-                <div style="font-size:14px;font-weight:900;color:#22d3ee">${money(l.price)}</div>
+                <div style="font-size:14px;font-weight:900;color:var(--accent-text)">${money(l.price)}</div>
               </div>
               <div style="display:flex;gap:6px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.05)">
                 ${btn('🏡 Invite Neighbor',`sendNeighborInvite('${l.id}')`,'gold','class="btn btn-gold btn-sm" style="flex:1"')}
@@ -3843,18 +3843,21 @@
      VIRAL FEATURE 2: ISLAND FLEX CARD
      ═══════════════════════════════════════════════ */
   function flexCard() {
-    const netWorth = state.wallet + state.ownedLand.length * 800 + state.ownedProperties.length * 1200 + state.ownedVehicles.length * 600 + state.inventory.length * 50;
+    const builtCount = Object.keys(state.landBuildings || {}).length;
+    const netWorth = state.wallet + state.ownedLand.length * 800 + builtCount * 1100 + state.ownedProperties.length * 1200 + state.ownedVehicles.length * 600 + state.inventory.length * 50;
     const totalVisitors = state.home.visitorsNow * 47 + state.home.upvotes * 12;
     const assetCount = state.ownedLand.length + state.ownedProperties.length + state.ownedVehicles.length + state.inventory.length;
     const tier = netWorth >= 10000 ? 'Platinum' : netWorth >= 5000 ? 'Gold' : netWorth >= 2000 ? 'Silver' : 'Bronze';
-    const tierColors = { Platinum:'linear-gradient(135deg,#e2e8f0,#94a3b8,#64748b)', Gold:'linear-gradient(135deg,#fbbf24,#d97706,#92400e)', Silver:'linear-gradient(135deg,#94a3b8,#64748b,#475569)', Bronze:'linear-gradient(135deg,#d97706,#92400e,#78350f)' };
+    const tierColors = { Platinum:'linear-gradient(135deg,#0f172a,#1e293b,#334155)', Gold:'linear-gradient(135deg,#b45309,#d97706,#78350f)', Silver:'linear-gradient(135deg,#334155,#475569,#1e293b)', Bronze:'linear-gradient(135deg,#78350f,#92400e,#451a03)' };
+    const activeVisa = VISA_TIERS.find(v => v.id === (state.visaTier || 'resident')) || VISA_TIERS[1];
+    const visaStamps = COUNTRIES.map(c => (state.visas && state.visas[c.id] && state.visas[c.id].unlocked) ? `${c.flag} ${c.id.toUpperCase()} ✓` : `${c.flag} 🔒`).join(' · ');
 
     return `<section class="fade" style="display:flex;flex-direction:column;gap:20px">
-      ${pageHeader('Social Sharing','Island Flex Card','Generate a stunning status card to share on Instagram, WhatsApp & social media.',btn('📲 Share Now','shareFlexCard()','gold'))}
+      ${pageHeader('Social Sharing & Sovereign Status','Citizen Flex Card & Multi-Country Visa Passport','Generate a verified sovereign status card displaying your 4-Country Visa stamps, Emaar properties, supercars, and net worth.',btn('🛂 Visa Center','openVisaCenterModal()','ghost')+btn('📲 Share Now','shareFlexCard()','gold'))}
 
       <!-- Preview Card -->
-      <div style="max-width:500px;margin:0 auto;width:100%">
-        <div id="flexCardPreview" style="aspect-ratio:1.586;border-radius:20px;padding:32px;position:relative;overflow:hidden;background:${tierColors[tier]};box-shadow:0 20px 60px -10px rgba(0,0,0,0.5),0 0 40px -10px rgba(245,158,11,0.2)">
+      <div style="max-width:520px;margin:0 auto;width:100%">
+        <div id="flexCardPreview" style="aspect-ratio:1.586;border-radius:20px;padding:28px;position:relative;overflow:hidden;background:${tierColors[tier]};box-shadow:0 20px 60px -10px rgba(0,0,0,0.5),0 0 40px -10px rgba(245,158,11,0.25);border:1px solid rgba(255,255,255,0.18)">
           <!-- Card Pattern Overlay -->
           <div style="position:absolute;inset:0;opacity:0.08;background-image:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.1) 20px,rgba(255,255,255,0.1) 21px)"></div>
 
@@ -3863,30 +3866,30 @@
             <!-- Top Row -->
             <div style="display:flex;justify-content:space-between;align-items:start">
               <div>
-                <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;opacity:0.8;font-weight:700">Nexus Island · Abu Dhabi</div>
+                <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.85;font-weight:800;color:#fbbf24">🇦🇪 UAE Sovereign Archipelago · ${esc(activeVisa.name)}</div>
                 <div style="font-size:22px;font-weight:900;margin-top:4px;letter-spacing:-0.02em">${esc(state.user.name)}</div>
-                <div style="font-size:11px;opacity:0.7;font-weight:600;margin-top:2px">@${esc(state.user.username)} · Level ${state.user.level}</div>
+                <div style="font-size:11px;opacity:0.8;font-weight:600;margin-top:2px">@${esc(state.user.username)} · Level ${state.user.level} · 🛡️ Nexus Shield Verified</div>
               </div>
               <div style="text-align:right">
                 <div style="font-size:32px">${state.user.avatar}</div>
-                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.15em;margin-top:4px;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,0.2)">${tier}</div>
+                <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.15em;margin-top:4px;padding:3px 8px;border-radius:6px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.15)">${tier}</div>
               </div>
             </div>
 
             <!-- Center Stats -->
-            <div style="display:flex;gap:16px;justify-content:center;margin:auto 0">
-              ${[['Net Worth',money(netWorth)],['Assets',assetCount],['Visitors',totalVisitors.toLocaleString()],['Rep',state.user.reputation]].map(([l,v]) => `
+            <div style="display:flex;gap:14px;justify-content:space-between;margin:auto 0;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,0.28);border:1px solid rgba(255,255,255,0.08)">
+              ${[['Net Worth',money(netWorth)],['Land & Villas',`${state.ownedLand.length} / ${builtCount}`],['Supercars',state.ownedVehicles.length],['Visitors',totalVisitors.toLocaleString()]].map(([l,v]) => `
                 <div style="text-align:center">
-                  <div style="font-size:18px;font-weight:900;letter-spacing:-0.02em">${v}</div>
-                  <div style="font-size:8px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.6;margin-top:2px">${l}</div>
+                  <div style="font-size:15px;font-weight:900;letter-spacing:-0.02em">${v}</div>
+                  <div style="font-size:8px;letter-spacing:0.15em;text-transform:uppercase;opacity:0.75;margin-top:2px">${l}</div>
                 </div>
               `).join('')}
             </div>
 
             <!-- Bottom Row -->
-            <div style="display:flex;justify-content:space-between;align-items:end">
-              <div style="font-size:9px;opacity:0.5;font-family:'JetBrains Mono',monospace">NX-${state.user.id.slice(0,8).toUpperCase()}</div>
-              <div style="font-size:9px;opacity:0.5">${new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'})}</div>
+            <div style="display:flex;justify-content:space-between;align-items:end;gap:8px">
+              <div style="font-size:9px;opacity:0.85;font-weight:700">${visaStamps}</div>
+              <div style="font-size:9px;opacity:0.65;font-family:'JetBrains Mono',monospace">VISA-${state.user.id.slice(0,6).toUpperCase()}</div>
             </div>
           </div>
         </div>
@@ -3895,7 +3898,7 @@
       <!-- Card Style Selector -->
       <div style="display:flex;justify-content:center;gap:8px;margin-top:-8px">
         ${[['black','⬛'],['gold','🟡'],['ocean','🔵'],['sunset','🟠']].map(([style,ic]) => `
-          <button onclick="setFlexStyle('${style}')" style="width:40px;height:40px;border-radius:12px;border:2px solid ${state.flexCardStyle===style?'#22d3ee':'rgba(255,255,255,0.1)'};background:rgba(255,255,255,0.04);font-size:18px;display:grid;place-items:center;cursor:pointer;transition:all 0.2s">${ic}</button>
+          <button onclick="setFlexStyle('${style}')" style="width:40px;height:40px;border-radius:12px;border:2px solid ${state.flexCardStyle===style?'var(--accent-text)':'rgba(255,255,255,0.1)'};background:rgba(255,255,255,0.04);font-size:18px;display:grid;place-items:center;cursor:pointer;transition:all 0.2s">${ic}</button>
         `).join('')}
       </div>
 
@@ -4140,7 +4143,7 @@
         ${entries.map((entry, i) => `
           <div class="glass-card ${i < 3 ? 'slide-up' : ''}" style="animation-delay:${i*0.08}s;padding:18px">
             <div style="display:flex;align-items:start;gap:12px">
-              <div style="width:40px;height:40px;border-radius:12px;background:rgba(6,182,212,0.08);display:grid;place-items:center;font-size:20px;flex-shrink:0">
+              <div style="width:40px;height:40px;border-radius:12px;background:var(--accent-soft);display:grid;place-items:center;font-size:20px;flex-shrink:0">
                 ${DATA.users.find(u=>u.name===entry.author)?.avatar || '👤'}
               </div>
               <div style="flex:1;min-width:0">
@@ -4216,10 +4219,38 @@
 
   initAlphaTracker();
   initMultiplayer();
-  initWorldEngine();
+
+  // Post-render: Initialize World Engine if on island page
+  if (route === 'island') {
+    // Use setTimeout to ensure world-engine.js has loaded and executed
+    // (it's a separate <script> tag that loads after app.js)
+    const startEngine = () => {
+      if (typeof window.initWorldEngine === 'function') {
+        window.initWorldEngine();
+        // Auto-enter vehicle if navigated from garage
+        if (typeof sessionStorage !== 'undefined') {
+          const pendingVehicle = sessionStorage.getItem('nexus_drive_vehicle');
+          if (pendingVehicle) {
+            sessionStorage.removeItem('nexus_drive_vehicle');
+            setTimeout(() => {
+              if (typeof window.engineEnterVehicle === 'function') {
+                window.engineEnterVehicle(pendingVehicle);
+                const v = DATA.vehicles.find(x => x.id === pendingVehicle);
+                if (v) toast(`🏎️ Driving ${v.name}! Use WASD to steer.`, 'success');
+              }
+            }, 500);
+          }
+        }
+      } else {
+        // Retry — world-engine.js might not have loaded yet
+        setTimeout(startEngine, 50);
+      }
+    };
+    setTimeout(startEngine, 0);
+  }
 
   /* ─── GLOBAL BINDINGS ─── */
   if (typeof window !== 'undefined') {
-    window.S=state; window.DATA=DATA; window.save=save; window.nav=nav; window.demo=demo; window.login=login; window.register=register; window.forgot=forgot; window.onboard=onboard; window.nova=nova; window.askNOVA=askNOVA; window.search=search; window.searchResults=searchResults; window.closeModal=closeModal; window.toast=toast; window.zone=zone; window.setMapTheme=setMapTheme; window.landDetail=landDetail; window.filterLand=filterLand; window.wish=wish; window.buyLand=buyLand; window.confirmLand=confirmLand; window.demoFunds=demoFunds; window.propertyDetail=propertyDetail; window.buyProperty=buyProperty; window.buildHome=buildHome; window.confirmHomeBuild=confirmHomeBuild; window.openRoomDesigner=openRoomDesigner; window.placeDecor=placeDecor; window.editHome=editHome; window.saveHomeDetails=saveHomeDetails; window.filterMarket=filterMarket; window.showInventory=showInventory; window.productDetail=productDetail; window.addCart=addCart; window.changeQty=changeQty; window.cart=cart; window.checkout=checkout; window.openCreatorStudio=openCreatorStudio; window.publishCreatorAsset=publishCreatorAsset; window.createBusiness=createBusiness; window.createBusinessSave=createBusinessSave; window.toggleFollow=toggleFollow; window.vehicleDetail=vehicleDetail; window.buyVehicle=buyVehicle; window.driveVehicle=driveVehicle; window.openPeople=openPeople; window.sendRequest=sendRequest; window.acceptRequest=acceptRequest; window.declineRequest=declineRequest; window.person=person; window.blockUser=blockUser; window.selectConversation=selectConversation; window.msg=msg; window.sendMessage=sendMessage; window.toggleCommunity=toggleCommunity; window.toggleRsvp=toggleRsvp; window.enterLiveStage=enterLiveStage; window.playGame=playGame; window.droneTap=droneTap; window.pearlPing=pearlPing; window.answerTycoon=answerTycoon; window.editProfile=editProfile; window.saveProfile=saveProfile; window.readOne=readOne; window.readAll=readAll; window.clearRead=clearRead; window.toggleSetting=toggleSetting; window.setSetting=setSetting; window.confirmReset=confirmReset; window.resetDemo=resetDemo; window.signOut=signOut; window.tour=tour; window.openPitchDeck=openPitchDeck; window.openMobileMenu=openMobileMenu; window.unitCalc=unitCalc; window.getWaitlist=getWaitlist; window.submitWaitlist=submitWaitlist; window.copyWaitlistRef=copyWaitlistRef; window.exportWaitlistCSV=exportWaitlistCSV; window.openAlphaJoinModal=openAlphaJoinModal; window.submitAlphaJoin=submitAlphaJoin; window.openAlphaFeedbackModal=openAlphaFeedbackModal; window.setAlphaStar=setAlphaStar; window.submitAlphaFeedback=submitAlphaFeedback; window.openAlphaInviteModal=openAlphaInviteModal; window.exportAlphaTelemetryCSV=exportAlphaTelemetryCSV; window.simulateAlphaSession=simulateAlphaSession; window.getAlphaTelemetry=getAlphaTelemetry; window.setRoomAmbiance=setRoomAmbiance; window.upvoteMyRoom=upvoteMyRoom; window.toggleRoomOpenHouse=toggleRoomOpenHouse; window.equipRoomSlot=equipRoomSlot; window.tryInRoom=tryInRoom; window.buyAndPlaceInRoom=buyAndPlaceInRoom; window.openShareRoomModal=openShareRoomModal; window.openSignGuestbookModal=openSignGuestbookModal; window.submitGuestbookEntry=submitGuestbookEntry; window.inspectCommunityRoom=inspectCommunityRoom; window.shopRoomBundle=shopRoomBundle; window.walkToPlazaPoint=walkToPlazaPoint; window.submitDistrictSay=submitDistrictSay; window.sendDistrictEmote=sendDistrictEmote; window.waveAtPeer=waveAtPeer; window.inspectPeer=inspectPeer; window.tipPeer=tipPeer; window.launchMultiplayerDemo=launchMultiplayerDemo; window.openNeighborInviteModal=openNeighborInviteModal; window.submitNeighborInvite=submitNeighborInvite; window.sendNeighborInvite=sendNeighborInvite; window.showNeighborInvites=showNeighborInvites; window.viewMyNeighborhood=viewMyNeighborhood; window.setFlexStyle=setFlexStyle; window.copyFlexCard=copyFlexCard; window.shareFlexCard=shareFlexCard; window.shareFlexWhatsApp=shareFlexWhatsApp; window.shareFlexInstagram=shareFlexInstagram; window.shareFlexTwitter=shareFlexTwitter; window.openHideTreasureModal=openHideTreasureModal; window.submitHideTreasure=submitHideTreasure; window.attemptTreasure=attemptTreasure; window.openTreasureMap=openTreasureMap; window.shareGuestbook=shareGuestbook; window.setWorldLayer=setWorldLayer; window.toggleWorldMode=toggleWorldMode; window.zoomWorld=zoomWorld; window.recenterWorld=recenterWorld; window.searchWorldPois=searchWorldPois; window.selectWorldPoi=selectWorldPoi; window.spawnVehicleInWorld=spawnVehicleInWorld; window.cycleRadio=cycleRadio; window.startWorldMission=startWorldMission; window.cancelWorldMission=cancelWorldMission; window.triggerGtaInteract=triggerGtaInteract; window.enterWorldBusiness=enterWorldBusiness; window.inspectWorldDeed=inspectWorldDeed; window.accessWorldAtm=accessWorldAtm; window.touchControlPress=touchControlPress; window.touchControlRelease=touchControlRelease;
+    window.S=state; window.DATA=DATA; window.DISTRICTS=DISTRICTS; window.COUNTRIES=COUNTRIES; window.VISA_TIERS=VISA_TIERS; window.UAE_ISLANDS=UAE_ISLANDS; window.HOUSE_BLUEPRINTS=HOUSE_BLUEPRINTS; window.save=save; window.nav=nav; window.demo=demo; window.login=login; window.register=register; window.forgot=forgot; window.onboard=onboard; window.nova=nova; window.askNOVA=askNOVA; window.search=search; window.searchResults=searchResults; window.closeModal=closeModal; window.toast=toast; window.zone=zone; window.setMapTheme=setMapTheme; window.playBeep=playBeep; window.landDetail=landDetail; window.filterLand=filterLand; window.wish=wish; window.buyLand=buyLand; window.confirmLand=confirmLand; window.openHouseBuilderModal=openHouseBuilderModal; window.confirmBuildBlueprint=confirmBuildBlueprint; window.sellLandModal=sellLandModal; window.confirmSellLand=confirmSellLand; window.demoFunds=demoFunds; window.propertyDetail=propertyDetail; window.buyProperty=buyProperty; window.sellPropertyModal=sellPropertyModal; window.confirmSellProperty=confirmSellProperty; window.buildHome=buildHome; window.confirmHomeBuild=confirmHomeBuild; window.openRoomDesigner=openRoomDesigner; window.placeDecor=placeDecor; window.editHome=editHome; window.saveHomeDetails=saveHomeDetails; window.filterMarket=filterMarket; window.showInventory=showInventory; window.productDetail=productDetail; window.addCart=addCart; window.changeQty=changeQty; window.cart=cart; window.checkout=checkout; window.openCreatorStudio=openCreatorStudio; window.publishCreatorAsset=publishCreatorAsset; window.enterBusinessStorefront=enterBusinessStorefront; window.claimPhygitalVoucher=claimPhygitalVoucher; window.applyHub71Grant=applyHub71Grant; window.createBusiness=createBusiness; window.createBusinessSave=createBusinessSave; window.toggleFollow=toggleFollow; window.vehicleDetail=vehicleDetail; window.buyVehicle=buyVehicle; window.driveVehicle=driveVehicle; window.openPeople=openPeople; window.sendRequest=sendRequest; window.acceptRequest=acceptRequest; window.declineRequest=declineRequest; window.person=person; window.blockUser=blockUser; window.selectConversation=selectConversation; window.msg=msg; window.sendMessage=sendMessage; window.toggleCommunity=toggleCommunity; window.toggleRsvp=toggleRsvp; window.enterLiveStage=enterLiveStage; window.playGame=playGame; window.droneTap=droneTap; window.pearlPing=pearlPing; window.answerTycoon=answerTycoon; window.editProfile=editProfile; window.saveProfile=saveProfile; window.readOne=readOne; window.readAll=readAll; window.clearRead=clearRead; window.toggleSetting=toggleSetting; window.setSetting=setSetting; window.confirmReset=confirmReset; window.resetDemo=resetDemo; window.signOut=signOut; window.tour=tour; window.openPitchDeck=openPitchDeck; window.openMobileMenu=openMobileMenu; window.unitCalc=unitCalc; window.getWaitlist=getWaitlist; window.submitWaitlist=submitWaitlist; window.copyWaitlistRef=copyWaitlistRef; window.exportWaitlistCSV=exportWaitlistCSV; window.openAlphaJoinModal=openAlphaJoinModal; window.submitAlphaJoin=submitAlphaJoin; window.openAlphaFeedbackModal=openAlphaFeedbackModal; window.setAlphaStar=setAlphaStar; window.submitAlphaFeedback=submitAlphaFeedback; window.openAlphaInviteModal=openAlphaInviteModal; window.exportAlphaTelemetryCSV=exportAlphaTelemetryCSV; window.simulateAlphaSession=simulateAlphaSession; window.getAlphaTelemetry=getAlphaTelemetry; window.setRoomAmbiance=setRoomAmbiance; window.upvoteMyRoom=upvoteMyRoom; window.toggleRoomOpenHouse=toggleRoomOpenHouse; window.equipRoomSlot=equipRoomSlot; window.tryInRoom=tryInRoom; window.buyAndPlaceInRoom=buyAndPlaceInRoom; window.openShareRoomModal=openShareRoomModal; window.openSignGuestbookModal=openSignGuestbookModal; window.submitGuestbookEntry=submitGuestbookEntry; window.inspectCommunityRoom=inspectCommunityRoom; window.shopRoomBundle=shopRoomBundle; window.walkToPlazaPoint=walkToPlazaPoint; window.submitDistrictSay=submitDistrictSay; window.sendDistrictEmote=sendDistrictEmote; window.waveAtPeer=waveAtPeer; window.inspectPeer=inspectPeer; window.tipPeer=tipPeer; window.launchMultiplayerDemo=launchMultiplayerDemo; window.openNeighborInviteModal=openNeighborInviteModal; window.submitNeighborInvite=submitNeighborInvite; window.sendNeighborInvite=sendNeighborInvite; window.showNeighborInvites=showNeighborInvites; window.viewMyNeighborhood=viewMyNeighborhood; window.setFlexStyle=setFlexStyle; window.copyFlexCard=copyFlexCard; window.shareFlexCard=shareFlexCard; window.shareFlexWhatsApp=shareFlexWhatsApp; window.shareFlexInstagram=shareFlexInstagram; window.shareFlexTwitter=shareFlexTwitter; window.openHideTreasureModal=openHideTreasureModal; window.submitHideTreasure=submitHideTreasure; window.attemptTreasure=attemptTreasure; window.openTreasureMap=openTreasureMap; window.shareGuestbook=shareGuestbook; window.openVisaCenterModal=openVisaCenterModal; window.applyCountryVisa=applyCountryVisa; window.switchCountry=switchCountry; window.upgradeVisaTier=upgradeVisaTier; window.focusUaeIsland=focusUaeIsland; window.openExpansionIslandModal=openExpansionIslandModal; window.voteExpansionIsland=voteExpansionIsland; window.verifyTxReceipt=verifyTxReceipt; window.toggleSecurityPin=toggleSecurityPin;
   }
 })();
